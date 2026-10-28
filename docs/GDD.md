@@ -1,7 +1,7 @@
 # URBE — Game Design Document
 
 > **Título provisional:** URBE (se puede cambiar en cualquier momento).
-> **Versión:** 0.1 (borrador inicial) · **Fecha:** 2026-10-28
+> **Versión:** 0.2 (decisiones del director aplicadas, ver [§20.2](#202-decisiones-tomadas-2026-10-28)) · **Fecha:** 2026-10-28
 > **Director:** Álvaro · **Redacción técnica:** Claude
 > **Documento hermano:** [PLAN_DE_TRABAJO.md](PLAN_DE_TRABAJO.md) (quién hace qué, en qué orden y con qué modelo de IA).
 
@@ -31,7 +31,7 @@ Este documento describe **qué** es el juego y **cómo** funciona por dentro. Es
 - [17. Sin conexión y servicios opcionales](#17-sin-conexión-y-servicios-opcionales)
 - [18. Monetización y distribución](#18-monetización-y-distribución)
 - [19. Arquitectura técnica](#19-arquitectura-técnica)
-- [20. Riesgos y preguntas abiertas](#20-riesgos-y-preguntas-abiertas)
+- [20. Riesgos y decisiones](#20-riesgos-y-decisiones)
 - [21. Glosario](#21-glosario)
 
 ---
@@ -42,7 +42,7 @@ Este documento describe **qué** es el juego y **cómo** funciona por dentro. Es
 
 | Aspecto | Decisión |
 |---|---|
-| Plataformas | **Android** (principal) y **PC** (Windows; Linux/Steam Deck si sale barato) |
+| Plataformas | **Android** (principal) y **PC** (Windows; Linux/Steam Deck si sale barato). **Sin iOS** |
 | Motor | **Unity 6 LTS** + URP, con la simulación en una librería C# independiente (`Sim.Core`) |
 | Estilo visual | **Low-poly estilizado** con una textura de paleta compartida |
 | Modelo de negocio | **Gratis con demo + desbloqueo único.** Sin anuncios, sin temporizadores, sin gemas |
@@ -152,7 +152,7 @@ No hay un city builder **3D, con carreteras libres y simulación por agentes** a
 | TM:PE (mod de C:S) | Código abierto | Qué herramientas de tráfico pedía la comunidad |
 | Devlogs de Citybound | Públicos | Simulación por agentes y carreteras procedurales |
 
-**Regla de oro:** no se copia código GPL en URBE, porque nos obligaría a liberar todo el juego, ni código o assets de juegos comerciales. Se aplica el **diseño en sala limpia**: observar el comportamiento, describirlo con palabras propias e implementarlo desde cero. La herramienta REA (ingeniería inversa) se usa **solo** sobre nuestros propios builds y sobre proyectos de código abierto (ver [PLAN_DE_TRABAJO.md](PLAN_DE_TRABAJO.md)).
+**Regla de oro:** no se copia código GPL en URBE, porque nos obligaría a liberar todo el juego, ni código o assets de juegos comerciales. Se aplica el **diseño en sala limpia**: observar el comportamiento, describirlo con palabras propias e implementarlo desde cero. **No se usan herramientas de ingeniería inversa** sobre juegos ni apps de terceros (ver [PLAN_DE_TRABAJO.md](PLAN_DE_TRABAJO.md)).
 
 ---
 
@@ -647,28 +647,28 @@ Parcela (ancho × fondo, pendiente, esquina sí/no)
 | Densidad | Baja, media, alta | Número de plantas y volumetría |
 | Nivel | 1–5 | Acabados, altura, accesorios, calidad |
 | Parcela | 16 tamaños (1×1 a 4×4) | Huella y número de módulos de fachada |
-| Estilo | 8 al lanzamiento | Piezas, paleta, cubiertas |
+| Estilo | 5 en la 1.0 (8 previstos) | Piezas, paleta, cubiertas |
 | Riqueza del barrio | Baja, media, alta | Accesorios, jardines, coches aparcados |
 | Semilla | Infinita | Combinación concreta de piezas, colores y accesorios |
 
-Con unas **450 piezas** (unas 55 por estilo más las comunes), el número de combinaciones distinguibles supera con creces las **5.000 por estilo**. El objetivo de calidad es que en una manzana de 20 edificios **no haya dos iguales** a simple vista.
+Con unas **300 piezas en la 1.0** (unas 55 por estilo × 5 estilos, más las comunes), el número de combinaciones distinguibles supera con creces las **5.000 por estilo**. El objetivo de calidad es que en una manzana de 20 edificios **no haya dos iguales** a simple vista.
 
 ### 6.4 Estilos arquitectónicos
 
-| Estilo | Rasgos | Cubiertas | Paleta |
-|---|---|---|---|
-| **Mediterráneo** | Encalado, persianas, balcones de forja, patios | Teja árabe a 2 o 4 aguas, azoteas | Blancos, ocres, terracota, azul añil |
-| **Ensanche europeo** | Manzana cerrada, chaflán, miradores, bajos comerciales | Mansarda, cubierta plana | Piedra, crema, verde botella |
-| **Nórdico** | Madera y ladrillo, ventanas grandes, colores vivos | 2 aguas muy inclinadas | Rojo Falun, amarillo, gris |
-| **Suburbio norteamericano** | Casas con jardín y garaje, porches | 2 y 4 aguas de tejas planas | Pastel, blanco, gris |
-| **Asia densa** | Torres estrechas, rótulos, terrazas, aire acondicionado por todas partes | Plana con depósitos | Gris hormigón, neones |
-| **Latinoamericano** | Colores intensos, rejas, patios, azoteas habitadas | Plana y teja | Turquesa, rosa, amarillo |
-| **Modernista y brutalista** | Hormigón, volúmenes rotundos, pilotis | Plana | Grises cálidos |
-| **Eco-futurista** (desbloqueable) | Fachadas verdes, madera laminada, placas solares | Ajardinada | Verdes, madera, blanco |
+| Estilo | Rasgos | Cubiertas | Paleta | Versión |
+|---|---|---|---|---|
+| **Mediterráneo** | Encalado, persianas, balcones de forja, patios | Teja árabe a 2 o 4 aguas, azoteas | Blancos, ocres, terracota, azul añil | **1.0** |
+| **Ensanche europeo** | Manzana cerrada, chaflán, miradores, bajos comerciales | Mansarda, cubierta plana | Piedra, crema, verde botella | **1.0** |
+| **Nórdico** | Madera y ladrillo, ventanas grandes, colores vivos | 2 aguas muy inclinadas | Rojo Falun, amarillo, gris | **1.0** |
+| **Suburbio norteamericano** | Casas con jardín y garaje, porches | 2 y 4 aguas de tejas planas | Pastel, blanco, gris | **1.0** |
+| **Asia densa** | Torres estrechas, rótulos, terrazas, aire acondicionado por todas partes | Plana con depósitos | Gris hormigón, neones | Después |
+| **Latinoamericano** | Colores intensos, rejas, patios, azoteas habitadas | Plana y teja | Turquesa, rosa, amarillo | **1.0** |
+| **Modernista y brutalista** | Hormigón, volúmenes rotundos, pilotis | Plana | Grises cálidos | Después |
+| **Eco-futurista** (desbloqueable) | Fachadas verdes, madera laminada, placas solares | Ajardinada | Verdes, madera, blanco | Después |
 
 - **Estilo por distrito:** se elige con la política "Estilo arquitectónico". Sin política, se mezclan según el estilo inicial de la partida.
 - **Mezcla controlada:** con la opción "ciudad ecléctica", cada barrio puede tener un estilo dominante (70 %) y uno secundario (30 %).
-- **Futuro:** más estilos como DLC estético (ver [18](#18-monetización-y-distribución)) y como mods de datos.
+- **Después del lanzamiento:** Asia densa, Modernista y brutalista y Eco-futurista, como actualizaciones o DLC estético (ver [18](#18-monetización-y-distribución)). La comunidad podrá añadir más como mods de datos (en móvil y PC).
 
 ### 6.5 Edificios únicos hechos a mano
 
@@ -1184,7 +1184,25 @@ El tráfico es el corazón del género. El jugador debe poder **entender** y **a
 - **Lado derecho:** capas, estadísticas, feed, hitos y modo plano.
 - **Barra inferior:** categorías de construcción (ver [12.7](#127-barra-de-construcción)), deshacer, rehacer y demoler.
 - **Al abrir una categoría:** sube un panel con pestañas de subcategorías y tarjetas con miniatura, nombre, coste e indicadores (cobertura, capacidad).
-- **Modo vertical** (después del lanzamiento): la barra pasa a una cuadrícula inferior de 2 filas. No es prioritario.
+- **Modo vertical (incluido en la 1.0, secundario):** el juego se diseña para horizontal, pero se puede jugar en vertical con una distribución adaptada:
+
+```
+┌──────────────────────────────┐
+│ 💰 1,2M (+8k) 👥 48k 😊78% ☰ │  ← barra compacta (demanda y fecha al tocar)
+│ ⏸ ▶ ▶▶ ▶▶▶        🔔3   ⋯   │  ← velocidad, avisos y menú "⋯" (capas, stats, feed, hitos, plano)
+├──────────────────────────────┤
+│                              │
+│          [ MAPA 3D ]         │
+│                              │
+├──────────────────────────────┤
+│ 🛣️ 🏘️ 🗺️ ⚡ 💧 🗑️ 🏥 🚒 🚓 │  ← categorías en 2 filas
+│ 🎓 🚌 🌳 🏛️ 🏭 🌲 ⛰️ 🧰 ↶ ↷ │
+└──────────────────────────────┘
+```
+
+  - Los paneles (categoría abierta, información, capas) **suben desde abajo** como hojas deslizables (medio o pantalla completa).
+  - La rotación es automática y se puede bloquear en Ajustes (ver [12.4](#124-ajustes)).
+  - Al rotar se conserva la cámara y la herramienta activa.
 
 ### 11.3 Gestos
 
@@ -1294,7 +1312,7 @@ Arranque (logo → carga de datos)
     │   └── Acciones: cargar · renombrar · duplicar · exportar · borrar
     ├── Escenarios (lista con objetivo y dificultad)
     ├── Editor de mapas (después del lanzamiento)
-    ├── Estilos y mods (después del lanzamiento: activar estilos de datos)
+    ├── Estilos y mods (después del lanzamiento: mods de datos en móvil y PC)
     ├── Plantillas (gestionar .urbeplan: importar, exportar, borrar)
     ├── Logros
     ├── Ajustes
@@ -1331,7 +1349,7 @@ En partida
 
 ### 12.3 Nueva partida
 
-- **Mapas al lanzamiento:** 6–8 mapas con biomas (templado, mediterráneo, nórdico, tropical, desierto, montaña). Cada uno con río, mar o lago y distintas conexiones exteriores.
+- **Mapas al lanzamiento:** 6 mapas con biomas (templado, mediterráneo, nórdico, tropical, desierto, montaña). Cada uno con río, mar o lago y distintas conexiones exteriores.
 - **Semilla:** visible y editable para compartir.
 
 ### 12.4 Ajustes
@@ -1341,7 +1359,7 @@ En partida
 | **Gráficos** | Gama (Auto / Baja / Media / Alta / Personalizada) · Escala de resolución (50–100 %, dinámica sí o no) · FPS máximo (30 / 60 / 90 / 120 según pantalla; PC: libre) · Sombras (no / cerca / medias / lejanas) · Calidad de los árboles · Densidad de decoración · Máximo de vehículos y peatones visibles · Agua (simple / con reflejos) · Postproceso (no / ligero / completo) · Modo ahorro de batería |
 | **Simulación** | Duración del día (3 / 6 / 12 min) · Velocidad máxima permitida · Autoguardado (no / 5 / 10 / 20 min) · Ranuras de autoguardado (1–5, por defecto 3) |
 | **Controles** | Sensibilidad de la cámara · Invertir ejes · Desplazamiento del cursor (px) · Lupa sí o no · Confirmación ✓ sí o no · Modo una mano · Zurdo o diestro · Vibración · Construir en pausa · (PC) Reasignar atajos |
-| **Interfaz** | Escala · Paleta para daltonismo · Idioma · Notificaciones por tipo · Mostrar nombres de calles · Mostrar iconos de problemas |
+| **Interfaz** | Escala · Orientación (auto / horizontal / vertical) · Paleta para daltonismo · Idioma · Notificaciones por tipo · Mostrar nombres de calles · Mostrar iconos de problemas |
 | **Audio** | General · Música · Ambiente · Efectos · Interfaz · Silenciar en segundo plano |
 | **Almacenamiento** | Tamaño de cada partida · Compresión (rápida / máxima) · Borrar caché regenerable · Exportar o importar una partida (`.urbe`) · Borrar los autoguardados antiguos |
 | **Cuenta y nube (opcional)** | Conectar Google Play Games o Steam · Sincronizar partidas sí o no · Sincronizar logros |
@@ -1732,14 +1750,52 @@ Cada tipología × 8 estilos × 5 niveles × 16 parcelas × semilla da miles de 
 
 ## 14. Sonido y música
 
-- **Música adaptativa:** 3–4 capas (calma, día, noche, ciudad activa) que se mezclan según la hora, la velocidad y la densidad visible. Al lanzamiento, de 8 a 12 pistas.
+### 14.1 Banda sonora original
+
+- **Origen:** banda sonora **100 % original de URBE**, **compuesta y sintetizada por código** con un generador propio (`tools/music/`, Python + numpy). No depende de licencias de terceros. Se regenera de forma idéntica con la misma semilla y se amplía añadiendo definiciones de pistas nuevas.
+- **Estilo:** **electrónica cálida / lo-fi**: pads suaves, piano eléctrico FM, bajo redondo, plucks y campanas, batería suave y un leve crujido de vinilo. Acompaña sin cansar durante sesiones largas.
+- **v1 (generada el 2026-10-28):**
+
+| # | Pista | Momento de uso | Tempo y tonalidad |
+|---|---|---|---|
+| 1 | Plano Inicial | Menú principal | 76 BPM, Re mayor |
+| 2 | Primeras Calles | Mañana / inicio de partida | 84 BPM, Sol mayor |
+| 3 | Hora Punta | Día con mucha actividad | 92 BPM, La menor |
+| 4 | Barrio al Sol | Tarde | 80 BPM, Fa mayor |
+| 5 | Luces de Neón | Noche | 70 BPM, Mi dórico |
+| 6 | Skyline | Ciudad grande / hitos altos | 88 BPM, Si♭ mayor |
+| J1 | Hito alcanzado | Jingle al desbloquear un hito | — |
+| J2 | Logro | Jingle de logro | — |
+
+- **Capas adaptativas:** cada pista se exporta también en 3 capas sincronizadas:
+  - `base` (pads + bajo)
+  - `melodia`
+  - `ritmo`
+
+  El juego las combina según el momento:
+
+  | Estado | Capas |
+  |---|---|
+  | Calma (pausa, zoom lejano, noche tranquila) | Base |
+  | Normal | Base + melodía |
+  | Activa (hora punta, eventos, construcción intensa) | Las tres |
+
+  Los cambios son fundidos de 4 s, siempre en el compás.
+- **Bucles sin cortes:** la cola de la reverberación del final se suma al principio, así que la pista se repite sin chasquidos ni silencios.
+- **Lista de reproducción:** por momento del día y tamaño de la ciudad, con silencios de 20–60 s entre pistas para no fatigar.
+- **Para la 1.0:** de 8 a 10 pistas, ampliadas con el mismo generador.
+- **Más adelante:** el director valorará añadir música con licencia (CC0/CC-BY) o generada con IA en el PC.
+- **Cómo se regenera:** `python3 tools/music/render.py --all` (mezclas) y `--stems` (capas). Ver [PLAN_DE_TRABAJO.md](PLAN_DE_TRABAJO.md).
+
+### 14.2 Sonido ambiente y efectos
+
 - **Ambiente por zonas:**
   - Pájaros y viento en las afueras, rumor de tráfico en el centro, zumbido industrial, olas en la costa y grillos de noche.
   - Mezcla por densidad en pantalla, **no por fuente individual**.
 - **Tráfico agregado:** se calcula la densidad de tráfico cerca de la cámara y se ajusta el volumen de 3 capas en bucle (fluido, denso, atasco con bocinas). Cero fuentes de audio por coche.
 - **Sirenas:** las emergencias visibles cercanas tienen una fuente propia (máximo 4).
 - **Interfaz:** sonidos suaves y cortos, con vibración opcional.
-- **Formatos:** Vorbis; música en streaming; efectos en mono a 22–32 kHz. **Presupuesto: ≤ 25 MB** en la descarga base. Música extra en el pack HD opcional.
+- **Formatos:** Vorbis; música en streaming; efectos en mono a 22–32 kHz. **Presupuesto: ≤ 25 MB** en la descarga base, de los que como máximo **15 MB son música** (capas a calidad media). Música extra en el pack HD opcional.
 
 ---
 
@@ -1824,11 +1880,11 @@ Cada tipología × 8 estilos × 5 niveles × 16 parcelas × semilla da miles de 
 |---|---|
 | Código (IL2CPP ARM64) | 25 MB |
 | Runtime de Unity | 20 MB |
-| Mallas (kit modular de 8 estilos, servicios, vehículos, peatones, decoración) | 30 MB |
+| Mallas (kit modular de 5 estilos, servicios, vehículos, peatones, decoración) | 30 MB |
 | Texturas (paletas, atlas, VAT, interfaz, terreno) | 25 MB |
 | Audio (música base + ambiente + efectos) | 25 MB |
 | Datos (JSON comprimido), fuentes, localización | 5 MB |
-| Mapas (alturas comprimidas, 6–8 mapas) | 10 MB |
+| Mapas (alturas comprimidas, 6 mapas) | 10 MB |
 | **Total de descarga base** | **≈ 140 MB** (objetivo ≤ 150 MB) |
 
 - **Pack HD opcional** mediante Play Asset Delivery (*on-demand*): música extra, texturas de mayor resolución para tablets y gama alta, y mapas adicionales.
@@ -1928,7 +1984,7 @@ La simulación crece de forma lineal y compacta: unos 1,2 KB por habitante inclu
 | **Google Play** | AAB + Play Asset Delivery | **Nivel de API objetivo:** desde el 31-08-2026, las apps nuevas y las actualizaciones deben apuntar a **Android 16 (API 36)**. Las cuentas personales nuevas deben pasar una **prueba cerrada** (más de 12 probadores durante 14 días; se verifica la cifra vigente) antes de producción. Cuenta de desarrollador: pago único de 25 $ |
 | **Steam** | Windows x64 (+ Linux / Steam Deck si es viable) | Steam Direct (tarifa por aplicación). DRM opcional: se publicará sin DRM obligatorio |
 | **itch.io** | Windows / Linux | Ideal para la demo temprana y la comunidad |
-| iOS (futuro) | — | No previsto al lanzamiento; Unity lo permite más adelante |
+| iOS | — | **Descartado** (decisión del director) |
 
 ### 18.3 Comunidad y marketing (coste cero o bajo)
 
@@ -2027,7 +2083,7 @@ Todo lo balanceable vive en JSON validado por esquemas (JSON Schema): edificios,
 
 ---
 
-## 20. Riesgos y preguntas abiertas
+## 20. Riesgos y decisiones
 
 ### 20.1 Riesgos de diseño y técnicos
 
@@ -2040,16 +2096,19 @@ Todo lo balanceable vive en JSON validado por esquemas (JSON Schema): edificios,
 | Alcance excesivo | Alta | Alto | Hitos con versión jugable en cada uno; lo que no entra en la 1.0 va a una lista "después del lanzamiento" |
 | Interfaz táctil confusa en herramientas complejas (editor de cruces) | Media | Medio | Prototipos en Figma, pruebas con usuarios reales en la prueba cerrada, modo experto oculto |
 | Cambios de requisitos de Google Play | Media | Medio | Revisar los requisitos en cada hito (API objetivo, formularios) |
-| Riesgo legal por ingeniería inversa o por assets | Baja | Muy alto | Sala limpia, registro de licencias, REA solo sobre nuestros builds |
+| Riesgo legal por copiar diseño o assets de terceros | Baja | Muy alto | Sala limpia, registro de licencias, sin herramientas de ingeniería inversa |
 
-### 20.2 Preguntas abiertas (para decidir más adelante)
+### 20.2 Decisiones tomadas (2026-10-28)
 
-1. **Nombre definitivo** del juego (URBE es provisional).
-2. Número de mapas y estilos en la 1.0 (propuesta: 6 mapas y 5 estilos; el resto, después).
-3. ¿iOS en algún momento?
-4. ¿Mods en el móvil (solo de datos) o solo en PC?
-5. ¿Modo vertical en el móvil?
-6. ¿Banda sonora original o música con licencia CC0/CC-BY?
+| Tema | Decisión del director |
+|---|---|
+| Nombre | **URBE sigue siendo provisional.** Se elige el definitivo antes de la ficha de la tienda (M7) |
+| Contenido de la 1.0 | **6 mapas y 5 estilos:** Mediterráneo, Ensanche europeo, Nórdico, Suburbio norteamericano y Latinoamericano. Asia densa, Modernista y Eco-futurista llegan después |
+| iOS | **Descartado** |
+| Mods | **Mods de datos en móvil y PC**, después del lanzamiento (puede cambiar) |
+| Modo vertical | **Sí, en la 1.0**, como modo secundario; el diseño principal es horizontal (ver [11.2](#112-distribución-en-el-móvil-horizontal)) |
+| Música | **Banda sonora original generada por código** (ver [14.1](#141-banda-sonora-original)). Más adelante se valorará añadir música con licencia |
+| Ingeniería inversa | **No se usan herramientas de ingeniería inversa** (REA descartado) |
 
 ---
 

@@ -1,0 +1,4 @@
+# Capas de música: se regeneran con tools/music/render.py --stems
+audio/music/stems/
+__pycache__/
+*.pyc

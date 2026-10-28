@@ -20,7 +20,7 @@
 - [10. Tarjetas de tarea detalladas (M0–M2)](#10-tarjetas-de-tarea-detalladas-m0m2)
 - [11. Épicas de M3 a M7](#11-épicas-de-m3-a-m7)
 - [12. Pipeline de assets paso a paso](#12-pipeline-de-assets-paso-a-paso)
-- [13. Uso de REA (ingeniería inversa)](#13-uso-de-rea-ingeniería-inversa)
+- [13. Análisis de builds y sala limpia](#13-análisis-de-builds-y-sala-limpia)
 - [14. Riesgos de producción](#14-riesgos-de-producción)
 - [15. ChatGPT y Gemini (opcional)](#15-chatgpt-y-gemini-opcional)
 - [16. Próximos pasos inmediatos](#16-próximos-pasos-inmediatos)
@@ -46,7 +46,7 @@
                  │                               │
        Sesiones en la NUBE                Sesiones en el PC de Álvaro
        (Sim.Core, tests, docs,            (Unity, Blender, ComfyUI,
-        Figma/Canva/Adobe)                 adb + móvil, descargas, REA)
+        Figma/Canva/Adobe, música)         adb + móvil, descargas)
 ```
 
 **Reglas básicas:**
@@ -73,7 +73,7 @@
 - Aceptar los avisos de permisos de las herramientas cuando aparezcan (Desktop Commander, Remote Control).
 - **Probar en la mano:** cómo se siente el juego en el móvil (Claude puede instalar, lanzar y capturar por `adb`, pero no "sentir" el control).
 - Reclutar probadores para la prueba cerrada de Google Play.
-- Decisiones abiertas del GDD (ver [GDD §20.2](GDD.md#202-preguntas-abiertas-para-decidir-más-adelante)).
+- Decisiones de diseño (las primeras ya están tomadas: ver [GDD §20.2](GDD.md#202-decisiones-tomadas-2026-10-28)).
 
 **Todo lo demás lo hace Claude, también en el PC** (con el permiso de control que ha dado Álvaro), con las herramientas de la sección siguiente.
 
@@ -95,7 +95,8 @@
 | **ComfyUI** | PC (GPU) | API HTTP local (`http://127.0.0.1:8188`) con scripts de Python o `curl` | Imágenes de referencia, imagen → 3D, iconos |
 | **Android platform-tools (`adb`)** | PC + móvil por USB o Wi-Fi | Terminal | Instalar builds, lanzar, capturas, logs, medir fps |
 | **Navegador** | PC | Skills `chrome-browser` / `computer-use` | Descargar assets que piden clics, revisar tiendas |
-| **REA** | PC | MCP / CLI (ver [13](#13-uso-de-rea-ingeniería-inversa)) | Analizar nuestros propios APK y builds |
+| **Generador de música** (`tools/music/`) | Nube y PC | Python + numpy + ffmpeg | Banda sonora original (GDD §14.1) |
+| **Análisis de builds** (Unity Build Report, `bundletool`, APK Analyzer) | PC | Unity CLI / terminal (ver [13](#13-análisis-de-builds-y-sala-limpia)) | Medir qué ocupa espacio en nuestros APK y AAB |
 
 ### 3.2 Cómo se conecta Claude al PC (por orden de preferencia)
 
@@ -116,7 +117,7 @@ Instalar o verificar:
 - Blender (LTS).
 - ComfyUI con un modelo imagen → 3D (**revisar su licencia de uso comercial**).
 - Android platform-tools.
-- Node.js (para REA y herramientas).
+- Node.js (para herramientas auxiliares).
 - Claude Code.
 
 Después: clonar el repo y configurar el MCP de Unity. Álvaro solo inicia sesión en Unity Hub y activa la depuración USB en su móvil.
@@ -488,7 +489,7 @@ M7 Lanzamiento ◄── M6 Arte, vida y rendimiento ◄── M5 Economía, gua
 
 \* *Sesión = una tarjeta (normalmente 30–90 minutos). Son estimaciones para planificar el uso del plan Pro, no plazos.*
 
-**Lista "después del lanzamiento"** (no bloquea la 1.0): editor de mapas, mods de datos, más estilos y mapas, modo vertical, trolebús, desastres avanzados, taller online, iOS.
+**Lista "después del lanzamiento"** (no bloquea la 1.0): editor de mapas, mods de datos (móvil y PC), 3 estilos más (Asia densa, Modernista, Eco-futurista) y más mapas, trolebús, desastres avanzados, taller online, música con licencia (si se decide). **iOS: descartado.**
 
 ---
 
@@ -502,14 +503,15 @@ En la tarjeta M0-09 se copian a `docs/tareas/<ID>.md` (un archivo por tarjeta) p
 | ID | Tarea | Modelo · esfuerzo | Dónde | Depende | Aceptación / verificación |
 |---|---|---|---|---|---|
 | M0-01 | Escribir el GDD y el Plan de Trabajo | Opus · medium | ☁️ | — | ✅ Estos dos documentos |
-| M0-02 | Revisión del GDD por Álvaro y decisiones abiertas (§20.2) | **Álvaro** (+ Opus · medium para aplicar los cambios) | — | M0-01 | Comentarios aplicados; versión 0.2 del GDD |
+| M0-02 | Revisión del GDD por Álvaro y decisiones abiertas (§20.2) | **Álvaro** (+ Opus · medium para aplicar los cambios) | — | M0-01 | ✅ Decisiones aplicadas; GDD 0.2 |
 | M0-03 | `CLAUDE.md` (< 100 líneas: resumen, reglas, mapa de docs, regla de modelos) + `README.md` | Haiku · medium | ☁️ | M0-02 | Ambos archivos existen; `CLAUDE.md` tiene < 100 líneas |
 | M0-04 | Crear `.claude/settings.json`, las skills (§6.1) y los subagentes (§6.2) | Sonnet · low | ☁️ | M0-03 | `/tarea`, `/disenar`, `/datos`, `/revisar`, `/assets`, `/medir` aparecen en el menú `/`; los subagentes aparecen en `/agents` |
-| M0-05 | Puesta a punto del PC (§3.3) + clonar el repo + MCP de Unity + REA desde el repo oficial | Sonnet · medium (🖥️ vía Desktop Commander o Claude Code local); **Álvaro:** login en Unity Hub y depuración USB | 🖥️ | — | Informe con versiones instaladas; `unity --version`, `blender --version`, `adb devices` y `dotnet --version` responden; ComfyUI responde en :8188 |
-| M0-06 | Bocetos en Figma: menú principal, HUD, barra de construcción abierta, panel de edificio con cadena de causas, herramienta de carreteras, capas | Sonnet · medium | ☁️ (Figma) | M0-02 | Archivo de Figma con 6 pantallas y componentes base; enlace en `docs/` |
+| M0-05 | Puesta a punto del PC (§3.3) + clonar el repo + MCP de Unity | Sonnet · medium (🖥️ vía Desktop Commander o Claude Code local); **Álvaro:** login en Unity Hub y depuración USB | 🖥️ | — | Informe con versiones instaladas; `unity --version`, `blender --version`, `adb devices` y `dotnet --version` responden; ComfyUI responde en :8188 |
+| M0-06 | Bocetos en Figma: menú principal, HUD, barra de construcción abierta, panel de edificio con cadena de causas, herramienta de carreteras, capas + **2 bocetos en vertical** (HUD y panel) | Sonnet · medium | ☁️ (Figma) | M0-02 | Archivo de Figma con 8 pantallas y componentes base; enlace en `docs/` |
 | M0-07 | Descargar los packs CC0 iniciales (Kenney City Kit Roads/Suburban/Commercial/Industrial, Car Kit; Quaternius ciudad y personajes; KayKit City Builder Bits), comprobar licencias y crear `ASSETS_LICENSES.md` | Haiku · medium | 🖥️ | M0-05 | Packs en `art_source/` (fuera de Unity, con Git LFS o ignorados) + registro completo |
 | M0-08 | Esqueleto de CI de GitHub Actions para `dotnet build/test` | Haiku · medium | ☁️ | M1-01 | El workflow pasa en verde en un PR |
 | M0-09 | Copiar las tarjetas de M1 y M2 a `docs/tareas/<ID>.md` | Haiku · low | ☁️ | M0-04 | Un archivo por tarjeta con el formato de la tabla |
+| M0-10 | Banda sonora original v1: generador `tools/music/`, 6 pistas + 2 jingles, página de escucha | Opus · medium (esta sesión) | ☁️ | M0-02 | ✅ Pistas en `audio/music/`; verificación automática (picos, sonoridad, bucles) superada |
 
 ### 10.2 M1 — Tráfico sin motor (todo en la nube)
 
@@ -590,6 +592,7 @@ Al empezar cada hito, **Opus · medium** ejecuta `/disenar M<n>` y convierte est
 | Hitos y desbloqueos | Tabla de hitos, casillas de mapa (§3.3) | Haiku · medium (datos) + Sonnet · low |
 | **Guardado compacto** | Formato por bloques, empaquetado de bits, semillas, Zstd, migraciones, escritura atómica (§16) | **Opus · high** (diseño) → Sonnet · high |
 | Menús completos | Mapa de pantallas, ajustes, pausa, cargar partida (§12.1–12.5) | Sonnet · medium |
+| Interfaz vertical | Distribución secundaria en vertical, hojas deslizables, rotación sin perder el estado (§11.2) | Sonnet · medium |
 | Modo plano, plantillas, copiar y pegar, simetría | (§5.6–5.7) | Sonnet · high |
 | Distritos y políticas | (§4.6) | Sonnet · medium |
 | Tranvía y metro | (§4.8) | Sonnet · medium |
@@ -606,10 +609,10 @@ Al empezar cada hito, **Opus · medium** ejecuta `/disenar M<n>` y convierte est
 | VAT de peatones | Horneado en Blender, shader, instancing, LOD de animación (§7) | Sonnet · high |
 | Shaders de vida | Tintes, suciedad, ventanas de noche, viento, agua, nieve (§6.6, §7.4) | Sonnet · high |
 | Día y noche, clima | (§4.14) | Sonnet · medium |
-| Audio | Música adaptativa, ambiente por densidad, tráfico agregado (§14) | Sonnet · medium (sistema) + Haiku (búsqueda de audio CC0) |
+| Audio | Integrar la banda sonora con capas adaptativas (`render.py --stems`), ampliar a 8–10 pistas con el generador, ambiente por densidad, tráfico agregado (§14) | Sonnet · medium (sistema) + Haiku · medium (renderizar pistas nuevas, buscar efectos CC0) |
 | Gamas y optimización | Detección, escalones, impostores, culling, memoria (§15) | Sonnet · high + `/medir` (Haiku) |
 | Escenas de referencia | 25.000 / 50.000 / 100.000 / 200.000 habitantes con cámara grabada, CSV por `adb` (§15.6) | Sonnet · medium |
-| REA sobre nuestros builds | Análisis de tamaño y contenido del APK/AAB (§13 de este plan) | Sonnet · medium |
+| Análisis del tamaño del build | Unity Build Report, `bundletool` y APK Analyzer sobre nuestros AAB (§13 de este plan) | Sonnet · medium |
 | **Prueba cerrada en Google Play** | AAB, ficha mínima, más de 12 probadores durante 14 días (verificar la cifra vigente) | Sonnet · medium + **Álvaro** (cuenta, probadores) |
 
 ### M7 — Lanzamiento
@@ -622,6 +625,7 @@ Al empezar cada hito, **Opus · medium** ejecuta `/disenar M<n>` y convierte est
 | PC: Steam e itch | Builds de Windows y Linux, Steamworks.NET (logros, nube), página de Steam | Sonnet · medium + **Álvaro** (cuentas) |
 | Correcciones finales | Lista de bugs de la prueba cerrada | Sonnet · medium / Opus · medium para los difíciles |
 | Devlog y marketing | Publicaciones, clips cortos | Haiku · medium |
+| **Nombre definitivo** | Lluvia de ideas, comprobar que no esté registrado en las tiendas ni como marca evidente, decisión final | Haiku · medium (ideas) + **Álvaro** (decide) |
 
 ---
 
@@ -641,27 +645,37 @@ Al empezar cada hito, **Opus · medium** ejecuta `/disenar M<n>` y convierte est
 
 **Regla:** si un paso automático falla, **Haiku no arregla el script**: crea una tarjeta para Sonnet. Así los scripts no se corrompen con parches baratos.
 
+### 12.1 Música
+
+La banda sonora sale de `tools/music/` (GDD §14.1). Cada pista es una definición en `tools/music/tracks.py`: tonalidad, tempo, progresión, secciones, instrumentos y semilla.
+
+| Acción | Comando | Quién (modelo · esfuerzo) |
+|---|---|---|
+| Regenerar todas las mezclas | `python3 tools/music/render.py --all` | Haiku · low |
+| Exportar las capas para Unity | `python3 tools/music/render.py --all --stems` | Haiku · low |
+| Ajustar una pista según la opinión de Álvaro ("más lenta", "menos batería", "otra melodía") | Cambiar parámetros o semilla en `tracks.py` y renderizar esa pista: `--track <id>` | Sonnet · low |
+| Añadir pistas nuevas | Nueva definición en `tracks.py` (Sonnet · low la escribe) → renderizar y verificar (Haiku · medium) | Sonnet · low + Haiku · medium |
+| Instrumentos o efectos nuevos en el sintetizador | Cambios en `synth.py` / `mix.py` | Sonnet · medium |
+
+Toda pista nueva pasa la verificación automática (`render.py --check`): picos, sonoridad, unión del bucle y duración.
+
 ---
 
-## 13. Uso de REA (ingeniería inversa)
+## 13. Análisis de builds y sala limpia
 
-**REA** ("Reverse Engineer Anything", [github.com/morluto/rea](https://github.com/morluto/rea)) es un CLI y servidor MCP que conecta agentes como Claude Code con herramientas de ingeniería inversa: Ghidra, ensamblados .NET, APKs de Android, etc.
+**Decisión del director:** no se usan herramientas de ingeniería inversa (REA descartado).
 
-**Instalación segura** (tarjeta M0-05):
-- Solo desde el **repositorio oficial** `morluto/rea`. Se han reportado **copias falsas con troyanos**.
-- Revisar el autor, la fecha y el `package.json` antes de ejecutar nada.
-- Seguir las instrucciones del README oficial.
+**Para medir y reducir el tamaño de nuestros builds** (objetivo ≤ 150 MB, GDD §16.1) bastan herramientas estándar:
+- **Unity Build Report:** el informe del editor tras cada build, con lo que ocupa cada asset, textura, malla y audio.
+- **`bundletool`** (Google): tamaño de descarga real por dispositivo a partir del AAB (`bundletool get-size total`).
+- **APK Analyzer** de Android Studio: contenido del APK, librerías nativas y recursos.
+- **Símbolos de IL2CPP:** para leer los crashes de **nuestras** builds en la consola de Google Play.
 
-**Usos permitidos en URBE:**
-- ✅ Analizar **nuestros propios** APK/AAB: qué ocupa espacio, librerías incluidas, metadatos de IL2CPP. Útil para el objetivo de ≤ 150 MB (GDD §16.1).
-- ✅ Depurar crashes nativos de **nuestras** builds con símbolos.
-- ✅ Estudiar proyectos de **código abierto**, respetando su licencia y sin copiar código GPL (GDD §2.3).
-
-**Usos prohibidos:**
-- ❌ Descompilar **Cities: Skylines** u otros juegos comerciales para copiar código, algoritmos literales, datos o assets.
-- ❌ Extraer assets de juegos o apps de terceros.
-
-**Motivo:** riesgo legal (derechos de autor, licencias de usuario) que podría impedir publicar en Google Play o Steam. Para inspirarnos en Cities: Skylines usamos su **comportamiento observable**, la documentación pública y la experiencia de la comunidad, y escribimos nuestra propia implementación (sala limpia).
+**Sala limpia:**
+- Para inspirarnos en Cities: Skylines usamos su **comportamiento observable**, la documentación pública y la experiencia de la comunidad.
+- Escribimos nuestra propia implementación.
+- No se descompilan juegos comerciales ni se extraen assets de juegos o apps de terceros.
+- No se copia código GPL (GDD §2.3).
 
 ---
 
@@ -695,7 +709,8 @@ Lo que salga de ahí se trae al repo como **dato o referencia** y Claude lo inte
 ## 16. Próximos pasos inmediatos
 
 Para Álvaro:
-- [ ] Leer el [GDD](GDD.md) y este plan; anotar cambios y responder a las preguntas abiertas (GDD §20.2) → **M0-02**.
+- [x] Leer el GDD y el plan y tomar las primeras decisiones (GDD §20.2) → **M0-02** ✅
+- [ ] Escuchar la banda sonora v1 y decir qué cambiar (tempo, instrumentos, ambiente).
 - [ ] Decidir si el trabajo en el PC se hará con **Claude Code instalado en el PC** (recomendado) o con Desktop Commander.
 - [ ] Tener a mano: el login de Unity, el móvil Android con la depuración USB activada y un cable.
 
