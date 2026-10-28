@@ -31,6 +31,8 @@ OUT = ROOT / "audio" / "music"
 TAIL_S = 6.0
 TARGET_RMS_DB = -18.0
 CEILING_DB = -1.0
+# Ecualización final: menos barro en graves-medios y más presencia para que la melodía se entienda.
+MASTER_EQ = ((300.0, -2.5, 1.2), (3000.0, 3.5, 1.4))
 
 
 def repan(sig: np.ndarray, pan: float) -> np.ndarray:
@@ -89,7 +91,7 @@ def render_layers(spec: dict, score, jingle: bool = False) -> dict:
         x = dry[name] + reverb(send[name], ir)
         if not jingle:
             x = wow_flutter(x, score.loop_s)
-        x = fft_eq(x, 35.0, 16000.0)
+        x = fft_eq(x, 40.0, 16000.0, bells=MASTER_EQ)
         layers[name] = loop_wrap(x, loop_n) if not jingle else x[:, : int((score.loop_s + 1.8) * SR)]
     return layers
 
@@ -227,12 +229,12 @@ def main():
         manifest_path = OUT / "tracks.json"
         manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {"tracks": []}
         entries = {e["id"]: e for e in manifest["tracks"]}
+        order = [s["id"] for s in specs]
         for spec in selected:
             entries[spec["id"]] = render_one(spec, args.stems, args.mp3)
-        order = [s["id"] for s in specs]
-        manifest = {"version": 1, "sample_rate": SR, "layers": {k: list(v) for k, v in LAYERS.items()},
-                    "tracks": [entries[i] for i in order if i in entries]}
-        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            manifest = {"version": 1, "sample_rate": SR, "layers": {k: list(v) for k, v in LAYERS.items()},
+                        "tracks": [entries[i] for i in order if i in entries]}
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if args.check:
         sys.exit(0 if check(args.spectrogram) else 1)
     if not selected and not args.check:

@@ -8,6 +8,8 @@ def place(buf: np.ndarray, sig: np.ndarray, start: int, gain: float = 1.0):
     """Suma una señal estéreo en el búfer a partir de la muestra `start` (se recorta al final)."""
     if start >= buf.shape[1]:
         return
+    if start < 0:  # una nota adelantada por la humanización empieza en 0
+        sig, start = sig[:, -start:], 0
     end = min(buf.shape[1], start + sig.shape[1])
     buf[:, start:end] += sig[:, : end - start] * gain
 
@@ -41,12 +43,18 @@ def reverb(send: np.ndarray, ir: np.ndarray) -> np.ndarray:
     return np.vstack([fft_convolve(send[ch], ir[ch]) for ch in range(2)])
 
 
-def fft_eq(x: np.ndarray, lo: float, hi: float, order: int = 2) -> np.ndarray:
-    """Paso alto + paso bajo de fase cero aplicados por FFT a una señal estéreo larga."""
+def fft_eq(x: np.ndarray, lo: float, hi: float, order: int = 2, bells=()) -> np.ndarray:
+    """Paso alto + paso bajo de fase cero aplicados por FFT a una señal estéreo larga.
+
+    `bells`: campanas de ecualización (frecuencia central Hz, ganancia dB, ancho en octavas).
+    """
     n = x.shape[1]
     f = np.fft.rfftfreq(n, 1.0 / SR)
     with np.errstate(divide="ignore"):
         mask = 1.0 / (1.0 + (lo / np.maximum(f, 1e-6)) ** order) / (1.0 + (f / hi) ** order)
+        octaves = np.log2(np.maximum(f, 1.0))
+    for fc, gain_db, width in bells:
+        mask = mask * 10 ** (gain_db / 20 * np.exp(-0.5 * ((octaves - np.log2(fc)) / (width / 2)) ** 2))
     return np.vstack([np.fft.irfft(np.fft.rfft(x[ch]) * mask, n) for ch in range(2)])
 
 
