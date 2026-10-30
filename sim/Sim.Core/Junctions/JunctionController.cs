@@ -10,7 +10,7 @@ namespace Urbe.Sim.Junctions
     /// espera, vehiculo), mascara de conflictos con liberacion parcial, anti-bloqueo por hueco a la salida, stop y semaforos de
     /// fases fijas. Sin asignaciones en el tick (todo preasignado en <see cref="Bind"/> y al reconstruir nodos).
     /// </summary>
-    public sealed partial class JunctionController : IJunctionGate, IVehicleViewConsumer
+    public sealed partial class JunctionController : IJunctionGate, IVehicleViewConsumer, IForcedPassGate
     {
         private const int LocalBits = 6;
         private const int LocalMask = (1 << LocalBits) - 1;
@@ -199,6 +199,15 @@ namespace Urbe.Sim.Junctions
             if (vehicle < 0) return;
             if (vehicle >= _vehCap) EnsureVehicleCapacity(vehicle + 1);
             _forced[vehicle] = true;
+        }
+
+        /// <summary>True mientras el vehiculo tiene un paso forzado sin conceder (M1-11).</summary>
+        public bool IsForced(int vehicle) => vehicle >= 0 && vehicle < _vehCap && _forced[vehicle];
+
+        /// <summary>Retira el paso forzado pendiente (M1-11): si no es seguro no debe seguir reclamando el cruce.</summary>
+        public void CancelForce(int vehicle)
+        {
+            if (vehicle >= 0 && vehicle < _vehCap) _forced[vehicle] = false;
         }
 
         /// <summary>Conexion local (nodo &lt;&lt; 6 | local) del permiso pendiente del vehiculo, o -1 (tests).</summary>

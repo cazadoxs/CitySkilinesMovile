@@ -205,3 +205,8 @@ final del vaciado `alive == 0`.
   `EntryRequest.Accel`.
 - Linea de parada (ADR 002 regla 2): el lider virtual se coloca s0 mas alla y `maxAdv` no pasa de StopMargin, asi que el frente se
   detiene a StopMargin de la linea (antes a StopMargin + s0 = 3 m).
+
+## Cambios durante la implementación (M1-11, bloqueo total)
+- `IForcedPassGate` (`Vehicles/`, opcional; lo implementan `JunctionController` y `GapOnlyGate`): `ForceNextGrant`, `IsForced` y `CancelForce`. Un paso forzado no seguro (conflicto fisico real, paso 4) se cancela a los 4 s para que no siga reclamando el cruce.
+- La detección y resolución viven en `Traffic/GridlockResolver` (no en `Junctions/`): usa solo la API pública de `VehicleSystem` y de `JunctionController` (`GetLastDecision`, máscaras, `LastEntrant`). Arista A→B: lider, cola de la conexion con permiso, cola del carril de salida lleno (`DeniedExitFull`) u ocupante/permiso de la conexion en conflicto (`DeniedConflict`); semaforo, stop y reclamaciones no forman ciclos.
+- Anillo de coches con todos los tramos llenos: un solo paso forzado rota el anillo una plaza y la onda de compactacion tarda ~15 s por tramo, asi que por ciclo se fuerzan a la vez hasta `MaxForcedPerCycle` (8) primeros de tramo; cada uno sigue sujeto al paso 4. Los miembros de un ciclo recuerdan 60 s que lo fueron y vuelven a contar tras 3 s parados (no otros 20 s).

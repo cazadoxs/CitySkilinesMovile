@@ -88,6 +88,8 @@ namespace Urbe.Sim.Runner
                 Console.WriteLine("Simulados " + totalTicks + " ticks (" + seconds.ToString("0.#", CultureInfo.InvariantCulture)
                     + " s), vehiculos vivos " + sc.Vehicles.AliveCount + ", flujo " + sc.Sim.Metrics.CityFlowPercent.ToString("0.0", CultureInfo.InvariantCulture)
                     + " %, viajes generados " + sc.Sim.Trips.Generated + ", completados " + sc.Sim.Trips.Completed + ", pendientes " + sc.Sim.Trips.Pending + ", perdidos " + sc.Sim.Trips.Lost + " (sin ruta " + sc.Sim.Trips.Unroutable + "), descartados " + sc.Sim.Trips.Dropped + (writer != null ? ", fotogramas GIF " + writer.FrameCount : ""));
+                Urbe.Sim.Traffic.GridlockStats gl = sc.Sim.Metrics.Gridlock;
+                Console.WriteLine("Bloqueo total: ciclos " + gl.Cycles + ", pasos forzados " + gl.ForcedPasses + "/" + gl.ForcedAttempts + ", re-rutas " + gl.Reroutes + ", bajas " + gl.Despawns + ", sin resolver " + gl.Unresolved);
             }
             finally
             {

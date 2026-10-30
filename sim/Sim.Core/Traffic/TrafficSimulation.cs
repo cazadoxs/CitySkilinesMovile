@@ -26,11 +26,13 @@ namespace Urbe.Sim.Traffic
         /// <see cref="JunctionController"/> (ADR 004), que es la puerta por defecto. Solo para pruebas y comparativas.
         /// </summary>
         public bool UseGapOnlyGate;
+        /// <summary>Deteccion y resolucion de bloqueo total (GDD 8.7, M1-11): tiempos y opcion de desaparicion.</summary>
+        public GridlockConfig Gridlock = new GridlockConfig();
     }
 
     /// <summary>
     /// Agrupa red, vehiculos, puerta de cruces, pathfinding, generador de viajes y metricas, y avanza un tick en el orden del
-    /// GDD 8.1: comandos, viajes, cola de rutas, movimiento, metricas. La puerta es inyectable; por defecto es el JunctionController (M1-07b) y GapOnlyGate solo con la opcion explicita.
+    /// GDD 8.1: comandos, viajes, cola de rutas, movimiento, bloqueo total (M1-11), metricas. La puerta es inyectable; por defecto es el JunctionController (M1-07b) y GapOnlyGate solo con la opcion explicita.
     /// </summary>
     public sealed class TrafficSimulation
     {
@@ -52,6 +54,7 @@ namespace Urbe.Sim.Traffic
         public PathRequestQueue PathQueue { get; }
         public TripGenerator Trips { get; }
         public TrafficMetrics Metrics { get; }
+        public GridlockResolver Gridlock { get; }
         public CommandQueue Commands { get; } = new CommandQueue();
         public CommandHistory History { get; } = new CommandHistory();
 
@@ -62,11 +65,13 @@ namespace Urbe.Sim.Traffic
         {
             _opt = options ?? new TrafficSimulationOptions();
             Network = network ?? throw new ArgumentNullException(nameof(network));
-            Vehicles = new VehicleSystem(network, gate ?? (_opt.UseGapOnlyGate ? (IJunctionGate)new GapOnlyGate(network) : new JunctionController(network)), _opt.VehicleCapacity, seed, _opt.Vehicle);
+            IJunctionGate junctions = gate ?? (_opt.UseGapOnlyGate ? (IJunctionGate)new GapOnlyGate(network) : new JunctionController(network));
+            Vehicles = new VehicleSystem(network, junctions, _opt.VehicleCapacity, seed, _opt.Vehicle);
             Paths = new PathFinder(network, _opt.PathCost);
             PathQueue = new PathRequestQueue(Paths, _opt.PathResultCapacity, _opt.Trips.MaxRouteLength);
             Trips = new TripGenerator(network, Vehicles, PathQueue, seed, _opt.Trips);
             Metrics = new TrafficMetrics(network, Vehicles, _opt.Metrics);
+            Gridlock = new GridlockResolver(network, Vehicles, junctions, Trips, _opt.Gridlock, Metrics.Gridlock);
             _factors = _noFactors;
             _publishTicks = Math.Max(1, (int)Math.Round(_opt.CongestionPublishSeconds / Vehicles.Config.Dt));
             _ticksPerMinute = Math.Max(1, (int)Math.Round(60f / Vehicles.Config.Dt));
@@ -96,6 +101,7 @@ namespace Urbe.Sim.Traffic
             Trips.Tick();
             PathQueue.Process(_opt.PathsPerTick);
             Vehicles.Update();
+            Gridlock.Step();
             Trips.CollectFinished();
             Metrics.Sample();
             if (++_publishCounter >= _publishTicks)

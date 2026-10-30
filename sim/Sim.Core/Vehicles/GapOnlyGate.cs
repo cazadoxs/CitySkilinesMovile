@@ -8,7 +8,7 @@ namespace Urbe.Sim.Vehicles
     /// Puerta minima de M1-06b: concede si hay hueco a la salida (no entrar sin sitio al otro lado). No conoce conflictos,
     /// prioridades ni semaforos (M1-07). Resuelve por orden de peticion, que es indice ascendente de vehiculo.
     /// </summary>
-    public sealed class GapOnlyGate : IJunctionGate, IVehicleViewConsumer
+    public sealed class GapOnlyGate : IJunctionGate, IVehicleViewConsumer, IForcedPassGate
     {
         private readonly RoadNetwork _net;
         private IVehicleView? _view;
@@ -37,6 +37,13 @@ namespace Urbe.Sim.Vehicles
 
         /// <summary>Gancho M1-11: en la siguiente resolucion la peticion de este vehiculo va primera y se concede sin mirar el hueco.</summary>
         public void ForceNextGrant(int vehicle) => _forced = vehicle;
+
+        public bool IsForced(int vehicle) => vehicle >= 0 && _forced == vehicle;
+
+        public void CancelForce(int vehicle)
+        {
+            if (_forced == vehicle) _forced = -1;
+        }
 
         public void OnNetworkChanged(ReadOnlySpan<EntityId> changedNodes) { }
 

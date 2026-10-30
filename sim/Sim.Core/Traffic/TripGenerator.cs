@@ -50,7 +50,7 @@ namespace Urbe.Sim.Traffic
     /// pathfinding, crea el vehiculo y reintenta mientras el carril de salida este lleno. Tambien re-rutea los vehiculos con
     /// <c>NeedsReroute</c>. Invariante: Generated = Completed + Lost + vivos + Pending. Sin asignaciones por tick.
     /// </summary>
-    public sealed class TripGenerator
+    public sealed class TripGenerator : IRerouteSource
     {
         private enum State : byte { Free, Awaiting, Ready }
 
@@ -108,6 +108,9 @@ namespace Urbe.Sim.Traffic
         public long Dropped { get; private set; }
         public long Rerouted { get; private set; }
         public int Pending => _pending;
+
+        /// <summary>True si el vehiculo lo dio de alta este generador (y por tanto puede rehacerle la ruta; M1-11).</summary>
+        public bool CanReroute(int vehicle) => vehicle >= 0 && vehicle < _tracked.Length && _tracked[vehicle];
         /// <summary>Suma de tiempos de viaje (s) de los completados.</summary>
         public double TripSecondsTotal => _tripSecondsTotal;
         public TripGeneratorConfig Config => _cfg;

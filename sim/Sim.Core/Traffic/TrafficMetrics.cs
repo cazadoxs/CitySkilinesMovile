@@ -80,6 +80,9 @@ namespace Urbe.Sim.Traffic
 
         public TrafficMetricsConfig Config => _cfg;
 
+        /// <summary>Contadores de deteccion y resolucion de bloqueo total (M1-11); los actualiza el <see cref="GridlockResolver"/>.</summary>
+        public GridlockStats Gridlock { get; } = new GridlockStats();
+
         /// <summary>Flujo de la ciudad en [0, 1] (1 si no hay vehiculos).</summary>
         public float CityFlow
         {
