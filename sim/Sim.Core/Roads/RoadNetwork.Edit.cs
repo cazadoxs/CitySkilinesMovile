@@ -9,6 +9,9 @@ namespace Urbe.Sim.Roads
     {
         private const int MaxCrossings = 32;
         private const int MaxPlanPoints = MaxCrossings + 2;
+        /// <summary>Dos calles a menos de esto a lo largo de <see cref="OverlapMinRun"/> metros se consideran solapadas.</summary>
+        private const float OverlapDistance = 0.25f;
+        private const float OverlapMinRun = 3f;
 
         private enum PointKind : byte { Free, Existing, Split }
 
@@ -209,6 +212,7 @@ namespace Urbe.Sim.Roads
             // ---- cruces con la red existente, ordenados por t de la curva nueva
             int nc = 0;
             int candCount = QuerySegments(curve.Bounds, _cand);
+            if (candCount >= _cand.Length) return ValidationResult.TooManyCrossings; // el buffer pudo truncar candidatos
             for (int q = 0; q < candCount; q++)
             {
                 EntityId sid = _cand[q];
@@ -218,6 +222,11 @@ namespace Urbe.Sim.Roads
                 if (last.Kind == PointKind.Split && last.Seg == sid) continue;
 
                 ref readonly Segment s = ref _segments[sid.Index];
+                // Calle dibujada sobre otra (solape o casi colinealidad): se rechaza ya, sin subdividir (M1-16). A distinta
+                // altura (paso elevado) no cuenta.
+                if (Math.Abs(first.Elev + (last.Elev - first.Elev) * 0.5f - LerpElev(s.NodeA, s.NodeB, 0.5f)) < _maxCrossElevDelta
+                    && Intersections.RunsAlong(curve, s.Curve, OverlapDistance, OverlapMinRun))
+                    return ValidationResult.AngleTooSharp;
                 int nh = Intersections.CurveCurve(curve, s.Curve, _hits);
                 for (int h = 0; h < nh; h++)
                 {

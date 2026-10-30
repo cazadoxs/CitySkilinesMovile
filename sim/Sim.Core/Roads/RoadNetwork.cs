@@ -31,6 +31,7 @@ namespace Urbe.Sim.Roads
         private readonly Vec2 _worldMax;
 
         private ulong _epoch;
+        private ulong _graphEpoch;
 
         // ---- Nodos ----
         private readonly IdAllocator _nodeIds;
@@ -108,6 +109,12 @@ namespace Urbe.Sim.Roads
         // ------------------------------------------------------------------ propiedades
 
         public ulong Epoch => _epoch;
+
+        /// <summary>
+        /// Epoca topologica/geometrica: solo sube con cambios que alteran el grafo de carreteras (nodos, segmentos, conexiones),
+        /// no con cambios de control de nodo (<see cref="SetNodeControl"/>). La usan pathfinding, su cache y los landmarks.
+        /// </summary>
+        public ulong GraphEpoch => _graphEpoch;
         public int NodeCount => _nodeIds.AliveCount;
         public int SegmentCount => _segIds.AliveCount;
         public RoadTypeCatalog Types => _types;
@@ -209,7 +216,9 @@ namespace Urbe.Sim.Roads
             if (n.ControlId == controlId) return true;
             n.ControlId = controlId;
             TouchNode(node);
+            ulong graphEpoch = _graphEpoch;
             FinishMutation();
+            _graphEpoch = graphEpoch; // el control no cambia el grafo de rutas
             return true;
         }
 

@@ -20,7 +20,7 @@ namespace Urbe.Sim.Geometry
         public const float Tolerance = 0.01f;
         private const float DedupeDistance = 0.05f;
         private const int MaxDepth = 40;
-        private const int NodeBudget = 50000;
+        private const int NodeBudget = 4096;
 
         /// <summary>Interseccion segmento a0-a1 con b0-b1. tA y tB en [0,1]. Paralelos: false.</summary>
         public static bool SegmentSegment(Vec2 a0, Vec2 a1, Vec2 b0, Vec2 b1, out float tA, out float tB)
@@ -50,6 +50,48 @@ namespace Urbe.Sim.Geometry
             int budget = NodeBudget;
             Recurse(a, a, 0f, 1f, b, 0f, 1f, results, ref count, ref budget, 0);
             return count;
+        }
+
+        /// <summary>
+        /// true si <paramref name="a"/> discurre a menos de <paramref name="maxDist"/> de <paramref name="b"/> a lo largo de al menos
+        /// <paramref name="minRun"/> metros seguidos (solape o casi colinealidad). Muestreo grueso (17 puntos de a contra una
+        /// poligonal de 32 tramos de b), sin asignar: pensado para rechazar pronto antes de la subdivision, que en ese caso es muy cara.
+        /// Un cruce legitimo (angulo &gt;= 25 grados) queda cerca de b solo ~1 m, muy por debajo de minRun.
+        /// </summary>
+        public static bool RunsAlong(in Bezier3 a, in Bezier3 b, float maxDist, float minRun)
+        {
+            const int Na = 16, Nb = 32;
+            Span<Vec2> pb = stackalloc Vec2[Nb + 1];
+            for (int j = 0; j <= Nb; j++) pb[j] = b.Evaluate(j / (float)Nb);
+            float d2 = maxDist * maxDist;
+            float run = 0f;
+            Vec2 prev = Vec2.Zero;
+            bool prevNear = false;
+            for (int i = 0; i <= Na; i++)
+            {
+                Vec2 p = a.Evaluate(i / (float)Na);
+                bool near = false;
+                for (int j = 0; j < Nb && !near; j++) near = DistSqToSegment(p, pb[j], pb[j + 1]) <= d2;
+                if (near)
+                {
+                    if (prevNear) run += Vec2.Distance(prev, p);
+                    if (run >= minRun) return true;
+                }
+                else run = 0f;
+                prev = p;
+                prevNear = near;
+            }
+            return false;
+        }
+
+        private static float DistSqToSegment(Vec2 p, Vec2 s0, Vec2 s1)
+        {
+            Vec2 d = s1 - s0;
+            float len2 = Vec2.Dot(d, d);
+            float t = len2 > 1e-12f ? Vec2.Dot(p - s0, d) / len2 : 0f;
+            if (t < 0f) t = 0f; else if (t > 1f) t = 1f;
+            Vec2 q = new Vec2(s0.X + d.X * t - p.X, s0.Z + d.Z * t - p.Z);
+            return Vec2.Dot(q, q);
         }
 
         private static void Recurse(in Bezier3 root, in Bezier3 a, float a0, float a1, in Bezier3 b, float b0, float b1,

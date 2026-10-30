@@ -299,6 +299,7 @@ namespace Urbe.Sim.Roads
         private void FinishMutation()
         {
             _epoch++;
+            _graphEpoch++;
             MaybeCompactConnections();
         }
     }

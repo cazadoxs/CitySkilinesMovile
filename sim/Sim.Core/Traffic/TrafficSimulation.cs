@@ -18,6 +18,8 @@ namespace Urbe.Sim.Traffic
         public PathCostConfig? PathCost;
         /// <summary>Peticiones de ruta que se atienden por tick.</summary>
         public int PathsPerTick = 16;
+        /// <summary>Presupuesto de expansiones de Dijkstra por tick para reconstruir los landmarks ALT tras un cambio de grafo (M1-16).</summary>
+        public int LandmarkBudgetPerTick = 2000;
         public int PathResultCapacity = 512;
         /// <summary>Cada cuanto se pasa el flujo por segmento al pathfinding como factor de congestion.</summary>
         public float CongestionPublishSeconds = 30f;
@@ -39,7 +41,7 @@ namespace Urbe.Sim.Traffic
         private readonly TrafficSimulationOptions _opt;
         private readonly float[] _noFactors = Array.Empty<float>();
         private float[] _factors;
-        private ulong _lastEpoch;
+        private ulong _lastGraphEpoch;
         private readonly int _publishTicks;
         private int _publishCounter;
 
@@ -78,7 +80,7 @@ namespace Urbe.Sim.Traffic
             _factors = _noFactors;
             _publishTicks = Math.Max(1, (int)Math.Round(_opt.CongestionPublishSeconds / Vehicles.Config.Dt));
             _ticksPerMinute = Math.Max(1, (int)Math.Round(60f / Vehicles.Config.Dt));
-            _lastEpoch = network.Epoch;
+            _lastGraphEpoch = network.GraphEpoch;
             if (network.SegmentIndexBound > 0) Paths.BuildLandmarks();
             PublishCongestion();
         }
@@ -96,11 +98,12 @@ namespace Urbe.Sim.Traffic
         public void Step()
         {
             if (Commands.Count > 0) Commands.Drain(Network, History);
-            if (Network.Epoch != _lastEpoch)
+            if (Network.GraphEpoch != _lastGraphEpoch)
             {
-                _lastEpoch = Network.Epoch;
-                if (!Paths.LandmarksReady && Network.SegmentIndexBound > 0) Paths.BuildLandmarks();
+                _lastGraphEpoch = Network.GraphEpoch;
+                if (Network.SegmentIndexBound > 0) Paths.StartLandmarkBuild();
             }
+            if (Paths.LandmarksBuilding) Paths.AdvanceLandmarks(_opt.LandmarkBudgetPerTick);
             Trips.Tick();
             PathQueue.Process(_opt.PathsPerTick);
             Vehicles.Update();

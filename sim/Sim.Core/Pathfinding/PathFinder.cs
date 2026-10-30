@@ -11,7 +11,7 @@ namespace Urbe.Sim.Pathfinding
     /// Estado de busqueda = (segmento, sentido) = <c>segmentIndex * 2 + (forward ? 0 : 1)</c>: "haber recorrido el
     /// segmento y estar en su nodo final". Una transicion existe solo si hay alguna <see cref="LaneConnection"/> desde un
     /// carril de ese segmento/sentido a un carril del siguiente (respeta sentidos unicos y cambios de sentido solo en
-    /// fin de via). El grafo plano (CSR) se reconstruye de forma perezosa cuando cambia <see cref="RoadNetwork.Epoch"/>.
+    /// fin de via). El grafo plano (CSR) se reconstruye de forma perezosa cuando cambia <see cref="RoadNetwork.GraphEpoch"/>.
     /// </para>
     /// <para>
     /// Coste = longitud / (limite * factor de congestion) + penalizacion de giro + penalizacion de cruce, multiplicado
@@ -177,10 +177,10 @@ namespace Urbe.Sim.Pathfinding
 
         private void EnsureGraph()
         {
-            if (_graphBuilt && _graphEpoch == _net.Epoch) return;
+            if (_graphBuilt && _graphEpoch == _net.GraphEpoch) return;
             RebuildGraph();
             _graphBuilt = true;
-            _graphEpoch = _net.Epoch;
+            _graphEpoch = _net.GraphEpoch;
             _cache?.Clear();
         }
 

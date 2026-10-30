@@ -12,10 +12,10 @@ namespace Urbe.Sim.Pathfinding
     /// (se escala por 1 - amplitud), y es consistente.
     /// </para>
     /// <para>
-    /// Los landmarks valen para una unica epoca de la red: tras cambiarla se ignoran (se vuelve a la heuristica
-    /// euclidea) hasta que el llamador invoque <see cref="BuildLandmarks"/>, que cuesta ~2K Dijkstra completos y por
-    /// tanto debe llamarse fuera del camino critico (p. ej. cuando la cola esta vacia o con un presupuesto aparte).
-    /// TODO(ALT incremental): recalcular solo por partes tras cambios locales, como pide el GDD.
+    /// Los landmarks valen para una unica epoca de grafo (<see cref="RoadNetwork.GraphEpoch"/>): tras cambiarla se
+    /// ignoran (heuristica euclidea) hasta terminar una nueva construccion. Esta es incremental
+    /// (<see cref="StartLandmarkBuild"/> + <see cref="AdvanceLandmarks"/> con presupuesto por tick, 2K+1 Dijkstra en total);
+    /// <see cref="BuildLandmarks"/> la hace de golpe (arranque, tests, benchmarks).
     /// </para>
     /// </summary>
     public sealed partial class PathFinder
@@ -47,53 +47,142 @@ namespace Urbe.Sim.Pathfinding
         public int LandmarkCount { get; set; } = 6;
 
         /// <summary>true si hay landmarks calculados para la epoca actual de la red.</summary>
-        public bool LandmarksReady => _lmBuilt && _lmEpoch == _net.Epoch && _lmCount > 0;
+        public bool LandmarksReady => _lmBuilt && _lmEpoch == _net.GraphEpoch && _lmCount > 0;
 
-        /// <summary>Calcula los landmarks de la epoca actual (determinista: farthest-point, empates por indice).</summary>
+        // ---- Construccion incremental (presupuesto por tick) ----
+        private enum LmPhase : byte { Idle, Init, Probe, Forward, Backward }
+        private LmPhase _lmPhase;
+        private ulong _lmBuildEpoch;
+        private int _lmK, _lmBuilding, _lmNext;
+        private bool _dkReverse;
+        private float[] _dkDist = new float[0];
+        private HeapEntry[] _lmHeap = new HeapEntry[256];
+        private int _lmHeapCount;
+
+        /// <summary>true mientras hay una construccion de landmarks en curso (<see cref="AdvanceLandmarks"/> la hace avanzar).</summary>
+        public bool LandmarksBuilding => _lmPhase != LmPhase.Idle;
+
+        /// <summary>Calcula los landmarks de la epoca de grafo actual de golpe (determinista: farthest-point, empates por indice).</summary>
         public void BuildLandmarks()
         {
-            EnsureGraph();
-            int k = LandmarkCount;
-            _lmBuilt = true;
-            _lmEpoch = _graphEpoch;
+            StartLandmarkBuild();
+            AdvanceLandmarks(int.MaxValue);
+        }
+
+        /// <summary>
+        /// Descarta los landmarks actuales y empieza (o reinicia) una construccion incremental para la epoca de grafo actual.
+        /// Mientras no termine se usa la heuristica euclidea. No hace trabajo pesado: este se reparte en <see cref="AdvanceLandmarks"/>.
+        /// </summary>
+        public void StartLandmarkBuild()
+        {
+            _lmBuilt = false;
             _lmCount = 0;
-            _cache?.Clear(); // las rutas cacheadas pueden diferir en empates segun la heuristica
-            if (k <= 0 || _stateCount == 0) return;
+            _lmPhase = LmPhase.Init;
+        }
 
-            BuildReverseGraph();
-            int n = _stateCount;
-            int stride = 2 * k;
-            Grow(ref _lm, n * stride);
-            Grow(ref _lmTmp, n);
-            Grow(ref _lmMin, n);
-            for (int i = 0; i < n; i++) _lmMin[i] = Unreachable;
+        /// <summary>
+        /// Avanza la construccion gastando como mucho ~<paramref name="budget"/> expansiones de nodo de Dijkstra (las pasadas O(n)
+        /// de copia/seleccion se cargan al presupuesto y pueden excederlo una vez). Determinista: el tick en que termina solo depende
+        /// del grafo y del presupuesto. Devuelve true si no queda trabajo pendiente.
+        /// </summary>
+        public bool AdvanceLandmarks(int budget)
+        {
+            if (_lmPhase == LmPhase.Idle) return true;
+            if (_lmPhase != LmPhase.Init && _lmBuildEpoch != _net.GraphEpoch) _lmPhase = LmPhase.Init; // el grafo cambio: reiniciar
+            // Monticulo propio: una busqueda de ruta entre dos llamadas no debe pisar el de un Dijkstra a medias.
+            HeapEntry[] th = _heap; int tc = _heapCount;
+            _heap = _lmHeap; _heapCount = _lmHeapCount;
+            try { RunLandmarkBuild(ref budget); }
+            finally { _lmHeap = _heap; _lmHeapCount = _heapCount; _heap = th; _heapCount = tc; }
+            return _lmPhase == LmPhase.Idle;
+        }
 
-            // Primer landmark: el estado mas lejano (alcanzable) desde el primer estado con aristas.
-            int start = -1;
-            for (int s = 0; s < n && start < 0; s++)
-                if (_edgeFirst[s + 1] > _edgeFirst[s]) start = s;
-            if (start < 0) return;
-            LandmarkDijkstra(start, false, _lmTmp);
-            int next = Farthest(_lmTmp);
-            if (next < 0) return;
-
-            for (int li = 0; li < k && next >= 0; li++)
+        private void RunLandmarkBuild(ref int budget)
+        {
+            int n, stride, k;
+            while (budget > 0 && _lmPhase != LmPhase.Idle)
             {
-                LandmarkDijkstra(next, false, _lmTmp);
-                for (int v = 0; v < n; v++)
+                switch (_lmPhase)
                 {
-                    float d = _lmTmp[v];
-                    _lm[v * stride + li] = d;
-                    if (d < _lmMin[v]) _lmMin[v] = d;
+                    case LmPhase.Init:
+                    {
+                        EnsureGraph();
+                        _lmBuildEpoch = _graphEpoch;
+                        _lmBuilt = false;
+                        _lmCount = 0;
+                        _lmBuilding = 0;
+                        _lmK = LandmarkCount;
+                        _cache?.Clear();
+                        n = _stateCount;
+                        budget -= n + _edgeCount;
+                        int start = -1;
+                        if (_lmK > 0 && n > 0)
+                        {
+                            for (int s = 0; s < n && start < 0; s++)
+                                if (_edgeFirst[s + 1] > _edgeFirst[s]) start = s;
+                        }
+                        if (start < 0) { FinishLandmarks(); break; }
+                        BuildReverseGraph();
+                        Grow(ref _lm, n * 2 * _lmK);
+                        Grow(ref _lmTmp, n);
+                        Grow(ref _lmMin, n);
+                        for (int i = 0; i < n; i++) _lmMin[i] = Unreachable;
+                        DijkstraBegin(start, false, _lmTmp);
+                        _lmPhase = LmPhase.Probe;
+                        break;
+                    }
+                    case LmPhase.Probe:
+                        if (!DijkstraRun(ref budget)) return;
+                        _lmNext = Farthest(_lmTmp);
+                        budget -= _stateCount;
+                        if (_lmNext < 0) { FinishLandmarks(); break; }
+                        DijkstraBegin(_lmNext, false, _lmTmp);
+                        _lmPhase = LmPhase.Forward;
+                        break;
+                    case LmPhase.Forward:
+                    {
+                        if (!DijkstraRun(ref budget)) return;
+                        n = _stateCount; k = _lmK; stride = 2 * k;
+                        int li = _lmBuilding;
+                        for (int v = 0; v < n; v++)
+                        {
+                            float d = _lmTmp[v];
+                            _lm[v * stride + li] = d;
+                            if (d < _lmMin[v]) _lmMin[v] = d;
+                        }
+                        budget -= n;
+                        DijkstraBegin(_lmNext, true, _lmTmp);
+                        _lmPhase = LmPhase.Backward;
+                        break;
+                    }
+                    default: // Backward
+                    {
+                        if (!DijkstraRun(ref budget)) return;
+                        n = _stateCount; k = _lmK; stride = 2 * k;
+                        int li = _lmBuilding;
+                        for (int v = 0; v < n; v++) _lm[v * stride + k + li] = _lmTmp[v];
+                        _lmBuilding = li + 1;
+                        _lmMin[_lmNext] = 0f;
+                        _lmNext = Farthest(_lmMin);
+                        budget -= 2 * n;
+                        if (_lmBuilding >= k || _lmNext < 0) { FinishLandmarks(); break; }
+                        DijkstraBegin(_lmNext, false, _lmTmp);
+                        _lmPhase = LmPhase.Forward;
+                        break;
+                    }
                 }
-                LandmarkDijkstra(next, true, _lmTmp);
-                for (int v = 0; v < n; v++) _lm[v * stride + k + li] = _lmTmp[v];
-                _lmCount = li + 1;
-                _lmMin[next] = 0f;
-                next = Farthest(_lmMin);
             }
-            _lmStride = stride;
-            _lmHalf = k;
+        }
+
+        private void FinishLandmarks()
+        {
+            _lmCount = _lmBuilding;
+            _lmStride = 2 * _lmK;
+            _lmHalf = _lmK;
+            _lmEpoch = _lmBuildEpoch;
+            _lmBuilt = true;
+            _lmPhase = LmPhase.Idle;
+            _cache?.Clear(); // las rutas cacheadas pueden diferir en empates segun la heuristica
         }
 
         /// <summary>Estado con mayor distancia finita y &gt; 0 (empate: menor indice); -1 si no hay.</summary>
@@ -132,16 +221,27 @@ namespace Urbe.Sim.Pathfinding
             }
         }
 
-        /// <summary>Dijkstra a flujo libre. reverse=false: d(src -&gt; v); reverse=true: d(v -&gt; src). Inalcanzable = +inf.</summary>
-        private void LandmarkDijkstra(int src, bool reverse, float[] dist)
+        /// <summary>Prepara un Dijkstra a flujo libre. reverse=false: d(src -&gt; v); reverse=true: d(v -&gt; src). Inalcanzable = 1e30.</summary>
+        private void DijkstraBegin(int src, bool reverse, float[] dist)
         {
             int n = _stateCount;
             for (int i = 0; i < n; i++) dist[i] = Unreachable;
             dist[src] = 0f;
+            _dkReverse = reverse;
+            _dkDist = dist;
             _heapCount = 0;
             HeapPush(0, 0, src);
+        }
+
+        /// <summary>Continua el Dijkstra preparado hasta agotar el presupuesto (1 por nodo sacado). true si termino.</summary>
+        private bool DijkstraRun(ref int budget)
+        {
+            float[] dist = _dkDist;
+            bool reverse = _dkReverse;
             while (_heapCount > 0)
             {
+                if (budget <= 0) return false;
+                budget--;
                 int u = HeapPop(out int qkey);
                 float key = dist[u];
                 if (qkey > Quant(key)) continue;
@@ -164,7 +264,7 @@ namespace Urbe.Sim.Pathfinding
                     }
                 }
             }
-            _heapCount = 0;
+            return true;
         }
 
         /// <summary>Copia las filas de los estados objetivo a vectores locales (una vez por busqueda).</summary>
