@@ -15,7 +15,7 @@ namespace Urbe.Sim.Tests.Vehicles
     {
         public readonly GapOnlyGate Inner;
         public bool DenyAll;
-        public int Entered, Exited, Removed, NetworkChanges, Requests;
+        public int Entered, Exited, Removed, NetworkChanges, Requests, Cancelled;
 
         public RecordingGate(RoadNetwork net) { Inner = new GapOnlyGate(net); }
 
@@ -33,6 +33,7 @@ namespace Urbe.Sim.Tests.Vehicles
         public void OnEntered(int connection, int vehicle) { Entered++; Inner.OnEntered(connection, vehicle); }
         public void OnExited(int connection, int vehicle) { Exited++; Inner.OnExited(connection, vehicle); }
         public void OnVehicleRemoved(int vehicle) { Removed++; Inner.OnVehicleRemoved(vehicle); }
+        public void OnPermitCancelled(int vehicle) { Cancelled++; Inner.OnPermitCancelled(vehicle); }
     }
 
     internal static class VK

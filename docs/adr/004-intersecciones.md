@@ -177,3 +177,20 @@ final del vaciado `alive == 0`.
 14. Determinismo: dos ejecuciones del escenario C con la misma semilla → hash de vehículos + controlador idéntico cada 100 ticks.
 15. Época y asignaciones: cambiar `ControlId` y reconstruir un nodo con vehículos dentro no lanza ni descuadra contadores; 1.000 ticks con 500
     vehículos en cruces sin bytes asignados (`GC.GetAllocatedBytesForCurrentThread`).
+
+## Cambios durante la implementación (M1-07)
+- Carpeta y namespace: `sim/Sim.Core/Junctions/`, `Urbe.Sim.Junctions` (tests en `sim/Sim.Tests/Junctions/`), no `Intersections`.
+- Datos por nodo en un objeto `JunctionNode` con sus propios `ConnGate[]`/`ConflictEntry[]` (se reutilizan si caben, solo se asigna al
+  reconstruir) en vez de bloques compartidos; el estado va indexado por (nodo, `LocalIndex`), así que sobrevive a la compactación de
+  conexiones de ADR 001 en los nodos no cambiados. `ConnGate` añade `Turn` y `FirstOccupant`.
+- Muestreo: además del paso de 1 m, las muestras (uniformes en t) bastan para que la poligonal no se separe de la curva más de
+  `ChordTolerance = 0,05 m`; el conflicto usa distancia segmento-segmento entre poligonales (con solo 1 m fallaba el test 3 en giros en lazo).
+- Ocupación: lista intrusiva por conexión ordenada por trasera (cola = `LastEntrant`), no un contador FIFO: admite bajas en cualquier
+  posición y el re-registro tras una época en orden de índice. `OnEntered` solo consume el permiso si es de esa conexión.
+- `IJunctionGate.OnPermitCancelled(vehicle)` (nuevo): `TryReplaceRoute` lo llama al retirar un permiso; sin él quedaba un permiso
+  fantasma. Además, una petición de un vehículo con permiso registrado libera ese permiso (era obsoleto).
+- `ForceNextGrant` dura hasta que se concede o el vehículo se da de baja. `GetOldestWaitTicks(node)` sustituye a leer `JunctionState`.
+- `ControlId` entra en el hash de la red solo si ≠ 0 (los hashes previos no cambian).
+- Test 1: con la geometría de ADR 001 (sin retranqueo) las derechas opuestas de una X de calles 1+1 se acercan a ~1,2 m y sí
+  conflictúan; el test lo comprueba contra la distancia fina y verifica "sin conflicto" en la X de avenidas. En el test 5 la izquierda
+  se deniega como `Claimed` (paso 3), no `Conflict`.

@@ -195,10 +195,25 @@ namespace Urbe.Sim.Roads
             tangent = c.Curve.Tangent(t);
         }
 
+        /// <summary>
+        /// Cambia el control del cruce (ADR 004: 0 = auto, 1 = prioridad, 2 = stop, 3 = semaforo). Epoca +1 y nodo cambiado,
+        /// para que las intersecciones lo reconstruyan. Devuelve false si el nodo no existe; sin cambios si el valor es el mismo.
+        /// </summary>
+        public bool SetNodeControl(EntityId node, ushort controlId)
+        {
+            if (!_nodeIds.IsAlive(node)) return false;
+            ref Node n = ref _nodes[node.Index];
+            if (n.ControlId == controlId) return true;
+            n.ControlId = controlId;
+            TouchNode(node);
+            FinishMutation();
+            return true;
+        }
+
         // ------------------------------------------------------------------ hash
 
         /// <summary>
-        /// Hash canonico: suma modulo 2^64 de SplitMix64 por nodo vivo (posicion, elevacion) y segmento vivo (curva, tipo).
+        /// Hash canonico: suma modulo 2^64 de SplitMix64 por nodo vivo (posicion, elevacion, control si no es 0) y segmento vivo (curva, tipo).
         /// No depende de indices, generaciones, carriles, conexiones ni epoca.
         /// </summary>
         public ulong ComputeHash()
@@ -212,6 +227,7 @@ namespace Urbe.Sim.Roads
                 h = Fold(h, n.Position.X);
                 h = Fold(h, n.Position.Z);
                 h = Fold(h, n.Elevation);
+                if (n.ControlId != 0) h = SplitMix64(h ^ ((ulong)n.ControlId << 32));
                 unchecked { sum += h; }
             }
             for (int i = 0; i < _segHigh; i++)

@@ -111,5 +111,7 @@ namespace Urbe.Sim.Vehicles
         {
             if (_forced == vehicle) _forced = -1;
         }
+
+        public void OnPermitCancelled(int vehicle) { }
     }
 }
