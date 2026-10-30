@@ -23,7 +23,7 @@
 | [M1-07](M1-07.md) | Intersecciones y semáforos | **Opus · high** (diseño + implementación del núcleo; tarjeta crítica) | M1-06b | ⬜ pendiente |
 | [M1-08](M1-08.md) | Elección y cambio de carril | Sonnet · high | M1-07 | ⬜ pendiente |
 | [M1-09](M1-09.md) | Generador de viajes y flujo % | Sonnet · medium | M1-06b | ⬜ pendiente |
-| [M1-10](M1-10.md) | Visor PNG/GIF en Sim.Runner | Sonnet · medium | M1-06b | ⬜ pendiente |
+| [M1-10](M1-10.md) | Visor PNG/GIF en Sim.Runner | Sonnet · medium | M1-06b | ✅ hecho |
 | [M1-11](M1-11.md) | Detección y resolución de gridlock | Sonnet · high | M1-07 | ⬜ pendiente |
 | [M1-12](M1-12.md) | Tests golden y benchmark | Sonnet · medium | M1-09 | ⬜ pendiente |
 | [M1-13](M1-13.md) | Revisión de cierre de M1 | Opus · medium | M1-12 | ⬜ pendiente |
