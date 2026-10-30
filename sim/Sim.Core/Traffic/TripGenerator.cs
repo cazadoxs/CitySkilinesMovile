@@ -140,6 +140,13 @@ namespace Urbe.Sim.Traffic
             _rerouteTries = new byte[cap];
             _rerouteList = new int[cap];
             _inRerouteList = new bool[cap];
+            _veh.DestinationSegmentChanged += OnDestinationSegmentChanged;
+        }
+
+        /// <summary>M1-15: el segmento de destino de un vehiculo se dividio y el vehiculo sigue su viaje hasta la mitad que contiene el destino.</summary>
+        private void OnDestinationSegmentChanged(int vehicle, EntityId segment)
+        {
+            if (vehicle >= 0 && vehicle < _destSeg.Length && _tracked[vehicle]) _destSeg[vehicle] = segment;
         }
 
         public void AddDemandPoint(EntityId segment, float generationWeight, float attractionWeight)
@@ -428,7 +435,7 @@ namespace Urbe.Sim.Traffic
                     DestinationSegment = dest,
                     DestinationDirs = TravelDirs.Both,
                     Options = PathOptions.WithSeed((uint)(i * 2654435761u) ^ (uint)_veh.CurrentTick, v.Type),
-                    Priority = PathPriority.Private,
+                    Priority = PathPriority.Service,
                 };
                 if (_queue.TryEnqueue(in req, out int id)) _rerouteId[i] = id;
                 return false;

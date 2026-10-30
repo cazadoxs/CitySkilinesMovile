@@ -73,6 +73,7 @@ namespace Urbe.Sim.Junctions
             ReadOnlySpan<EntityId> segs = net.GetNodeSegments(node);
             int n = conns.Length;
             jn.Node = node;
+            jn.BuiltVersion = net.GetNodeVersion(node);
             jn.ConnCount = n;
             jn.SegmentCount = (byte)segs.Length;
             if (jn.Gates.Length < n) jn.Gates = new ConnGate[n];

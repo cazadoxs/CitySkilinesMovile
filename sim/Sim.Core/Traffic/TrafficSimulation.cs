@@ -76,6 +76,7 @@ namespace Urbe.Sim.Traffic
             PathQueue = new PathRequestQueue(Paths, _opt.PathResultCapacity, _opt.Trips.MaxRouteLength);
             Trips = new TripGenerator(network, Vehicles, PathQueue, seed, _opt.Trips);
             Metrics = new TrafficMetrics(network, Vehicles, _opt.Metrics);
+            Metrics.SegmentFlowReset = PublishCongestion;
             Gridlock = new GridlockResolver(network, Vehicles, junctions, Trips, _opt.Gridlock, Metrics.Gridlock);
             _factors = _noFactors;
             _publishTicks = Math.Max(1, (int)Math.Round(_opt.CongestionPublishSeconds / Vehicles.Config.Dt));

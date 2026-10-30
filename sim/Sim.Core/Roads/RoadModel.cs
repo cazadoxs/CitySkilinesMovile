@@ -34,6 +34,8 @@ namespace Urbe.Sim.Roads
         public int ConnFirst;
         public ushort ConnCount;
         public ushort ConnCapacity;
+        /// <summary>Sube cada vez que el nodo cambia (conexiones, control, geometria). Derivado: no entra en el hash. Lo usan los cruces para detectar cambios no notificados.</summary>
+        public uint Version;
     }
 
     public struct Segment

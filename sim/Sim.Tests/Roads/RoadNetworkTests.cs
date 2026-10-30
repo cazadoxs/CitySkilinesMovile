@@ -568,20 +568,20 @@ namespace Urbe.Sim.Tests.Roads
         public void T12_ConsumeChanges_ListsTouchedSortedAndClears()
         {
             RoadNetwork n = Kit.New();
-            n.ConsumeChanges(out _, out _);
+            int sub = n.Subscribe();
             EntityId a = Kit.Node(n, 0, 0), b = Kit.Node(n, 100, 0);
             EntityId s = Kit.Seg(n, a, b, RoadTypeIds.Street2);
-            n.ConsumeChanges(out ReadOnlySpan<EntityId> nodes, out ReadOnlySpan<EntityId> segs);
+            n.ConsumeChanges(sub, out ReadOnlySpan<EntityId> nodes, out ReadOnlySpan<EntityId> segs);
             Assert.Equal(new[] { a, b }, nodes.ToArray());
             Assert.Equal(new[] { s }, segs.ToArray());
-            n.ConsumeChanges(out nodes, out segs);
+            n.ConsumeChanges(sub, out nodes, out segs);
             Assert.Equal(0, nodes.Length);
             Assert.Equal(0, segs.Length);
 
             // Dividir toca los extremos (sus carriles cambian), el nodo nuevo y las tres ids de segmento.
             var edit = new NetworkEdit();
             Assert.True(n.SplitSegment(s, 0.5f, edit));
-            n.ConsumeChanges(out nodes, out segs);
+            n.ConsumeChanges(sub, out nodes, out segs);
             Assert.Equal(3, nodes.Length);
             Assert.Equal(3, segs.Length); // la liberada + las dos mitades
             Assert.Contains(s, segs.ToArray());
@@ -591,7 +591,7 @@ namespace Urbe.Sim.Tests.Roads
             for (int i = 1; i < segs.Length; i++) Assert.True(segs[i - 1].Index <= segs[i].Index);
 
             Assert.True(n.RemoveSegment(edit.CreatedSegments[0], edit));
-            n.ConsumeChanges(out nodes, out segs);
+            n.ConsumeChanges(sub, out nodes, out segs);
             Assert.Single(segs.ToArray());
             Assert.Equal(2, nodes.Length); // el extremo A (huerfano, eliminado) y el nodo central
         }

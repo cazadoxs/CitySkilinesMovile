@@ -82,10 +82,12 @@ namespace Urbe.Sim.Junctions
         public long DeniedExitFull;
         /// <summary>M1-07b: denegadas por aceptacion de huecos (llega un vehiculo con preferencia que aun no pidio).</summary>
         public long DeniedGap;
+        /// <summary>M1-15: cruces reconstruidos a mitad de tick porque su version de red no coincidia (cambio no notificado; no deberia ocurrir).</summary>
+        public long StaleRebuilds;
 
         public void Reset()
         {
-            Requests = Granted = DeniedSignal = DeniedStop = DeniedClaimed = DeniedConflict = DeniedExitFull = DeniedGap = 0;
+            Requests = Granted = DeniedSignal = DeniedStop = DeniedClaimed = DeniedConflict = DeniedExitFull = DeniedGap = StaleRebuilds = 0;
         }
     }
 

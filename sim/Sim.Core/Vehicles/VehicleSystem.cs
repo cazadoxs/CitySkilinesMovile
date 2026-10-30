@@ -75,6 +75,7 @@ namespace Urbe.Sim.Vehicles
             _ring = new SnapshotRing(capacity);
             _planner = new LanePlanner(network);
             _epoch = network.Epoch;
+            _netSub = network.Subscribe();
             EnsureTrackCapacity();
             if (_gate is IVehicleViewConsumer consumer) consumer.Bind(this, capacity);
         }

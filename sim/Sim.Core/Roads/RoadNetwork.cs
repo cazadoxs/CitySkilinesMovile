@@ -54,17 +54,6 @@ namespace Urbe.Sim.Roads
         private int _connUsed;
         private int _connHoles;
 
-        // ---- Cambios ----
-        private EntityId[] _chNodes = new EntityId[32];
-        private EntityId[] _chSegments = new EntityId[32];
-        private int _chNodeCount;
-        private int _chSegmentCount;
-        private int[] _nodeTouchStamp;
-        private int[] _nodeTouchGen;
-        private int[] _segTouchStamp;
-        private int[] _segTouchGen;
-        private int _touchStamp = 1;
-
         private readonly NetworkEdit _scratchEdit = new NetworkEdit();
 
         public RoadNetwork(RoadTypeCatalog types, NetworkConfig config)
@@ -93,10 +82,7 @@ namespace Urbe.Sim.Roads
             _segments = new Segment[_segCap];
             _lanes = new Lane[_segCap * MaxLanesPerSegment];
             _arcTables = new float[_segCap * ArcSamples];
-            _nodeTouchStamp = new int[_nodeCap];
-            _nodeTouchGen = new int[_nodeCap];
-            _segTouchStamp = new int[_segCap];
-            _segTouchGen = new int[_segCap];
+            InitChangeLog(_nodeCap, _segCap);
             _conns = new LaneConnection[256];
             _connArc = new float[256 * ConnArcSamples];
             for (int i = 0; i < _nodeCap; i++) _nodes[i].Id = EntityId.None;
@@ -273,59 +259,6 @@ namespace Urbe.Sim.Roads
             }
         }
 
-        // ------------------------------------------------------------------ cambios
-
-        /// <summary>
-        /// Entrega los nodos y segmentos tocados desde la ultima llamada (ordenados por indice; incluye los
-        /// liberados). Los spans valen hasta la siguiente mutacion.
-        /// </summary>
-        public void ConsumeChanges(out ReadOnlySpan<EntityId> nodes, out ReadOnlySpan<EntityId> segments)
-        {
-            Array.Sort(_chNodes, 0, _chNodeCount, EntityIdComparer.Instance);
-            Array.Sort(_chSegments, 0, _chSegmentCount, EntityIdComparer.Instance);
-            nodes = new ReadOnlySpan<EntityId>(_chNodes, 0, _chNodeCount);
-            segments = new ReadOnlySpan<EntityId>(_chSegments, 0, _chSegmentCount);
-            _chNodeCount = 0;
-            _chSegmentCount = 0;
-            if (++_touchStamp == int.MaxValue)
-            {
-                Array.Clear(_nodeTouchStamp, 0, _nodeTouchStamp.Length);
-                Array.Clear(_segTouchStamp, 0, _segTouchStamp.Length);
-                _touchStamp = 1;
-            }
-        }
-
-        private sealed class EntityIdComparer : IComparer<EntityId>
-        {
-            public static readonly EntityIdComparer Instance = new EntityIdComparer();
-
-            public int Compare(EntityId a, EntityId b)
-            {
-                int c = a.Index.CompareTo(b.Index);
-                return c != 0 ? c : a.Generation.CompareTo(b.Generation);
-            }
-        }
-
-        private void TouchNode(EntityId id)
-        {
-            int i = id.Index;
-            if (_nodeTouchStamp[i] == _touchStamp && _nodeTouchGen[i] == id.Generation) return;
-            _nodeTouchStamp[i] = _touchStamp;
-            _nodeTouchGen[i] = id.Generation;
-            if (_chNodeCount == _chNodes.Length) Array.Resize(ref _chNodes, _chNodeCount * 2);
-            _chNodes[_chNodeCount++] = id;
-        }
-
-        private void TouchSegment(EntityId id)
-        {
-            int i = id.Index;
-            if (_segTouchStamp[i] == _touchStamp && _segTouchGen[i] == id.Generation) return;
-            _segTouchStamp[i] = _touchStamp;
-            _segTouchGen[i] = id.Generation;
-            if (_chSegmentCount == _chSegments.Length) Array.Resize(ref _chSegments, _chSegmentCount * 2);
-            _chSegments[_chSegmentCount++] = id;
-        }
-
         // ------------------------------------------------------------------ capacidad
 
         private void EnsureNodeCapacity(int index)
@@ -336,8 +269,7 @@ namespace Urbe.Sim.Roads
             while (cap <= index) cap *= 2;
             Array.Resize(ref _nodes, cap);
             Array.Resize(ref _nodeSegments, cap * MaxSegmentsPerNode);
-            Array.Resize(ref _nodeTouchStamp, cap);
-            Array.Resize(ref _nodeTouchGen, cap);
+            GrowNodeChangeArrays(cap);
             for (int i = old; i < cap; i++) _nodes[i].Id = EntityId.None;
             _nodeCap = cap;
             GrowNodeGrid(cap);
@@ -352,8 +284,7 @@ namespace Urbe.Sim.Roads
             Array.Resize(ref _segments, cap);
             Array.Resize(ref _lanes, cap * MaxLanesPerSegment);
             Array.Resize(ref _arcTables, cap * ArcSamples);
-            Array.Resize(ref _segTouchStamp, cap);
-            Array.Resize(ref _segTouchGen, cap);
+            GrowSegmentChangeArrays(cap);
             for (int i = old; i < cap; i++) _segments[i].Id = EntityId.None;
             for (int i = old * MaxLanesPerSegment; i < _lanes.Length; i++) _lanes[i].Segment = EntityId.None;
             _segCap = cap;
