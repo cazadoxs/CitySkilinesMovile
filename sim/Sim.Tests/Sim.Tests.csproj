@@ -9,6 +9,11 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
   <ItemGroup>
+    <!-- El codificador GIF no depende de SkiaSharp: se compila aqui por enlace en lugar de referenciar Sim.Runner. -->
+    <Compile Include="..\Sim.Runner\Render\GifWriter.cs" Link="Render\GifWriter.cs" />
+    <Compile Include="..\Sim.Runner\Render\FixedPalette.cs" Link="Render\FixedPalette.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Sim.Core\Sim.Core.csproj" />
   </ItemGroup>
 </Project>
