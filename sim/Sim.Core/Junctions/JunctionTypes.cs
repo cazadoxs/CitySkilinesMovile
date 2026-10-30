@@ -23,7 +23,7 @@ namespace Urbe.Sim.Junctions
     public enum SignalAspect : byte { Red, Amber, Green }
 
     /// <summary>Motivo de la ultima decision sobre una peticion (diagnostico y tests).</summary>
-    public enum GrantDecision : byte { None, Granted, DeniedSignal, DeniedStop, DeniedClaimed, DeniedConflict, DeniedExitFull }
+    public enum GrantDecision : byte { None, Granted, DeniedSignal, DeniedStop, DeniedClaimed, DeniedConflict, DeniedExitFull, DeniedGap }
 
     /// <summary>Conflicto de la conexion i con <see cref="Other"/>. Zonas en decimetros (Start hacia abajo, End hacia arriba). 8 B.</summary>
     public struct ConflictEntry
@@ -80,10 +80,12 @@ namespace Urbe.Sim.Junctions
         public long DeniedClaimed;
         public long DeniedConflict;
         public long DeniedExitFull;
+        /// <summary>M1-07b: denegadas por aceptacion de huecos (llega un vehiculo con preferencia que aun no pidio).</summary>
+        public long DeniedGap;
 
         public void Reset()
         {
-            Requests = Granted = DeniedSignal = DeniedStop = DeniedClaimed = DeniedConflict = DeniedExitFull = 0;
+            Requests = Granted = DeniedSignal = DeniedStop = DeniedClaimed = DeniedConflict = DeniedExitFull = DeniedGap = 0;
         }
     }
 
@@ -105,6 +107,21 @@ namespace Urbe.Sim.Junctions
         public float AmberBrake = 3.0f;
         /// <summary>Espera minima parado de un giro a la izquierda para despejar en ambar.</summary>
         public ushort AmberClearStoppedTicks = 20;
+        /// <summary>
+        /// M1-07b: deceleracion comoda con la que se estima cuanto avanzara aun la cola del carril de salida (credito v^2/2b en el
+        /// anti-bloqueo); 0 lo desactiva.
+        /// </summary>
+        public float ExitCreditDecel = 2.0f;
+        /// <summary>
+        /// M1-07b, aceptacion de huecos: quien cede no entra si un vehiculo con preferencia sin permiso (mas alla del horizonte de
+        /// peticion) llegaria a la zona comun antes de que la despeje mas <see cref="GapMargin"/> segundos. 0 en GapLookDistance lo desactiva.
+        /// </summary>
+        public float GapLookDistance = 100f;
+        public float GapMargin = 1.0f;
+        /// <summary>Fraccion de la aceleracion maxima del vehiculo que se supone al despejar (el IDM la reduce al ganar velocidad).</summary>
+        public float GapAccelFactor = 0.7f;
+        /// <summary>Aceleracion supuesta si la peticion no la trae.</summary>
+        public float GapDefaultAccel = 1.0f;
         public ushort GreenMajor = 250;
         public ushort GreenOther = 150;
         public ushort Amber = 30;

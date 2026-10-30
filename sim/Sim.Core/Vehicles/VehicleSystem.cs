@@ -114,6 +114,43 @@ namespace Urbe.Sim.Vehicles
             return rear - _laneReservedCm[lane.Value] * 0.01f;
         }
 
+        public float TailSpeed(LaneId lane)
+        {
+            int tail = lane.Value < _laneTail.Length ? _laneTail[lane.Value] : -1;
+            return tail >= 0 ? _veh[tail].V : 0f;
+        }
+
+        public bool NextApproach(LaneId lane, float maxDistance, out int connection, out float distance, out float speed)
+        {
+            connection = -1;
+            distance = 0f;
+            speed = 0f;
+            if (lane.Value < 0 || lane.Value >= _laneHead.Length) return false;
+            float len = _net.GetLane(lane).Length;
+            for (int i = _laneHead[lane.Value]; i >= 0; i = _veh[i].Behind)
+            {
+                ref Vehicle v = ref _veh[i];
+                float d = len - v.S;
+                if (d > maxDistance) return false;
+                if ((v.Flags & VehicleFlags.HasEntryPermit) != 0) continue;
+                if (v.RouteCursor >= v.RouteLast) return false;
+                // Dentro de su horizonte ya pide permiso: lo decide el orden canonico de la puerta (y puede frenar a tiempo).
+                if (d <= RequestHorizon(in v)) return false;
+                connection = FindConn(v.Track, _routes.Steps[v.RouteOffset + v.RouteCursor + 1].Lane.Value);
+                distance = d;
+                speed = v.V;
+                return connection >= 0;
+            }
+            return false;
+        }
+
+        /// <summary>Distancia al final del carril a la que el vehiculo empieza a pedir permiso (fase 1a).</summary>
+        private float RequestHorizon(in Vehicle v)
+        {
+            float b = _types[v.Type].B;
+            return v.V * v.V / (2f * b) + v.V * _cfg.Dt + _cfg.StopMargin + _cfg.RequestExtra;
+        }
+
         public float RearOnConnection(int vehicle, int connection)
         {
             ref Vehicle v = ref _veh[vehicle];

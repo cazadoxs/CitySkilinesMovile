@@ -22,6 +22,15 @@ namespace Urbe.Sim.Tests.Junctions
 
         public float RearOnConnection(int vehicle, int connection) =>
             Rear.TryGetValue((vehicle, connection), out float r) ? r : float.PositiveInfinity;
+
+        public float TailSpeed(LaneId lane) => 0f;
+
+        public bool NextApproach(LaneId lane, float maxDistance, out int connection, out float distance, out float speed)
+        {
+            connection = -1;
+            distance = speed = 0f;
+            return false;
+        }
     }
 
     /// <summary>Tests 5-10 del ADR 004 sobre el controlador (con vista falsa o con vehiculos reales) y ganchos de M1-11.</summary>

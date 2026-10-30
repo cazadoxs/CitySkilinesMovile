@@ -28,7 +28,6 @@ namespace Urbe.Sim.Vehicles
         private void RequestPhase()
         {
             RouteStep[] steps = _routes.Steps;
-            float dt = _cfg.Dt;
             for (int i = 0; i < _high; i++)
             {
                 ref Vehicle v = ref _veh[i];
@@ -36,8 +35,7 @@ namespace Urbe.Sim.Vehicles
                 if (v.Kind != TrackKind.Lane || v.Ahead >= 0 || v.RouteCursor >= v.RouteLast) continue;
                 VehicleType t = _types[v.Type];
                 float d = _net.GetLane(new LaneId(v.Track)).Length - v.S;
-                float horizon = v.V * v.V / (2f * t.B) + v.V * dt + _cfg.StopMargin + _cfg.RequestExtra;
-                if (d > horizon) continue;
+                if (d > RequestHorizon(in v)) continue;
                 LaneId to = steps[v.RouteOffset + v.RouteCursor + 1].Lane;
                 int conn = FindConn(v.Track, to.Value);
                 if (conn < 0) continue;
@@ -51,6 +49,7 @@ namespace Urbe.Sim.Vehicles
                     Speed = v.V,
                     Space = t.Length + t.S0,
                     StoppedTicks = v.WaitTicks,
+                    Accel = t.AMax,
                 };
                 _gate.RequestEntry(in req);
             }
@@ -148,7 +147,7 @@ namespace Urbe.Sim.Vehicles
             if (v0 < 0.1f) v0 = 0.1f;
 
             // Lider: el de delante en la lista o, si es la cabeza, el que revele el lookahead.
-            bool has = false;
+            bool has = false, stopLine = false;
             float gap = 0f, lv = 0f;
             if (v.Ahead >= 0)
             {
@@ -171,10 +170,13 @@ namespace Urbe.Sim.Vehicles
                     {
                         // Linea de parada (ADR 002 regla 2). Desviacion: solo dentro del horizonte de peticion, el mismo que usa la
                         // fase 1a; fuera de el, el termino 1/s^2 del IDM frenaria antes de poder siquiera pedir permiso.
+                        // M1-07b: el lider virtual va s0 mas alla para que el frente se detenga a StopMargin de la linea (antes
+                        // paraba a StopMargin + s0 = 3 m y cada arranque desde parado recorria 2 m de mas antes de entrar).
                         if (dEnd <= horizon)
                         {
-                            gap = dEnd - stopMargin;
+                            gap = dEnd - stopMargin + t.S0;
                             has = true;
+                            stopLine = true;
                         }
                     }
                     else
@@ -251,6 +253,7 @@ namespace Urbe.Sim.Vehicles
                 float q = sStar / s;
                 inter = q * q;
                 maxAdv = gap - _cfg.MinGap;
+                if (stopLine && maxAdv > dEnd - stopMargin) maxAdv = dEnd - stopMargin;
                 if (maxAdv < 0f) maxAdv = 0f;
             }
             float acc = t.AMax * (1f - r2 * r2 - inter);

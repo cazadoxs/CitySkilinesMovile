@@ -21,7 +21,7 @@
 | [M1-06a](M1-06a.md) | ADR de vehículos (IDM) | Opus · medium | M1-03b | ✅ hecho |
 | [M1-06b](M1-06b.md) | Movimiento de vehículos con IDM | Sonnet · high | M1-06a, M1-05 | ✅ hecho |
 | [M1-07](M1-07.md) | Intersecciones y semáforos | **Opus · high** (diseño + implementación del núcleo; tarjeta crítica) | M1-06b | ✅ hecho |
-| [M1-07b](M1-07b.md) | Retranqueo de carriles en nodos + controlador por defecto | Sonnet · high | M1-07, M1-09 | ⬜ pendiente |
+| [M1-07b](M1-07b.md) | Retranqueo de carriles en nodos + controlador por defecto | Sonnet · high | M1-07, M1-09 | ✅ hecho |
 | [M1-08](M1-08.md) | Elección y cambio de carril | Sonnet · high | M1-07 | ⬜ pendiente |
 | [M1-09](M1-09.md) | Generador de viajes y flujo % | Sonnet · medium | M1-06b | ✅ hecho |
 | [M1-10](M1-10.md) | Visor PNG/GIF en Sim.Runner | Sonnet · medium | M1-06b | ✅ hecho |

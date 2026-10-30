@@ -194,3 +194,14 @@ final del vaciado `alive == 0`.
 - Test 1: con la geometría de ADR 001 (sin retranqueo) las derechas opuestas de una X de calles 1+1 se acercan a ~1,2 m y sí
   conflictúan; el test lo comprueba contra la distancia fina y verifica "sin conflicto" en la X de avenidas. En el test 5 la izquierda
   se deniega como `Claimed` (paso 3), no `Conflict`.
+
+## Cambios durante la implementación (M1-07b, capacidad)
+- Anti-bloqueo (paso 5): el hueco a la salida suma el credito v²/(2·`ExitCreditDecel`) de la cola del carril (lo que aun avanza
+  frenando comodamente; 2 m/s², 0 lo desactiva). Sin el, un peloton en movimiento se denegaba a si mismo. `IVehicleView.TailSpeed`.
+- Paso 4 bis, aceptacion de huecos (`GrantDecision.DeniedGap`, no reclama): una peticion no forzada ni semaforica se deniega si un
+  movimiento en conflicto con mas rango que su prioridad efectiva tiene un vehiculo sin permiso y fuera de su horizonte de peticion
+  (dentro ya lo ordena la puerta) que llegaria a la zona comun antes de que esta la despeje (aceleracion `GapAccelFactor`·AMax) mas
+  `GapMargin`. Solo deniega mas: nunca relaja conflictos; el envejecimiento sigue evitando la inanicion. `IVehicleView.NextApproach`,
+  `EntryRequest.Accel`.
+- Linea de parada (ADR 002 regla 2): el lider virtual se coloca s0 mas alla y `maxAdv` no pasa de StopMargin, asi que el frente se
+  detiene a StopMargin de la linea (antes a StopMargin + s0 = 3 m).

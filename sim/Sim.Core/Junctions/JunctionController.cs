@@ -43,6 +43,7 @@ namespace Urbe.Sim.Junctions
         private EntryRequest[] _queue = Array.Empty<EntryRequest>();
         private int[] _qNode = Array.Empty<int>();
         private int[] _qLocal = Array.Empty<int>();
+        private byte[] _qEff = Array.Empty<byte>();
         private ulong[] _keys = Array.Empty<ulong>();
         private int[] _order = Array.Empty<int>();
         private ulong[] _tmpKeys = Array.Empty<ulong>();
@@ -103,6 +104,7 @@ namespace Urbe.Sim.Junctions
             Array.Resize(ref _queue, n);
             Array.Resize(ref _qNode, n);
             Array.Resize(ref _qLocal, n);
+            Array.Resize(ref _qEff, n);
             Array.Resize(ref _keys, n);
             Array.Resize(ref _order, n);
             Array.Resize(ref _tmpKeys, n);

@@ -46,6 +46,7 @@ namespace Urbe.Sim.Junctions
                 _qNode[q] = ni;
                 _qLocal[q] = local;
                 _order[q] = q;
+                _qEff[q] = (byte)eff;
                 _keys[q] = ((ulong)(uint)ni << 40) | ((ulong)(15 - eff) << 36) | ((ulong)(0xFFFF - w) << 20) | (uint)v;
             }
             SortUtil.Sort(_keys, _order, n, _tmpKeys, _tmpIdx, _counts);
@@ -69,7 +70,7 @@ namespace Urbe.Sim.Junctions
                 ref EntryRequest req = ref _queue[q];
                 ushort wt = GetWaitTicks(req.Vehicle);
                 if (wt > node!.State.OldestWaitTicks) node.State.OldestWaitTicks = wt;
-                GrantDecision d = Evaluate(node, ref req, _qLocal[q], ref claim, view);
+                GrantDecision d = Evaluate(node, ref req, _qLocal[q], _qEff[q], ref claim, view);
                 _decision[req.Vehicle] = d;
                 Count(d);
             }
@@ -86,10 +87,11 @@ namespace Urbe.Sim.Junctions
                 case GrantDecision.DeniedClaimed: Stats.DeniedClaimed++; break;
                 case GrantDecision.DeniedConflict: Stats.DeniedConflict++; break;
                 case GrantDecision.DeniedExitFull: Stats.DeniedExitFull++; break;
+                case GrantDecision.DeniedGap: Stats.DeniedGap++; break;
             }
         }
 
-        private GrantDecision Evaluate(JunctionNode jn, ref EntryRequest req, int local, ref ulong claim, IVehicleView view)
+        private GrantDecision Evaluate(JunctionNode jn, ref EntryRequest req, int local, int eff, ref ulong claim, IVehicleView view)
         {
             ref ConnGate g = ref jn.Gates[local];
             ulong bit = 1UL << local;
@@ -132,6 +134,10 @@ namespace Urbe.Sim.Junctions
                 }
             }
 
+            // 4 bis (M1-07b). Aceptacion de huecos: el que cede no se cruza delante de un vehiculo con preferencia que aun no pidio.
+            if (!forced && g.Rule != ApproachRule.Signal && _cfg.GapLookDistance > 0f && GapTooShort(jn, in g, ref req, local, eff, view))
+                return GrantDecision.DeniedGap;
+
             // 5. Anti-bloqueo: hueco a la salida para todo el vehiculo (o el carril entero si es mas corto).
             int to = req.To.Value;
             float space = req.Space;
@@ -139,7 +145,10 @@ namespace Urbe.Sim.Junctions
             {
                 float laneLen = _net.GetLane(req.To).Length;
                 float need = space < laneLen ? space : laneLen;
-                float free = view.FreeSpace(req.To) - ScratchOf(to);
+                // M1-07b: el de delante tambien avanza. Credito = lo que recorre la cola al frenar comodamente desde su velocidad.
+                float vt = view.TailSpeed(req.To);
+                float credit = _cfg.ExitCreditDecel > 0f ? vt * vt / (2f * _cfg.ExitCreditDecel) : 0f;
+                float free = view.FreeSpace(req.To) + credit - ScratchOf(to);
                 if (free + 1e-4f < need) return GrantDecision.DeniedExitFull;
             }
 
@@ -152,6 +161,36 @@ namespace Urbe.Sim.Junctions
             _permitRef[req.Vehicle] = (jn.Node.Index << LocalBits) | local;
             _forced[req.Vehicle] = false;
             return GrantDecision.Granted;
+        }
+
+        /// <summary>
+        /// True si algun movimiento en conflicto con mas rango que la prioridad efectiva <paramref name="eff"/> tiene un vehiculo sin
+        /// permiso que llegaria a la zona comun antes de que esta peticion la despeje (mas el margen). Sin asignaciones.
+        /// </summary>
+        private bool GapTooShort(JunctionNode jn, in ConnGate g, ref EntryRequest req, int local, int eff, IVehicleView view)
+        {
+            ulong m = g.ConflictMask;
+            if (m == 0) return false;
+            int baseConn = req.Connection - local;
+            float a = (req.Accel > 0f ? req.Accel : _cfg.GapDefaultAccel) * _cfg.GapAccelFactor;
+            float v0 = req.Speed;
+            while (m != 0)
+            {
+                int j = Bits.TrailingZeroCount(m);
+                m &= m - 1;
+                ref ConnGate gj = ref jn.Gates[j];
+                if (gj.Rank <= eff) continue;
+                LaneId fromJ = _net.GetConnection(baseConn + j).From;
+                if (!view.NextApproach(fromJ, _cfg.GapLookDistance, out int cj, out float dj, out float vj)) continue;
+                if (cj != baseConn + j || vj < 0.5f) continue; // parado: pide el mismo y el orden canonico decide
+                int e = g.ConflictFirst + Bits.PopCount(g.ConflictMask & ((1UL << j) - 1));
+                int ej = gj.ConflictFirst + Bits.PopCount(gj.ConflictMask & ((1UL << local) - 1));
+                float clearD = req.DistanceToStop + jn.Entries[e].EndDm * 0.1f + req.Space;
+                float tClear = (MathF.Sqrt(v0 * v0 + 2f * a * clearD) - v0) / a;
+                float eta = (dj + jn.Entries[ej].StartDm * 0.1f) / vj;
+                if (eta < tClear + _cfg.GapMargin) return true;
+            }
+            return false;
         }
 
         private bool SignalAllows(JunctionNode jn, in ConnGate g, in EntryRequest req)

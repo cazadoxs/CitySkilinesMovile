@@ -290,6 +290,8 @@ namespace Urbe.Sim.Tests.Junctions
         private long[] _first = new long[0];
         public int MaxWait;
         public int Exits;
+        /// <summary>Salidas por segmento de origen (indice del segmento).</summary>
+        public readonly Dictionary<int, int> ExitsBySegment = new Dictionary<int, int>();
         public readonly List<EntryRequest> LastRequests = new List<EntryRequest>();
         public readonly List<EntryGrant> LastGrants = new List<EntryGrant>();
         public bool Record { get; set; }
@@ -342,6 +344,8 @@ namespace Urbe.Sim.Tests.Junctions
                 if (w > MaxWait) MaxWait = w;
                 _first[vehicle] = -1;
                 Exits++;
+                int seg = _net.GetConnection(connection).From.SegmentIndex;
+                ExitsBySegment[seg] = ExitsBySegment.TryGetValue(seg, out int k) ? k + 1 : 1;
             }
             _inner.OnExited(connection, vehicle);
         }
@@ -375,7 +379,10 @@ namespace Urbe.Sim.Tests.Junctions
         public readonly VehicleSystem Sys;
         public readonly JunctionController? Ctrl;
         public readonly TracingGate Trace;
-        public readonly JunctionNode Layout;
+        /// <summary>Zonas del cruce para el detector; se reconstruye si cambia la epoca de la red (si no, quedaria obsoleto tras editar).</summary>
+        public JunctionNode Layout { get; private set; }
+        private ulong _layoutEpoch;
+        private readonly JunctionConfig _layoutCfg;
         private readonly List<LaneId> _entries = new List<LaneId>();
         private readonly List<float> _lambda = new List<float>();
         private Pcg32 _rng;
@@ -394,6 +401,24 @@ namespace Urbe.Sim.Tests.Junctions
         public float DespawnExitBeyond;
         /// <summary>Si es true, los vehiculos que aparecen solo eligen el movimiento recto.</summary>
         public bool StraightOnly;
+        /// <summary>
+        /// M1-07b: si es true los vehiculos aparecen en movimiento (a la velocidad del ultimo del carril, o la libre si esta vacio) con el
+        /// hueco de equilibrio del IDM (s0 + v*T); asi la oferta no la limita arrancar desde parado al inicio del brazo (con false, ~0,19
+        /// veh/s por carril como mucho) y los accesos quedan saturados de verdad.
+        /// </summary>
+        public bool SpawnMoving;
+
+        /// <summary>Salidas acumuladas desde los brazos E y O (la via principal de una X simetrica).</summary>
+        public long MajorExits
+        {
+            get
+            {
+                long n = 0;
+                foreach (int a in new[] { 0, 2 })
+                    if (X.Arms[a].IsValid && Trace.ExitsBySegment.TryGetValue(X.Arms[a].Index, out int k)) n += k;
+                return n;
+            }
+        }
 
         public PropertyScenario(Crossing x, ulong seed, float lambdaMin, float lambdaMax, bool useGapOnly = false, int capacity = 1024, JunctionConfig? config = null)
         {
@@ -404,7 +429,9 @@ namespace Urbe.Sim.Tests.Junctions
             else inner = Ctrl = new JunctionController(x.Net, config);
             Trace = new TracingGate(inner, x.Net, x.Center);
             Sys = new VehicleSystem(x.Net, Trace, capacity, seed, new VehicleConfig { DriverVariation = true });
-            Layout = new JunctionBuilder(config ?? new JunctionConfig()).Build(x.Net, x.Center);
+            _layoutCfg = config ?? new JunctionConfig();
+            Layout = new JunctionBuilder(_layoutCfg).Build(x.Net, x.Center);
+            _layoutEpoch = x.Net.Epoch;
             foreach (LaneId l in x.EntryLanes())
             {
                 _entries.Add(l);
@@ -423,6 +450,11 @@ namespace Urbe.Sim.Tests.Junctions
                     ref readonly Vehicle v = ref Sys.GetVehicle(i);
                     if (v.IsAlive && v.Kind == TrackKind.Lane && v.RouteCursor >= 1 && v.S > DespawnExitBeyond) Sys.Despawn(Sys.IdOf(i));
                 }
+            }
+            if (X.Net.Epoch != _layoutEpoch)
+            {
+                Layout = new JunctionBuilder(_layoutCfg).Build(X.Net, X.Center);
+                _layoutEpoch = X.Net.Epoch;
             }
             Collisions += JK.CountCollisions(Sys, Layout, _scratch);
             float g = JK.MinChainGap(Sys, _pieces);
@@ -445,7 +477,20 @@ namespace Urbe.Sim.Tests.Junctions
                 if (_rng.NextFloat() >= _lambda[k] * dt) continue;
                 LaneId lane = _entries[k];
                 int tail = Sys.LaneTail(lane);
-                if (tail >= 0)
+                byte type = _rng.NextInt(5) == 0 ? VehicleTypeId.Truck : VehicleTypeId.Car;
+                float speed = 0f;
+                if (SpawnMoving)
+                {
+                    VehicleType vt = Sys.GetVehicleType(type);
+                    speed = Math.Min(n.GetLane(lane).SpeedLimit * vt.V0Factor, vt.VMax);
+                    if (tail >= 0)
+                    {
+                        ref readonly Vehicle t = ref Sys.GetVehicle(tail);
+                        if (t.V < speed) speed = t.V;
+                        if (t.S - Sys.GetVehicleType(t.Type).Length < vt.S0 + 0.5f + speed * vt.T) continue;
+                    }
+                }
+                else if (tail >= 0)
                 {
                     ref readonly Vehicle t = ref Sys.GetVehicle(tail);
                     if (t.S - Sys.GetVehicleType(t.Type).Length < 15f) continue;
@@ -461,9 +506,8 @@ namespace Urbe.Sim.Tests.Junctions
                     if (!Allowed(conns[i].Turn)) continue;
                     if (pick-- == 0) { exit = conns[i].To; break; }
                 }
-                byte type = _rng.NextInt(5) == 0 ? VehicleTypeId.Truck : VehicleTypeId.Car;
                 float target = n.GetLane(exit).Length - 5f;
-                if (Sys.TrySpawn(type, new[] { lane, exit }, 0f, target, 0f, out _)) Spawned++;
+                if (Sys.TrySpawn(type, new[] { lane, exit }, 0f, target, speed, out _)) Spawned++;
             }
         }
     }

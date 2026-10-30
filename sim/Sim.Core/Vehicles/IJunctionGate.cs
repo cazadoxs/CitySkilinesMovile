@@ -18,6 +18,8 @@ namespace Urbe.Sim.Vehicles
         public float Space;
         /// <summary>Vehicle.WaitTicks.</summary>
         public ushort StoppedTicks;
+        /// <summary>Aceleracion maxima del tipo de vehiculo (M1-07b, aceptacion de huecos); 0 = desconocida.</summary>
+        public float Accel;
     }
 
     public struct EntryGrant
@@ -38,6 +40,16 @@ namespace Urbe.Sim.Vehicles
         /// si ya esta en el carril siguiente (PrevConnection), +infinito si no tiene cuerpo en ella.
         /// </summary>
         float RearOnConnection(int vehicle, int connection);
+
+        /// <summary>Velocidad del ultimo vehiculo del carril (0 si esta vacio). M1-07b: credito de avance en el hueco de salida.</summary>
+        float TailSpeed(LaneId lane);
+
+        /// <summary>
+        /// M1-07b (aceptacion de huecos): el vehiculo mas adelantado del carril que aun no tiene permiso, si esta a menos de
+        /// <paramref name="maxDistance"/> del final y aun fuera de su horizonte de peticion (dentro ya pide y lo ordena la puerta);
+        /// devuelve la conexion que tomara, su distancia al final y su velocidad.
+        /// </summary>
+        bool NextApproach(LaneId lane, float maxDistance, out int connection, out float distance, out float speed);
     }
 
     /// <summary>Opcional: la puerta recibe la vista y la capacidad de vehiculos al crearse el sistema.</summary>
