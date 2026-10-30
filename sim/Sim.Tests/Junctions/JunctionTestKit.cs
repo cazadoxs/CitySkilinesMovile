@@ -387,17 +387,24 @@ namespace Urbe.Sim.Tests.Junctions
         public int Spawned;
         public string? CounterError;
         public bool CheckCountersEachTick = true;
+        /// <summary>
+        /// Si &gt; 0, da de baja a los vehiculos que ya cruzaron y pasan de esta S en el carril de salida: asi la cola de llegada
+        /// (parada en el destino) no frena el cruce y se mide su capacidad.
+        /// </summary>
+        public float DespawnExitBeyond;
+        /// <summary>Si es true, los vehiculos que aparecen solo eligen el movimiento recto.</summary>
+        public bool StraightOnly;
 
-        public PropertyScenario(Crossing x, ulong seed, float lambdaMin, float lambdaMax, bool useGapOnly = false, int capacity = 1024)
+        public PropertyScenario(Crossing x, ulong seed, float lambdaMin, float lambdaMax, bool useGapOnly = false, int capacity = 1024, JunctionConfig? config = null)
         {
             X = x;
             _rng = new Pcg32(seed, 1234);
             IJunctionGate inner;
             if (useGapOnly) inner = new GapOnlyGate(x.Net);
-            else inner = Ctrl = new JunctionController(x.Net);
+            else inner = Ctrl = new JunctionController(x.Net, config);
             Trace = new TracingGate(inner, x.Net, x.Center);
             Sys = new VehicleSystem(x.Net, Trace, capacity, seed, new VehicleConfig { DriverVariation = true });
-            Layout = new JunctionBuilder(new JunctionConfig()).Build(x.Net, x.Center);
+            Layout = new JunctionBuilder(config ?? new JunctionConfig()).Build(x.Net, x.Center);
             foreach (LaneId l in x.EntryLanes())
             {
                 _entries.Add(l);
@@ -409,6 +416,14 @@ namespace Urbe.Sim.Tests.Junctions
         {
             if (demand) SpawnAll();
             Sys.Update();
+            if (DespawnExitBeyond > 0f)
+            {
+                for (int i = 0; i < Sys.HighWater; i++)
+                {
+                    ref readonly Vehicle v = ref Sys.GetVehicle(i);
+                    if (v.IsAlive && v.Kind == TrackKind.Lane && v.RouteCursor >= 1 && v.S > DespawnExitBeyond) Sys.Despawn(Sys.IdOf(i));
+                }
+            }
             Collisions += JK.CountCollisions(Sys, Layout, _scratch);
             float g = JK.MinChainGap(Sys, _pieces);
             if (g < MinChainGap) MinChainGap = g;
@@ -418,6 +433,8 @@ namespace Urbe.Sim.Tests.Junctions
                 if (e != null) CounterError = "tick " + Sys.CurrentTick + ": " + e;
             }
         }
+
+        private bool Allowed(TurnType t) => StraightOnly ? t == TurnType.Straight : t != TurnType.UTurn;
 
         private void SpawnAll()
         {
@@ -435,13 +452,13 @@ namespace Urbe.Sim.Tests.Junctions
                 }
                 var conns = n.GetConnectionsFrom(lane);
                 int count = 0;
-                for (int i = 0; i < conns.Length; i++) if (conns[i].Turn != TurnType.UTurn) count++;
+                for (int i = 0; i < conns.Length; i++) if (Allowed(conns[i].Turn)) count++;
                 if (count == 0) continue;
                 int pick = _rng.NextInt(count);
                 LaneId exit = LaneId.None;
                 for (int i = 0; i < conns.Length; i++)
                 {
-                    if (conns[i].Turn == TurnType.UTurn) continue;
+                    if (!Allowed(conns[i].Turn)) continue;
                     if (pick-- == 0) { exit = conns[i].To; break; }
                 }
                 byte type = _rng.NextInt(5) == 0 ? VehicleTypeId.Truck : VehicleTypeId.Car;

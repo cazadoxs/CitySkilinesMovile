@@ -104,6 +104,37 @@ namespace Urbe.Sim.Tests.Junctions
                     if (i != j && conns[i].From == conns[j].From) Assert.True((jn.Gates[i].ConflictMask & (1UL << j)) == 0);
         }
 
+        // M1-07b: con el retranqueo (carriles acaban a ~4,5 m del centro) las derechas opuestas de una X de calles 1+1 ya no se rozan
+        // y el recto de la via principal no conflictua con la derecha de la secundaria que no lo cruza.
+        [Fact]
+        public void Mask_StreetX_Setback_OppositeRightsAndUncrossedStraightDoNotConflict()
+        {
+            Crossing x = JK.X(RoadTypeIds.Street2, RoadTypeIds.Street2);
+            RoadNetwork n = x.Net;
+            JunctionNode jn = Layout(x);
+            CheckSymmetric(jn, n);
+            // Derechas opuestas (E y O, y N y S): sin conflicto ni siquiera por distancia.
+            int rE = x.ConnTurn(0, TurnType.Right), rW = x.ConnTurn(2, TurnType.Right);
+            int rN = x.ConnTurn(1, TurnType.Right), rS = x.ConnTurn(3, TurnType.Right);
+            Assert.True(FineDistance(n.GetConnection(rW), n.GetConnection(rE)) > 2.7f);
+            Assert.Null(Kind(jn, x, rW, rE));
+            Assert.Null(Kind(jn, x, rN, rS));
+            // Via principal E-O: el recto O->E (carril sur) no se cruza con la derecha N->O ni con la derecha S->E; el recto E->O si se
+            // junta con la derecha N->O (misma salida, Merge).
+            int sW = x.ConnTurn(2, TurnType.Straight), sE = x.ConnTurn(0, TurnType.Straight);
+            Assert.Null(Kind(jn, x, sW, rN));
+            Assert.Null(Kind(jn, x, sE, rS));
+            Assert.Equal(ConflictKind.Merge, Kind(jn, x, sE, rN));
+            // El area real del cruce: ninguna conexion recta mide ~0 y todas empiezan a >= 4 m del centro.
+            ReadOnlySpan<LaneConnection> conns = n.GetConnectionsAt(x.Center);
+            for (int i = 0; i < conns.Length; i++)
+            {
+                Assert.True(conns[i].Length > 6f, "conexion corta: " + conns[i].Length);
+                Assert.True(Vec2.Distance(conns[i].Curve.P0, Kit.V(0, 0)) >= 4f);
+                Assert.True(Vec2.Distance(conns[i].Curve.P3, Kit.V(0, 0)) >= 4f);
+            }
+        }
+
         [Fact]
         public void Mask_AvenueX_OppositeRightsAndStraightsDoNotConflict()
         {
@@ -112,7 +143,10 @@ namespace Urbe.Sim.Tests.Junctions
             CheckSymmetric(jn, x.Net);
             Assert.Null(Kind(jn, x, x.ConnTurn(0, TurnType.Right), x.ConnTurn(2, TurnType.Right)));
             Assert.Null(Kind(jn, x, x.ConnTurn(0, TurnType.Straight, 0), x.ConnTurn(2, TurnType.Straight, 0)));
-            Assert.Equal(ConflictKind.Cross, Kind(jn, x, x.ConnTurn(0, TurnType.Straight, 1), x.ConnTurn(1, TurnType.Right)));
+            // Recto del carril interior desde E x recto del carril interior desde N: se cruzan en el centro. (Con retranqueo la derecha
+            // desde N va al carril exterior de la salida O y ya no roza el recto interior: antes lo hacia por el lazo sin retranqueo.)
+            Assert.Equal(ConflictKind.Cross, Kind(jn, x, x.ConnTurn(0, TurnType.Straight, 1), x.ConnTurn(1, TurnType.Straight, 1)));
+            Assert.Null(Kind(jn, x, x.ConnTurn(0, TurnType.Straight, 1), x.ConnTurn(1, TurnType.Right)));
         }
 
         // 2. Zonas: los cortes de CurveCurve caen dentro; Merge acaba en L; Start <= End.

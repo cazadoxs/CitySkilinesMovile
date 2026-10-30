@@ -118,8 +118,9 @@ namespace Urbe.Sim.Roads
             ref readonly Lane el = ref _lanes[es * MaxLanesPerSegment + eSlot];
             ref readonly Lane xl = ref _lanes[xs * MaxLanesPerSegment + xSlot];
 
-            LaneEndpoint(esg.Curve, el, _gAtA[ei] ? 0f : 1f, out Vec2 p0, out Vec2 t0);
-            LaneEndpoint(xsg.Curve, xl, _gAtA[xj] ? 0f : 1f, out Vec2 p3, out Vec2 t3);
+            // Los carriles acaban/empiezan en el retranqueo del nodo (TLaneA junto a A, TLaneB junto a B).
+            LaneEndpoint(esg.Curve, el, _gAtA[ei] ? esg.TLaneA : esg.TLaneB, out Vec2 p0, out Vec2 t0);
+            LaneEndpoint(xsg.Curve, xl, _gAtA[xj] ? xsg.TLaneA : xsg.TLaneB, out Vec2 p3, out Vec2 t3);
             float h = 0.4f * Vec2.Distance(p0, p3);
             var curve = new Bezier3(p0, p0 + t0 * h, p3 - t3 * h, p3);
 

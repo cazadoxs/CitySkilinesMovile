@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using Urbe.Sim.Commands;
+using Urbe.Sim.Junctions;
 using Urbe.Sim.Pathfinding;
 using Urbe.Sim.Roads;
 using Urbe.Sim.Vehicles;
@@ -20,11 +21,16 @@ namespace Urbe.Sim.Traffic
         public int PathResultCapacity = 512;
         /// <summary>Cada cuanto se pasa el flujo por segmento al pathfinding como factor de congestion.</summary>
         public float CongestionPublishSeconds = 30f;
+        /// <summary>
+        /// Usa la puerta simple <see cref="GapOnlyGate"/> (sin prioridad, conflictos ni semaforos) en vez del
+        /// <see cref="JunctionController"/> (ADR 004), que es la puerta por defecto. Solo para pruebas y comparativas.
+        /// </summary>
+        public bool UseGapOnlyGate;
     }
 
     /// <summary>
     /// Agrupa red, vehiculos, puerta de cruces, pathfinding, generador de viajes y metricas, y avanza un tick en el orden del
-    /// GDD 8.1: comandos, viajes, cola de rutas, movimiento, metricas. La puerta es inyectable (GapOnlyGate por defecto).
+    /// GDD 8.1: comandos, viajes, cola de rutas, movimiento, metricas. La puerta es inyectable; por defecto es el JunctionController (M1-07b) y GapOnlyGate solo con la opcion explicita.
     /// </summary>
     public sealed class TrafficSimulation
     {
@@ -56,7 +62,7 @@ namespace Urbe.Sim.Traffic
         {
             _opt = options ?? new TrafficSimulationOptions();
             Network = network ?? throw new ArgumentNullException(nameof(network));
-            Vehicles = new VehicleSystem(network, gate ?? new GapOnlyGate(network), _opt.VehicleCapacity, seed, _opt.Vehicle);
+            Vehicles = new VehicleSystem(network, gate ?? (_opt.UseGapOnlyGate ? (IJunctionGate)new GapOnlyGate(network) : new JunctionController(network)), _opt.VehicleCapacity, seed, _opt.Vehicle);
             Paths = new PathFinder(network, _opt.PathCost);
             PathQueue = new PathRequestQueue(Paths, _opt.PathResultCapacity, _opt.Trips.MaxRouteLength);
             Trips = new TripGenerator(network, Vehicles, PathQueue, seed, _opt.Trips);

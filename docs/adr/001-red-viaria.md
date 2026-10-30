@@ -156,3 +156,15 @@ derivados y no entran; la época tampoco.
 - Las reglas de giro son deterministas y sin estado: cualquier nodo se puede reconstruir en cualquier momento con el mismo resultado.
 - M1-07 añade `ControlId`, máscaras de conflicto por `LocalIndex` y filtros de giro sin cambiar las estructuras.
 - Elevación: solo filtra cruces; puentes y túneles (rampas, pendiente) llegan con la herramienta de carreteras de M2.
+
+## Cambios durante la implementación (M1-07b: retranqueo de carriles)
+- Los carriles ya no llegan al punto del nodo en los nodos `Junction` (≥ 3 segmentos). Cada extremo se recorta `setback = máx(TotalWidth/2 de los otros segmentos del nodo) + 1 m` (mínimo 4 m;
+  0 en `DeadEnd`/`Continuation`), acotado por extremo a `Length/2 − 1,5 m`. Calle × calle: 6 m (área de ~12 m); calle con avenida de 6 carriles: 15,5 m.
+- `Segment` guarda `SetbackA/B` y `TLaneA/B` (t de la curva donde empiezan los carriles). Son derivados: no entran en el hash (`ComputeHash` no cambia) ni en `NetworkEdit`.
+  Se recalculan en `InsertSegment`/`DetachSegment` para todos los segmentos de los nodos afectados (por lo que un split que convierte un `Continuation` en `Junction` recorta
+  a sus vecinos y quitar el tercer segmento los restituye); los que cambian se marcan con `TouchSegment` y salen en `ConsumeChanges`.
+- `Lane.Length` es la longitud del tramo retranqueado y s = 0 es su inicio retranqueado; `SampleLane` mapea s → distancia sobre la curva central de forma proporcional dentro de
+  `[SetbackA, Length − SetbackB]` (invertido en carriles `Backward`). Con retranqueo 0 el resultado es idéntico al anterior.
+- Las conexiones van del extremo retranqueado del carril de entrada al del de salida (`LaneEndpoint` usa `TLaneA/B`): cruzan el área real del cruce (rectas ≥ 12 m en una X de calles
+  1+1; antes ≈ 0). Efecto en ADR 004: las derechas opuestas y el recto que no cruza la derecha de la secundaria dejan de estar en conflicto; las zonas se recalculan solas al regenerar el nodo.
+- Un carril de salida o de entrada es ~retranqueo más corto que su brazo: el código que fije posiciones por `Length` del segmento (tests, generadores) debe usar `Lane.Length`.

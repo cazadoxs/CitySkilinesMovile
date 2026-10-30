@@ -167,13 +167,16 @@ namespace Urbe.Sim.Roads
         {
             ref readonly Lane l = ref _lanes[lane.Value];
             ref readonly Segment sg = ref _segments[l.Segment.Index];
+            // s -> distancia u sobre la curva central: proporcional dentro del tramo entre retranqueos [SetbackA, Length - SetbackB].
+            float uLo = sg.SetbackA;
+            float uSpan = sg.Length - sg.SetbackA - sg.SetbackB;
             float u = 0f;
             if (l.Length > 1e-6f)
             {
                 if (s < 0f) s = 0f; else if (s > l.Length) s = l.Length;
-                u = s * sg.Length / l.Length;
+                u = s * uSpan / l.Length;
             }
-            if (l.Direction == LaneDirection.Backward) u = sg.Length - u;
+            u = l.Direction == LaneDirection.Backward ? uLo + uSpan - u : uLo + u;
             float t = ArcLengthTable.TAtDistance(sg.Curve, new ReadOnlySpan<float>(_arcTables, sg.ArcTableOffset, ArcSamples), u);
             Vec2 tan = sg.Curve.Tangent(t);
             pos = sg.Curve.Evaluate(t) + OffsetCurve.Right(tan) * l.Offset;

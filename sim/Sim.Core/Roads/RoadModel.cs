@@ -48,6 +48,15 @@ namespace Urbe.Sim.Roads
         public byte LanesBackward;
         public SegmentFlags Flags;
         public int ArcTableOffset;
+        /// <summary>
+        /// Retranqueo (derivado, ADR 001 "Cambios durante la implementacion"): distancia sobre la curva central que los carriles
+        /// no ocupan junto al nodo A / B (0 salvo en nodos Junction). No entra en el hash.
+        /// </summary>
+        public float SetbackA;
+        public float SetbackB;
+        /// <summary>Parametro t de la curva donde empiezan los carriles junto a A y donde acaban junto a B (0 y 1 sin retranqueo).</summary>
+        public float TLaneA;
+        public float TLaneB;
     }
 
     /// <summary>Id de carril: <c>segmentIndex * 8 + slot</c>. Sin allocator propio.</summary>
@@ -81,6 +90,7 @@ namespace Urbe.Sim.Roads
         public LaneKind Kind;
         /// <summary>Desplazamiento lateral respecto a la curva central; + = derecha de A hacia B.</summary>
         public float Offset;
+        /// <summary>Longitud del carril entre los retranqueos de sus dos extremos (s = 0 en su inicio, ya retranqueado).</summary>
         public float Length;
         public float SpeedLimit;
         public int ConnFirst;

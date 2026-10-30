@@ -57,10 +57,71 @@ namespace Urbe.Sim.Roads
                 l.Direction = fwd ? LaneDirection.Forward : LaneDirection.Backward;
                 l.Kind = LaneKind.Car;
                 l.Offset = offset;
-                l.Length = OffsetCurve.Length(sg.Curve, offset, PolylineSamples);
+                l.Length = OffsetCurve.Length(sg.Curve, offset, sg.TLaneA, sg.TLaneB, PolylineSamples);
                 l.SpeedLimit = type.SpeedLimit;
                 l.ConnFirst = 0;
                 l.ConnCount = 0;
+            }
+        }
+
+        // ------------------------------------------------------------------ retranqueo
+
+        /// <summary>Retranqueo minimo de un extremo en un nodo Junction (m).</summary>
+        public const float MinSetback = 4f;
+
+        /// <summary>
+        /// Retranqueo del segmento <paramref name="si"/> en el nodo <paramref name="ni"/>: 0 salvo en nodos Junction (>= 3 segmentos), donde es
+        /// max(TotalWidth/2 de los otros segmentos) + 1 m, al menos <see cref="MinSetback"/>, y como mucho la mitad del segmento menos 1,5 m
+        /// (cada extremo se acota por separado para que el otro no dependa de este nodo). Solo depende del conjunto de segmentos del nodo.
+        /// </summary>
+        private float ComputeSetback(int ni, int si)
+        {
+            ref readonly Node nd = ref _nodes[ni];
+            if (nd.SegmentCount < 3) return 0f;
+            int adj = ni * MaxSegmentsPerNode;
+            float half = 0f;
+            for (int k = 0; k < nd.SegmentCount; k++)
+            {
+                int oi = _nodeSegments[adj + k].Index;
+                if (oi == si) continue;
+                float w = _types.Get(_segments[oi].RoadTypeId).TotalWidth * 0.5f;
+                if (w > half) half = w;
+            }
+            float sb = half + 1f;
+            if (sb < MinSetback) sb = MinSetback;
+            float cap = _segments[si].Length * 0.5f - 1.5f;
+            if (cap < 0f) cap = 0f;
+            return sb < cap ? sb : cap;
+        }
+
+        /// <summary>
+        /// Recalcula el retranqueo de los extremos de todos los segmentos del nodo (tras cambiar su conjunto de segmentos). Los segmentos que
+        /// cambian se marcan como tocados y sus carriles se acortan o alargan; las conexiones del nodo las regenera el llamador.
+        /// </summary>
+        private void RefreshNodeGeometry(int ni)
+        {
+            int adj = ni * MaxSegmentsPerNode;
+            int count = _nodes[ni].SegmentCount;
+            for (int k = 0; k < count; k++)
+            {
+                EntityId sid = _nodeSegments[adj + k];
+                int si = sid.Index;
+                ref Segment sg = ref _segments[si];
+                float sa = ComputeSetback(sg.NodeA.Index, si);
+                float sbk = ComputeSetback(sg.NodeB.Index, si);
+                if (sa == sg.SetbackA && sbk == sg.SetbackB) continue;
+                sg.SetbackA = sa;
+                sg.SetbackB = sbk;
+                var table = new ReadOnlySpan<float>(_arcTables, sg.ArcTableOffset, ArcSamples);
+                sg.TLaneA = sa > 0f ? ArcLengthTable.TAtDistance(sg.Curve, table, sa) : 0f;
+                sg.TLaneB = sbk > 0f ? ArcLengthTable.TAtDistance(sg.Curve, table, sg.Length - sbk) : 1f;
+                int lanes = sg.LanesForward + sg.LanesBackward;
+                for (int slot = 0; slot < lanes; slot++)
+                {
+                    ref Lane l = ref _lanes[si * MaxLanesPerSegment + slot];
+                    l.Length = OffsetCurve.Length(sg.Curve, l.Offset, sg.TLaneA, sg.TLaneB, PolylineSamples);
+                }
+                TouchSegment(sid);
             }
         }
 
@@ -85,6 +146,10 @@ namespace Urbe.Sim.Roads
             var table = new Span<float>(_arcTables, s.ArcTableOffset, ArcSamples);
             ArcLengthTable.Build(curve, table);
             s.Length = ArcLengthTable.TotalLengthOf(table);
+            s.SetbackA = 0f;
+            s.SetbackB = 0f;
+            s.TLaneA = 0f;
+            s.TLaneB = 1f;
             BuildLanes(si);
             GridRegister(si, true);
             AdjInsert(a.Index, id);
@@ -94,6 +159,8 @@ namespace Urbe.Sim.Roads
             TouchSegment(id);
             TouchNode(a);
             TouchNode(b);
+            RefreshNodeGeometry(a.Index);
+            RefreshNodeGeometry(b.Index);
             return id;
         }
 
@@ -120,6 +187,8 @@ namespace Urbe.Sim.Roads
             TouchSegment(id);
             TouchNode(a);
             TouchNode(b);
+            RefreshNodeGeometry(a.Index);
+            RefreshNodeGeometry(b.Index);
         }
 
         /// <summary>Alta completa con comprobaciones y conexiones. Devuelve None (sin cambios de estado) si se rechaza.</summary>

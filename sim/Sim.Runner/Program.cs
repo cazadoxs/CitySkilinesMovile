@@ -16,7 +16,7 @@ namespace Urbe.Sim.Runner
             float seconds = 20f;
             ulong seed = 1;
             int vehicles = 1000, size = 800, frameTicks = 10;
-            float tripsPerSecond = 8f;
+            float tripsPerSecond = 3f; // M1-07b: con el JunctionController por defecto, 8 viajes/s saturan la cuadricula 8x8
 
             try
             {

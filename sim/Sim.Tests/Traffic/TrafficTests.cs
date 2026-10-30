@@ -133,7 +133,8 @@ namespace Urbe.Sim.Tests.Traffic
         [Fact]
         public void Trips_AreConserved_GeneratedEqualsCompletedPlusActivePlusPendingPlusLost()
         {
-            TrafficSimulation sim = Grid(21, 3f);
+            // 2 viajes/s (antes 3): con el JunctionController por defecto (M1-07b) la cuadricula 6x6 se satura con 3 y algun viaje caduca en la salida.
+            TrafficSimulation sim = Grid(21, 2f);
             for (int step = 0; step < 6; step++)
             {
                 sim.Run(500);

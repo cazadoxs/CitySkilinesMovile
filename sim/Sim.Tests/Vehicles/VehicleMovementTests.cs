@@ -308,14 +308,16 @@ namespace Urbe.Sim.Tests.Vehicles
             LaneId stem = VK.Lane(n, tj.Stem, true);
             LaneId east = VK.Lane(n, tj.East, true);
             // Carril de salida lleno de parados desde el principio.
+            // (El carril de salida mide ~4,5 m menos que el brazo por el retranqueo del cruce: se llena desde su longitud real.)
+            float eastLen = n.GetLane(east).Length;
             var blockers = new List<EntityId>();
-            for (float pos = 96f; pos > 7f; pos -= 8f)
+            for (float pos = eastLen - 4f; pos > 7f; pos -= 8f)
             {
-                EntityId b = VK.Spawn(s, VehicleTypeId.Car, new[] { east }, pos, 100f);
+                EntityId b = VK.Spawn(s, VehicleTypeId.Car, new[] { east }, pos, eastLen - 1f);
                 s.SetFrozen(b, true);
                 blockers.Add(b);
             }
-            EntityId f = VK.Spawn(s, VehicleTypeId.Car, new[] { stem, east }, 0f, 99f, 5f);
+            EntityId f = VK.Spawn(s, VehicleTypeId.Car, new[] { stem, east }, 0f, eastLen - 2f, 5f);
             VK.Run(s, 400);
             Assert.Equal(TrackKind.Lane, s.GetVehicle(f).Kind);
             Assert.Equal(0, s.GetVehicle(f).RouteCursor);

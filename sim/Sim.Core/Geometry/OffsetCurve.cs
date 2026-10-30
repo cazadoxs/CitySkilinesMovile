@@ -37,12 +37,18 @@ namespace Urbe.Sim.Geometry
         /// <summary>Longitud aproximada de la curva desplazada, como polilinea de <paramref name="samples"/> tramos uniformes en t.</summary>
         public static float Length(in Bezier3 curve, float offset, int samples = 32)
         {
+            return Length(curve, offset, 0f, 1f, samples);
+        }
+
+        /// <summary>Longitud aproximada del tramo [t0, t1] de la curva desplazada (polilinea de <paramref name="samples"/> tramos uniformes en t).</summary>
+        public static float Length(in Bezier3 curve, float offset, float t0, float t1, int samples = 32)
+        {
             if (samples < 1) samples = 1;
-            Vec2 prev = PointAt(curve, 0f, offset);
+            Vec2 prev = PointAt(curve, t0, offset);
             float sum = 0f;
             for (int i = 1; i <= samples; i++)
             {
-                Vec2 p = PointAt(curve, (float)i / samples, offset);
+                Vec2 p = PointAt(curve, i == samples ? t1 : t0 + (t1 - t0) * i / samples, offset);
                 sum += Vec2.Distance(prev, p);
                 prev = p;
             }
