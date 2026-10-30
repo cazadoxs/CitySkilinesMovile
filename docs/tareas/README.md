@@ -28,10 +28,11 @@
 | [M1-11](M1-11.md) | Detección y resolución de gridlock | Sonnet · high | M1-07 | ✅ hecho |
 | [M1-12](M1-12.md) | Tests golden y benchmark | Sonnet · medium | M1-09 | ✅ hecho |
 | [M1-13](M1-13.md) | Revisión de cierre de M1 | Opus · medium | M1-12 | ✅ hecho |
-| [M1-14](M1-14.md) | Demo M1: GIF de 2.000 coches | Haiku · low (ejecutar y publicar) | M1-13 | ⬜ pendiente |
+| [M1-14](M1-14.md) | Demo M1: GIF de 2.000 coches | Haiku · low (ejecutar y publicar) | M1-13 | ✅ hecho (pendiente de aprobación) |
 | [M1-15](M1-15.md) | Arreglos revisión: cambios de red y época | Sonnet · high | M1-13 | ✅ hecho |
 | [M1-16](M1-16.md) | Arreglos revisión: landmarks y validación | Sonnet · medium | M1-13 | ✅ hecho |
 | [M1-17](M1-17.md) | Deuda de la revisión M1 | Sonnet · medium | M1-15 | ✅ hecho |
+| [M1-18](M1-18.md) | Capacidad de red: demo con 2.000 coches | Opus · medium → Sonnet · high | M1-14 | ⬜ pendiente |
 | [M2-01](M2-01.md) | Proyecto Unity 6 e integración de Sim.Core | Sonnet · medium | M0-05, M1-12 | ⬜ pendiente |
 | [M2-02](M2-02.md) | SimHost: bucle de ticks | Sonnet · medium | M2-01 | ⬜ pendiente |
 | [M2-03](M2-03.md) | Cámara con gestos | Sonnet · medium | M2-01 | ⬜ pendiente |
