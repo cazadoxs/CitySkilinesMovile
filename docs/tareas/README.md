@@ -7,7 +7,7 @@
 | [M0-03](M0-03.md) | CLAUDE.md y README.md | Haiku · medium | M0-02 | ✅ hecho |
 | [M0-04](M0-04.md) | Settings, skills y subagentes | Sonnet · low | M0-03 | ✅ hecho |
 | [M0-05](M0-05.md) | Puesta a punto del PC y MCP de Unity | Sonnet · medium (🖥️ vía Desktop Commander o Claude Code local); **Álvaro:** login en Unity Hub y depuración USB | — | ⬜ pendiente |
-| [M0-06](M0-06.md) | Bocetos en Figma | Sonnet · medium | M0-02 | ⬜ pendiente |
+| [M0-06](M0-06.md) | Bocetos en Figma | Sonnet · medium | M0-02 | ✅ hecho |
 | [M0-07](M0-07.md) | Packs CC0 y ASSETS_LICENSES.md | Haiku · medium | M0-05 | ⬜ pendiente |
 | [M0-08](M0-08.md) | Esqueleto de CI en GitHub Actions | Haiku · medium | M1-01 | ✅ hecho |
 | [M0-09](M0-09.md) | Copiar tarjetas M1 y M2 a docs/tareas | Haiku · low | M0-04 | ✅ hecho |
