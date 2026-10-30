@@ -1,0 +1,64 @@
+name: Sim CI
+
+on:
+  push:
+    paths:
+      - 'sim/**'
+      - '.github/workflows/sim.yml'
+  pull_request:
+    paths:
+      - 'sim/**'
+      - '.github/workflows/sim.yml'
+
+concurrency:
+  group: sim-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test Sim
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('sim/**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Build
+        run: dotnet build sim/Sim.sln -c Release
+
+      - name: Test
+        run: dotnet test sim/Sim.sln -c Release --no-build --filter "Category!=Bench" --logger "trx" --results-directory TestResults
+
+      # Los tests con límites de tiempo dependen de la máquina: informativos en CI
+      - name: Timing tests (informativo)
+        continue-on-error: true
+        run: dotnet test sim/Sim.sln -c Release --no-build --filter "Category=Bench"
+
+      - name: Bench (informativo)
+        continue-on-error: true
+        run: dotnet sim/Sim.Runner/bin/Release/net8.0/Sim.Runner.dll --bench --quick --bench-json bench-quick.json
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: TestResults
+          if-no-files-found: warn

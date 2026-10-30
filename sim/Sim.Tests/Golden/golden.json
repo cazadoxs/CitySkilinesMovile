@@ -1,0 +1,31 @@
+{
+  "checkpointEvery": 500,
+  "scenarios": {
+    "avenidas-semaforos": [
+      "546b76ed6a5124d4",
+      "02d6d8f1649d3345",
+      "c131e488444e6ae9",
+      "ad1c19cdfff40721",
+      "416b8cbfe88b77ea",
+      "e41360e41c358794"
+    ],
+    "calles-prioridad": [
+      "656c107d5977217b",
+      "697c68d037cf82ee",
+      "3ec90d07861350d9",
+      "a97e1f72f29f7b15",
+      "a7460c31d5208409",
+      "0112580a3ce82b44"
+    ],
+    "manzana-gridlock": [
+      "1d18cf7d73b915bf",
+      "86c7991f131b3b12",
+      "5602ce3089b7bd1f",
+      "9fabfba3f805d7b9",
+      "daeb0368f9f4da8c",
+      "899483022a764878"
+    ]
+  },
+  "seed": 20261030,
+  "ticks": 3000
+}

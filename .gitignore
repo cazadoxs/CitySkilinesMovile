@@ -2,3 +2,6 @@
 audio/music/stems/
 __pycache__/
 *.pyc
+
+# Copias de trabajo temporales de los agentes de Claude
+.claude/worktrees/
