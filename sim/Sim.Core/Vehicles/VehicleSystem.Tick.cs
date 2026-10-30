@@ -6,7 +6,7 @@ namespace Urbe.Sim.Vehicles
     public sealed partial class VehicleSystem
     {
         /// <summary>
-        /// Avanza un tick (0,1 s). Fases: 0 epoca, puerta.BeginTick, 1a peticiones, 1b concesiones, 2 aceleraciones,
+        /// Avanza un tick (0,1 s). Fases: 0 epoca, puerta.BeginTick, 0b cambio de carril (M1-08), 1a peticiones, 1b concesiones, 2 aceleraciones,
         /// 3 integracion, 4 transiciones, 5 bajas y esperas, 6 snapshot.
         /// </summary>
         public void Update()
@@ -14,6 +14,7 @@ namespace Urbe.Sim.Vehicles
             _tick++;
             if (_net.Epoch != _epoch) HandleEpoch();
             _gate.BeginTick(_tick);
+            LaneChangePhase();
             RequestPhase();
             ApplyGrants();
             AccelPhase();
@@ -32,7 +33,7 @@ namespace Urbe.Sim.Vehicles
             {
                 ref Vehicle v = ref _veh[i];
                 if ((v.Flags & (VehicleFlags.Alive | VehicleFlags.HasEntryPermit | VehicleFlags.Frozen | VehicleFlags.Arrived)) != VehicleFlags.Alive) continue;
-                if (v.Kind != TrackKind.Lane || v.Ahead >= 0 || v.RouteCursor >= v.RouteLast) continue;
+                if (v.Kind != TrackKind.Lane || v.Ahead >= 0 || v.RouteCursor >= v.RouteLast || v.LcTicks > 0) continue;
                 VehicleType t = _types[v.Type];
                 float d = _net.GetLane(new LaneId(v.Track)).Length - v.S;
                 if (d > RequestHorizon(in v)) continue;
@@ -239,6 +240,8 @@ namespace Urbe.Sim.Vehicles
                 }
             }
 
+            if (v.Kind == TrackKind.Lane && (_laneGhost[v.Track] >= 0 || v.LcTicks > 0)) LaneChangeLeaders(i, ref has, ref gap, ref lv);
+
             // IDM.
             float vv = v.V;
             float r = vv / v0;
@@ -348,6 +351,7 @@ namespace Urbe.Sim.Vehicles
                     if (v.PrevConnection >= 0) ExitRear(i);
                     Unlink(i);
                     int fromLane = v.Track;
+                    if (v.LcTicks > 0) EndManeuver(i);
                     v.Kind = TrackKind.Connection;
                     v.Track = conn;
                     v.S = over;
@@ -434,10 +438,19 @@ namespace Urbe.Sim.Vehicles
                 snap.Generation = (ushort)v.Generation;
                 snap.Type = v.Type;
                 snap.Speed = v.V;
+                snap.Lateral = 0f;
                 if (v.Kind == TrackKind.Lane)
                 {
                     var lane = new LaneId(v.Track);
                     _net.SampleLane(lane, v.S, out snap.Position, out snap.Tangent);
+                    if (v.LcTicks > 0)
+                    {
+                        // Desplazamiento lateral suavizado que decae de LcLateral0 a 0 durante la maniobra (derecha del sentido de marcha).
+                        float p = 1f - (float)v.LcTicks / _cfg.LaneChangeTicks;
+                        float lat = v.LcLateral0 * (1f - p * p * (3f - 2f * p));
+                        snap.Lateral = lat;
+                        snap.Position = new Urbe.Sim.Geometry.Vec2(snap.Position.X + snap.Tangent.Z * lat, snap.Position.Z - snap.Tangent.X * lat);
+                    }
                     ref readonly Lane l = ref _net.GetLane(lane);
                     ref readonly Segment sg = ref _net.GetSegment(l.Segment);
                     float u = l.Length > 1e-6f ? v.S / l.Length : 0f;

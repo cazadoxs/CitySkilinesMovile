@@ -32,6 +32,8 @@ namespace Urbe.Sim.Vehicles
         private int[] _laneReservedCm = Array.Empty<int>();
         private int[] _connHead = Array.Empty<int>();
         private int[] _connTail = Array.Empty<int>();
+        /// <summary>Cabeza de la lista de vehiculos que se estan desplazando lateralmente DESDE este carril (cambio de carril en curso, M1-08); -1 = ninguno.</summary>
+        private int[] _laneGhost = Array.Empty<int>();
 
         private readonly float[] _accel;
         private readonly float[] _maxAdv;
@@ -39,6 +41,8 @@ namespace Urbe.Sim.Vehicles
 
         private readonly RoutePool _routes = new RoutePool();
         private readonly LaneId[] _laneScratch = new LaneId[RoutePool.MaxBlock];
+        private readonly RouteSegment[] _segScratch = new RouteSegment[RoutePool.MaxBlock];
+        private readonly LanePlanner _planner;
         private readonly SnapshotRing _ring;
 
         private Pcg32 _rng;
@@ -48,6 +52,10 @@ namespace Urbe.Sim.Vehicles
         public int SpawnedCount { get; private set; }
         public int ArrivedCount { get; private set; }
         public int DespawnedByEdit { get; private set; }
+        /// <summary>Motivo del ultimo <c>TrySpawn</c> fallido (o <see cref="SpawnFailure.None"/> si fue bien).</summary>
+        public SpawnFailure LastSpawnFailure { get; private set; }
+        /// <summary>Planificador de carriles (M1-08), por si otro sistema necesita resolver cadenas de carriles.</summary>
+        public LanePlanner Planner => _planner;
 
         public VehicleSystem(RoadNetwork network, IJunctionGate? gate, int capacity, ulong seed,
             VehicleConfig? config = null, VehicleType[]? types = null)
@@ -65,6 +73,7 @@ namespace Urbe.Sim.Vehicles
             _vCap = new float[capacity];
             _rng = new Pcg32(seed, 0x564548UL);
             _ring = new SnapshotRing(capacity);
+            _planner = new LanePlanner(network);
             _epoch = network.Epoch;
             EnsureTrackCapacity();
             if (_gate is IVehicleViewConsumer consumer) consumer.Bind(this, capacity);
@@ -207,17 +216,33 @@ namespace Urbe.Sim.Vehicles
         /// Falla si no hay hueco, la ruta no es valida o el sistema esta lleno.
         /// </summary>
         public bool TrySpawn(byte type, ReadOnlySpan<LaneId> lanes, float startS, float targetS, float startSpeed, out EntityId id)
+            => SpawnCore(type, lanes, startS, targetS, startSpeed, false, out id);
+
+        /// <summary>
+        /// Alta con cadena de carriles de LLEGADA (M1-08): <paramref name="arrival"/>[k] es el carril por el que el vehiculo entra al
+        /// segmento k; entre dos consecutivos solo hace falta que algun carril del segmento k conecte con el de llegada del k+1 (el
+        /// vehiculo cambia de carril dentro del segmento). Falla si no hay hueco, la ruta no es valida o el sistema esta lleno.
+        /// </summary>
+        public bool TrySpawnPlanned(byte type, ReadOnlySpan<LaneId> arrival, float startS, float targetS, float startSpeed, out EntityId id)
+            => SpawnCore(type, arrival, startS, targetS, startSpeed, true, out id);
+
+        private bool SpawnCore(byte type, ReadOnlySpan<LaneId> lanes, float startS, float targetS, float startSpeed, bool planned, out EntityId id)
         {
             id = EntityId.None;
+            LastSpawnFailure = SpawnFailure.InvalidRoute;
             if (_net.Epoch != _epoch) HandleEpoch();
             if (type >= _types.Length || lanes.Length < 1 || lanes.Length > RoutePool.MaxBlock) return false;
-            if (_alive >= _capacity) return false;
+            if (_alive >= _capacity)
+            {
+                LastSpawnFailure = SpawnFailure.NoRoom;
+                return false;
+            }
             VehicleType t = _types[type];
 
             for (int k = 0; k < lanes.Length; k++)
             {
                 if (!IsUsableLane(lanes[k])) return false;
-                if (k > 0 && FindConn(lanes[k - 1].Value, lanes[k].Value) < 0) return false;
+                if (k > 0 && (planned ? NearestDeparture(lanes[k - 1].Value, lanes[k].Value) : FindConn(lanes[k - 1].Value, lanes[k].Value)) < 0) return false;
             }
             int first = lanes[0].Value;
             float firstLen = _net.GetLane(lanes[0]).Length;
@@ -225,7 +250,11 @@ namespace Urbe.Sim.Vehicles
             float lastLen = _net.GetLane(lanes[lanes.Length - 1]).Length;
             if (!(targetS >= 0f) || targetS > lastLen) return false;
             if (lanes.Length == 1 && targetS < startS) return false;
-            if (!HasSpawnRoom(first, startS, t) || !NextTrackFree(lanes, startS, t)) return false;
+            if (!HasSpawnRoom(first, startS, t) || !NextTrackFree(lanes, startS, t))
+            {
+                LastSpawnFailure = SpawnFailure.NoRoom;
+                return false;
+            }
 
             int off = _routes.Allocate(lanes.Length);
             if (off < 0) return false;
@@ -254,46 +283,32 @@ namespace Urbe.Sim.Vehicles
             v.Type = type;
             v.Kind = TrackKind.Lane;
             v.PrevConnection = -1;
+            v.LcFrom = -1;
+            v.GhostNext = -1;
             v.Generation = eid.Generation;
             v.Flags = VehicleFlags.Alive;
             InsertSorted(i);
             id = eid;
+            LastSpawnFailure = SpawnFailure.None;
             return true;
         }
 
         /// <summary>
-        /// Alta con ruta de segmentos y sentido. Los carriles se resuelven de atras hacia delante: en el ultimo segmento el
-        /// carril 0 del sentido; en los anteriores, el de menor ranura con conexion al ya elegido (ADR 002).
+        /// Alta con ruta de segmentos y sentido. Los carriles de llegada los elige el <see cref="LanePlanner"/> (eleccion anticipada,
+        /// M1-08): se minimizan los cambios de carril y estos se hacen en marcha. <paramref name="laneSeed"/> reparte los viajes entre
+        /// carriles equivalentes (0 = semilla derivada del contador de altas). Falla (<see cref="LastSpawnFailure"/>) si la ruta no
+        /// es valida (segmentos no conectados) o no hay hueco.
         /// </summary>
-        public bool TrySpawn(byte type, ReadOnlySpan<RouteSegment> segments, float startS, float targetS, float startSpeed, out EntityId id)
+        public bool TrySpawn(byte type, ReadOnlySpan<RouteSegment> segments, float startS, float targetS, float startSpeed, out EntityId id, uint laneSeed = 0)
         {
             id = EntityId.None;
+            LastSpawnFailure = SpawnFailure.InvalidRoute;
             if (_net.Epoch != _epoch) HandleEpoch();
             int n = segments.Length;
             if (n < 1 || n > RoutePool.MaxBlock) return false;
-            int next = -1;
-            for (int k = n - 1; k >= 0; k--)
-            {
-                EntityId seg = segments[k].Segment;
-                if (!_net.IsSegmentAlive(seg)) return false;
-                ref readonly Segment sg = ref _net.GetSegment(seg);
-                int lo = segments[k].Forward ? 0 : sg.LanesForward;
-                int hi = segments[k].Forward ? sg.LanesForward : sg.LanesForward + sg.LanesBackward;
-                int chosen = -1;
-                for (int slot = lo; slot < hi; slot++)
-                {
-                    LaneId cand = new LaneId(seg.Index, slot);
-                    if (k == n - 1 || FindConn(cand.Value, next) >= 0)
-                    {
-                        chosen = cand.Value;
-                        break;
-                    }
-                }
-                if (chosen < 0) return false;
-                _laneScratch[k] = new LaneId(chosen);
-                next = chosen;
-            }
-            return TrySpawn(type, new ReadOnlySpan<LaneId>(_laneScratch, 0, n), startS, targetS, startSpeed, out id);
+            uint seed = laneSeed != 0 ? laneSeed : unchecked((uint)(SpawnedCount + 1) * 2654435761u);
+            if (!_planner.Plan(segments, LaneId.None, startS, false, LaneId.None, seed, _laneScratch)) return false;
+            return SpawnCore(type, new ReadOnlySpan<LaneId>(_laneScratch, 0, n), startS, targetS, startSpeed, true, out id);
         }
 
         private bool IsUsableLane(LaneId lane)
@@ -310,6 +325,13 @@ namespace Urbe.Sim.Vehicles
         {
             if (lanes.Length < 2) return true;
             int conn = FindConn(lanes[0].Value, lanes[1].Value);
+            if (conn < 0)
+            {
+                // Con cambio de carril el carril inicial puede no conectar: se mira la conexion del carril de salida mas cercano.
+                int dep = NearestDeparture(lanes[0].Value, lanes[1].Value);
+                conn = dep >= 0 ? FindConn(dep, lanes[1].Value) : -1;
+                if (conn < 0) return true;
+            }
             float d = _net.GetLane(lanes[0]).Length - s;
             float need = t.S0 + _cfg.MinGap;
             int ct = _connTail[conn];
@@ -321,6 +343,17 @@ namespace Urbe.Sim.Vehicles
 
         private bool HasSpawnRoom(int lane, float s, VehicleType t)
         {
+            // Un vehiculo que se desplaza lateralmente fuera de este carril (M1-08) sigue ocupando su sitio hasta acabar la maniobra.
+            if (_laneGhost[lane] >= 0)
+            {
+                float need = t.S0 + _cfg.MinGap;
+                float laneLen = _net.GetLane(new LaneId(lane)).Length;
+                for (int g = _laneGhost[lane]; g >= 0; g = _veh[g].GhostNext)
+                {
+                    float gs = _veh[g].S * (laneLen / _net.GetLane(new LaneId(_veh[g].Track)).Length);
+                    if (gs + need > s - t.Length && gs - _types[_veh[g].Type].Length - need < s) return false;
+                }
+            }
             int behind = -1;
             int ahead = _laneTail[lane];
             while (ahead >= 0 && _veh[ahead].S < s)
@@ -346,6 +379,28 @@ namespace Urbe.Sim.Vehicles
         /// aun tiene la trasera en una conexion (reintentar un tick despues).
         /// </summary>
         public bool TryReplaceRoute(EntityId id, ReadOnlySpan<LaneId> lanes, float targetS)
+            => ReplaceRoute(id, lanes, targetS, false);
+
+        /// <summary>
+        /// Re-ruta por segmentos (M1-08): el primer segmento debe ser el actual; los carriles de llegada los planifica el
+        /// <see cref="LanePlanner"/> a partir del carril actual (y, si el vehiculo esta en una conexion, del de destino ya fijado).
+        /// </summary>
+        public bool TryReplaceRoute(EntityId id, ReadOnlySpan<RouteSegment> segments, float targetS)
+        {
+            int n = segments.Length;
+            if (!IsAlive(id) || n < 1 || n > RoutePool.MaxBlock) return false;
+            if (_net.Epoch != _epoch) HandleEpoch();
+            ref Vehicle v = ref _veh[id.Index];
+            if (v.PrevConnection >= 0) return false;
+            RouteStep[] old = _routes.Steps;
+            LaneId cur = old[v.RouteOffset + v.RouteCursor].Lane;
+            LaneId second = v.Kind == TrackKind.Connection ? old[v.RouteOffset + v.RouteCursor + 1].Lane : LaneId.None;
+            uint seed = unchecked((uint)id.Index * 2654435761u ^ (uint)_tick);
+            if (!_planner.Plan(segments, cur, v.Kind == TrackKind.Lane ? v.S : -1f, false, second, seed, _laneScratch)) return false;
+            return ReplaceRoute(id, new ReadOnlySpan<LaneId>(_laneScratch, 0, n), targetS, true);
+        }
+
+        private bool ReplaceRoute(EntityId id, ReadOnlySpan<LaneId> lanes, float targetS, bool planned)
         {
             if (!IsAlive(id) || lanes.Length < 1 || lanes.Length > RoutePool.MaxBlock) return false;
             if (_net.Epoch != _epoch) HandleEpoch();
@@ -361,7 +416,7 @@ namespace Urbe.Sim.Vehicles
             for (int k = 0; k < lanes.Length; k++)
             {
                 if (!IsUsableLane(lanes[k])) return false;
-                if (k > 0 && FindConn(lanes[k - 1].Value, lanes[k].Value) < 0) return false;
+                if (k > 0 && (planned ? NearestDeparture(lanes[k - 1].Value, lanes[k].Value) : FindConn(lanes[k - 1].Value, lanes[k].Value)) < 0) return false;
             }
             if (!(targetS >= 0f) || targetS > _net.GetLane(lanes[lanes.Length - 1]).Length) return false;
             int off = _routes.Allocate(lanes.Length);
@@ -472,6 +527,7 @@ namespace Urbe.Sim.Vehicles
             }
             if (v.Kind == TrackKind.Connection) ClearLast(_net.GetConnection(v.Track).From.Value, vi);
             else if (v.PrevConnection >= 0) ClearLast(_net.GetConnection(v.PrevConnection).From.Value, vi);
+            if (v.LcTicks > 0) EndManeuver(vi);
             FreeRecord(vi);
         }
 
@@ -503,6 +559,7 @@ namespace Urbe.Sim.Vehicles
                 GrowFill(ref _laneTail, laneCap, -1);
                 GrowFill(ref _laneLast, laneCap, -1);
                 GrowFill(ref _laneReservedCm, laneCap, 0);
+                GrowFill(ref _laneGhost, laneCap, -1);
             }
             int connCap = Math.Max(_net.ConnectionStorageUsed, 64);
             if (connCap > _connHead.Length)
@@ -539,7 +596,7 @@ namespace Urbe.Sim.Vehicles
                 h = Mix(h, (uint)BitConverter.SingleToInt32Bits(v.V));
                 h = Mix(h, (uint)v.Track);
                 h = Mix(h, ((ulong)(byte)v.Kind << 40) | ((ulong)v.RouteCursor << 24) | ((ulong)(byte)v.Flags << 8) | v.Type);
-                h = Mix(h, v.WaitTicks);
+                h = Mix(h, v.WaitTicks | ((ulong)v.LcTicks << 16));
             }
             return h;
         }
