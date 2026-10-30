@@ -112,6 +112,40 @@ namespace Urbe.Sim.Vehicles
             else if (v.LcWait >= _cfg.LaneChangeRelaxWaitTicks) RelaxPlan(i);
         }
 
+        /// <summary>
+        /// Vehiculo que impide el cambio de carril obligatorio de uno que esta en el carril equivocado (el lider o el seguidor del carril
+        /// destino mas pegado a su posicion), o -1 si no esta en el carril equivocado, no hay nadie o no se puede determinar. Sin
+        /// asignaciones; lo usa el detector de bloqueos para incluir a estos vehiculos en el grafo de espera.
+        /// </summary>
+        public int LaneChangeBlocker(int vehicle)
+        {
+            if (vehicle < 0 || vehicle >= _high) return -1;
+            ref Vehicle c = ref _veh[vehicle];
+            if ((c.Flags & VehicleFlags.Alive) == 0 || c.Kind != TrackKind.Lane || c.RouteCursor >= c.RouteLast) return -1;
+            int next = _routes.Steps[c.RouteOffset + c.RouteCursor + 1].Lane.Value;
+            if (FindConn(c.Track, next) >= 0) return -1;
+            int dep = NearestDeparture(c.Track, next);
+            if (dep < 0) return -1;
+            int slot = c.Track & 7, depSlot = dep & 7;
+            int newLane = c.Track + (depSlot > slot ? 1 : -1);
+            ref readonly Lane lo = ref _net.GetLane(new LaneId(c.Track));
+            ref readonly Lane ln = ref _net.GetLane(new LaneId(newLane));
+            float s = lo.Length > 1e-3f ? c.S * (ln.Length / lo.Length) : c.S;
+            if (s > ln.Length) s = ln.Length;
+            float rear = s - _types[c.Type].Length;
+            int f = -1, l = _laneTail[newLane];
+            while (l >= 0 && _veh[l].S < s)
+            {
+                f = l;
+                l = _veh[l].Ahead;
+            }
+            float gapL = float.MaxValue, gapF = float.MaxValue;
+            if (l >= 0) gapL = _veh[l].S - _types[_veh[l].Type].Length - s;
+            if (f >= 0) gapF = rear - _veh[f].S;
+            if (l < 0 && f < 0) return -1;
+            return gapL <= gapF ? l : f;
+        }
+
         private bool Deny(LaneChangeDenial reason)
         {
             LaneChangeDenials[(int)reason]++;
@@ -384,7 +418,9 @@ namespace Urbe.Sim.Vehicles
             if ((v.Flags & (VehicleFlags.NeedsReroute | VehicleFlags.HasEntryPermit)) != 0 || v.Kind != TrackKind.Lane) return;
             v.RouteLast = v.RouteCursor;
             v.Flags |= VehicleFlags.NeedsReroute;
-            v.TargetS = v.S;
+            // Como MarkForReroute: sigue hasta el final del carril (menos margen y s0) en vez de frenar en seco donde esta.
+            float stop = _net.GetLane(new LaneId(v.Track)).Length - _cfg.StopMargin - _types[v.Type].S0;
+            v.TargetS = stop > 0f ? stop : 0f;
             LaneChangeRerouted++;
         }
     }

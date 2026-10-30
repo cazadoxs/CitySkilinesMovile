@@ -49,6 +49,7 @@ namespace Urbe.Sim.Vehicles
                     DistanceToStop = d,
                     Speed = v.V,
                     Space = t.Length + t.S0,
+                    Length = t.Length,
                     StoppedTicks = v.WaitTicks,
                     Accel = t.AMax,
                 };

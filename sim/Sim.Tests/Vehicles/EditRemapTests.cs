@@ -42,6 +42,7 @@ namespace Urbe.Sim.Tests.Vehicles
         public void OnVehicleRemoved(int vehicle) => Inner.OnVehicleRemoved(vehicle);
         public void OnPermitCancelled(int vehicle) => Inner.OnPermitCancelled(vehicle);
         public void ForceNextGrant(int vehicle) => Inner.ForceNextGrant(vehicle);
+        public void ForceNextGrant(int vehicle, bool exitInCycle) => Inner.ForceNextGrant(vehicle, exitInCycle);
         public bool IsForced(int vehicle) => Inner.IsForced(vehicle);
         public void CancelForce(int vehicle) => Inner.CancelForce(vehicle);
     }

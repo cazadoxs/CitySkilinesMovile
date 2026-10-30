@@ -9,6 +9,13 @@ namespace Urbe.Sim.Vehicles
         /// <summary>Marca al vehiculo: su proxima peticion va primera. Dura hasta que se concede, se cancela o el vehiculo se da de baja.</summary>
         void ForceNextGrant(int vehicle);
 
+        /// <summary>
+        /// Como <see cref="ForceNextGrant(int)"/> pero con control del hueco a la salida (M1-17): si <paramref name="exitInCycle"/> es
+        /// false el paso forzado sigue exigiendo hueco libre del tamano del vehiculo en el carril de salida (no se mete en un cruce
+        /// sin sitio al otro lado); si es true, el carril de salida es del propio ciclo de bloqueo y se salta ese hueco.
+        /// </summary>
+        void ForceNextGrant(int vehicle, bool exitInCycle);
+
         /// <summary>True mientras el vehiculo tiene un paso forzado sin conceder.</summary>
         bool IsForced(int vehicle);
 

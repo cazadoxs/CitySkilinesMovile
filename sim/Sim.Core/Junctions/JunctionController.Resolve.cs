@@ -141,6 +141,13 @@ namespace Urbe.Sim.Junctions
             // 5. Anti-bloqueo: hueco a la salida para todo el vehiculo (o el carril entero si es mas corto).
             int to = req.To.Value;
             float space = req.Space;
+            if (forced && _forcedNeedsExit[req.Vehicle])
+            {
+                // Paso forzado hacia un carril que no es del ciclo: se salta la reclamacion pero no el hueco minimo (la longitud del vehiculo).
+                float laneLen = _net.GetLane(req.To).Length;
+                float minGap = req.Length < laneLen ? req.Length : laneLen;
+                if (view.FreeSpace(req.To) - ScratchOf(to) + 1e-4f < minGap) return GrantDecision.DeniedExitFull;
+            }
             if (!forced)
             {
                 float laneLen = _net.GetLane(req.To).Length;
@@ -160,6 +167,7 @@ namespace Urbe.Sim.Junctions
             _grants[_gCount++] = new EntryGrant { Vehicle = req.Vehicle, Connection = req.Connection, Space = space };
             _permitRef[req.Vehicle] = (jn.Node.Index << LocalBits) | local;
             _forced[req.Vehicle] = false;
+            _forcedNeedsExit[req.Vehicle] = false;
             return GrantDecision.Granted;
         }
 

@@ -37,6 +37,8 @@ namespace Urbe.Sim.Junctions
         private int[] _occPrev = Array.Empty<int>();
         private int[] _occNext = Array.Empty<int>();
         private bool[] _forced = Array.Empty<bool>();
+        /// <summary>Paso forzado que aun exige hueco minimo (el tamano del vehiculo) en el carril de salida.</summary>
+        private bool[] _forcedNeedsExit = Array.Empty<bool>();
         private GrantDecision[] _decision = Array.Empty<GrantDecision>();
 
         // Cola del tick.
@@ -125,6 +127,7 @@ namespace Urbe.Sim.Junctions
             int n = Math.Max(cap, Math.Max(64, old * 2));
             Array.Resize(ref _firstReq, n);
             Array.Resize(ref _forced, n);
+            Array.Resize(ref _forcedNeedsExit, n);
             Array.Resize(ref _decision, n);
             GrowFill(ref _permitRef, n, -1);
             GrowFill(ref _occRef, n, -1);
@@ -223,11 +226,18 @@ namespace Urbe.Sim.Junctions
         /// Gancho M1-11: la proxima peticion del vehiculo va primera en su nodo y se salta semaforo, stop, reclamacion y hueco a la
         /// salida, nunca la comprobacion de conflictos. Dura hasta que se concede o el vehiculo se da de baja.
         /// </summary>
-        public void ForceNextGrant(int vehicle)
+        public void ForceNextGrant(int vehicle) => ForceNextGrant(vehicle, true);
+
+        /// <summary>
+        /// Como <see cref="ForceNextGrant(int)"/>; con <paramref name="exitInCycle"/> false exige ademas hueco libre del tamano del
+        /// vehiculo en el carril de salida (M1-17): no se deja un coche parado dentro del cruce ni se deja FreeSpace negativo.
+        /// </summary>
+        public void ForceNextGrant(int vehicle, bool exitInCycle)
         {
             if (vehicle < 0) return;
             if (vehicle >= _vehCap) EnsureVehicleCapacity(vehicle + 1);
             _forced[vehicle] = true;
+            _forcedNeedsExit[vehicle] = !exitInCycle;
         }
 
         /// <summary>True mientras el vehiculo tiene un paso forzado sin conceder (M1-11).</summary>
@@ -236,7 +246,7 @@ namespace Urbe.Sim.Junctions
         /// <summary>Retira el paso forzado pendiente (M1-11): si no es seguro no debe seguir reclamando el cruce.</summary>
         public void CancelForce(int vehicle)
         {
-            if (vehicle >= 0 && vehicle < _vehCap) _forced[vehicle] = false;
+            if (vehicle >= 0 && vehicle < _vehCap) { _forced[vehicle] = false; _forcedNeedsExit[vehicle] = false; }
         }
 
         /// <summary>Conexion local (nodo &lt;&lt; 6 | local) del permiso pendiente del vehiculo, o -1 (tests).</summary>
@@ -365,6 +375,7 @@ namespace Urbe.Sim.Junctions
             if (_occRef[vehicle] >= 0) RemoveOccupant(vehicle);
             _firstReq[vehicle] = 0;
             _forced[vehicle] = false;
+            _forcedNeedsExit[vehicle] = false;
             _decision[vehicle] = GrantDecision.None;
         }
 

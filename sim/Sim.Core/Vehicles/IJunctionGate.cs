@@ -16,6 +16,8 @@ namespace Urbe.Sim.Vehicles
         public float Speed;
         /// <summary>Length + s0 del vehiculo.</summary>
         public float Space;
+        /// <summary>Longitud del vehiculo (hueco minimo a la salida de un paso forzado, M1-17); 0 = desconocida.</summary>
+        public float Length;
         /// <summary>Vehicle.WaitTicks.</summary>
         public ushort StoppedTicks;
         /// <summary>Aceleracion maxima del tipo de vehiculo (M1-07b, aceptacion de huecos); 0 = desconocida.</summary>

@@ -299,17 +299,26 @@ namespace Urbe.Sim.Traffic
             // Paso 1: pasos forzados, de mas a menos espera.
             if (candidates > 0)
             {
+                // Maximo un forzado a la vez por nodo (varios dentro del mismo cruce lo atascan) y, si el carril de salida no es
+                // del propio ciclo, la puerta sigue exigiendo hueco del tamano del vehiculo (no se deja un coche parado dentro).
                 int limit = _cfg.MaxForcedPerCycle < 1 ? 1 : _cfg.MaxForcedPerCycle;
-                for (int n = 0; n < limit && candidates > 0; n++)
+                int picked = 0;
+                while (picked < limit && candidates > 0)
                 {
-                    int bi = 0;
-                    for (int c = 1; c < candidates; c++)
-                        if (_veh.GetVehicle(_cand[c]).WaitTicks > _veh.GetVehicle(_cand[bi]).WaitTicks) bi = c;
+                    int bi = -1;
+                    for (int c = 0; c < candidates; c++)
+                    {
+                        if (bi >= 0 && _veh.GetVehicle(_cand[c]).WaitTicks <= _veh.GetVehicle(_cand[bi]).WaitTicks) continue;
+                        if (NodeHasPendingForce(ForceNode(_cand[c]))) continue;
+                        bi = c;
+                    }
+                    if (bi < 0) break;
                     int pick = _cand[bi];
                     _cand[bi] = _cand[--candidates];
-                    _force!.ForceNextGrant(pick);
+                    _force!.ForceNextGrant(pick, ExitInCycle(pick, start, end));
                     Mark(pick, StageForcePending, now);
                     _stats.ForcedAttempts++;
+                    picked++;
                 }
                 return;
             }
@@ -362,12 +371,50 @@ namespace Urbe.Sim.Traffic
         private static bool IsLaneHead(in Vehicle v) => v.Kind == TrackKind.Lane && v.Ahead < 0 && v.PrevConnection < 0;
 
         /// <summary>Candidato a paso forzado: primero de su carril, sin permiso, con ruta por delante y que no sea un rechazo por conflicto.</summary>
+        /// <summary>Indice del nodo cuyo cruce atravesaria el paso forzado del vehiculo, o -1 si no tiene conexion hacia su siguiente carril.</summary>
+        private int ForceNode(int i)
+        {
+            ref readonly Vehicle v = ref _veh.GetVehicle(i);
+            if (v.Kind != TrackKind.Lane || v.RouteCursor >= v.RouteLast) return -1;
+            int conn = FindConnection(new LaneId(v.Track), _veh.GetRouteStep(i, v.RouteCursor + 1).Lane);
+            return conn < 0 ? -1 : _net.GetConnection(conn).Node.Index;
+        }
+
+        /// <summary>True si otro vehiculo tiene un paso forzado pendiente en ese nodo.</summary>
+        private bool NodeHasPendingForce(int node)
+        {
+            if (node < 0) return false;
+            int high = _veh.HighWater;
+            for (int j = 0; j < high; j++)
+            {
+                if (_stage[j] != StageForcePending) continue;
+                ref readonly Vehicle w = ref _veh.GetVehicle(j);
+                if (!w.IsAlive || w.Generation != _stageGen[j]) continue;
+                if (ForceNode(j) == node) return true;
+            }
+            return false;
+        }
+
+        /// <summary>True si el carril de salida del paso forzado de <paramref name="i"/> lo ocupa algun miembro del ciclo (path[start..end)).</summary>
+        private bool ExitInCycle(int i, int start, int end)
+        {
+            ref readonly Vehicle v = ref _veh.GetVehicle(i);
+            LaneId to = _veh.GetRouteStep(i, v.RouteCursor + 1).Lane;
+            for (int k = start; k < end; k++)
+            {
+                ref readonly Vehicle m = ref _veh.GetVehicle(_path[k]);
+                if (m.Kind == TrackKind.Lane ? m.Track == to.Value : _net.GetConnection(m.Track).To == to) return true;
+            }
+            return false;
+        }
+
         private bool CanForce(int i)
         {
             if (_force == null) return false;
             ref readonly Vehicle v = ref _veh.GetVehicle(i);
             if ((v.Flags & (VehicleFlags.HasEntryPermit | VehicleFlags.NeedsReroute | VehicleFlags.Frozen | VehicleFlags.Arrived)) != 0) return false;
             if (v.RouteCursor >= v.RouteLast) return false;
+            if (ForceNode(i) < 0) return false; // en el carril equivocado no tiene peticion que forzar
             // Un rechazo por conflicto fisico no lo arregla un paso forzado (la puerta nunca se lo salta): mejor probar a otro.
             if (_junction != null && _junction.GetLastDecision(i) == GrantDecision.DeniedConflict) return false;
             return true;

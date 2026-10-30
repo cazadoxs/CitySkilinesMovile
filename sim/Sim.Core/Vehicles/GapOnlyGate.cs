@@ -19,7 +19,10 @@ namespace Urbe.Sim.Vehicles
         private float[] _scratch = new float[256];
         private int[] _touched = new int[64];
         private int _touchedCount;
-        private int _forced = -1;
+        // Pasos forzados pendientes por vehiculo (varios a la vez); se limpian al concederse, cancelarse o darse de baja.
+        private bool[] _forced = new bool[64];
+        private bool[] _forcedNeedsExit = new bool[64];
+        private int _forcedCount;
 
         public GapOnlyGate(RoadNetwork network)
         {
@@ -33,17 +36,44 @@ namespace Urbe.Sim.Vehicles
             if (_queue.Length < cap) _queue = new EntryRequest[cap];
             if (_grants.Length < cap) _grants = new EntryGrant[cap];
             if (_touched.Length < cap) _touched = new int[cap];
+            EnsureForced(cap);
+        }
+
+        private void EnsureForced(int cap)
+        {
+            if (_forced.Length >= cap) return;
+            int n = Math.Max(cap, _forced.Length * 2);
+            Array.Resize(ref _forced, n);
+            Array.Resize(ref _forcedNeedsExit, n);
+        }
+
+        private void ClearForced(int vehicle)
+        {
+            if (vehicle < 0 || vehicle >= _forced.Length || !_forced[vehicle]) return;
+            _forced[vehicle] = false;
+            _forcedNeedsExit[vehicle] = false;
+            _forcedCount--;
         }
 
         /// <summary>Gancho M1-11: en la siguiente resolucion la peticion de este vehiculo va primera y se concede sin mirar el hueco.</summary>
-        public void ForceNextGrant(int vehicle) => _forced = vehicle;
+        public void ForceNextGrant(int vehicle) => ForceNextGrant(vehicle, true);
 
-        public bool IsForced(int vehicle) => vehicle >= 0 && _forced == vehicle;
-
-        public void CancelForce(int vehicle)
+        /// <summary>Con <paramref name="exitInCycle"/> false el forzado sigue exigiendo hueco del tamano del vehiculo a la salida.</summary>
+        public void ForceNextGrant(int vehicle, bool exitInCycle)
         {
-            if (_forced == vehicle) _forced = -1;
+            if (vehicle < 0) return;
+            EnsureForced(vehicle + 1);
+            if (!_forced[vehicle])
+            {
+                _forced[vehicle] = true;
+                _forcedCount++;
+            }
+            _forcedNeedsExit[vehicle] = !exitInCycle;
         }
+
+        public bool IsForced(int vehicle) => vehicle >= 0 && vehicle < _forced.Length && _forced[vehicle];
+
+        public void CancelForce(int vehicle) => ClearForced(vehicle);
 
         public void OnNetworkChanged(ReadOnlySpan<EntityId> changedNodes) { }
 
@@ -67,15 +97,22 @@ namespace Urbe.Sim.Vehicles
             if (_grants.Length < _queueCount) Array.Resize(ref _grants, _queue.Length);
             if (_touched.Length < _queueCount) Array.Resize(ref _touched, _queue.Length);
 
-            if (_forced >= 0)
+            if (_forcedCount > 0)
             {
+                // Los forzados van primero (en orden de peticion) y no miran el hueco, salvo el minimo si la salida no es del ciclo.
                 for (int i = 0; i < _queueCount; i++)
                 {
-                    if (_queue[i].Vehicle != _forced) continue;
+                    int fv = _queue[i].Vehicle;
+                    if (fv < 0 || fv >= _forced.Length || !_forced[fv]) continue;
+                    if (_forcedNeedsExit[fv])
+                    {
+                        float laneLen = _net.GetLane(_queue[i].To).Length;
+                        float minGap = _queue[i].Length < laneLen ? _queue[i].Length : laneLen;
+                        if (view.FreeSpace(_queue[i].To) - Scratch(_queue[i].To.Value) + 1e-4f < minGap) continue;
+                    }
                     Grant(in _queue[i]);
                     _queue[i].Vehicle = -1;
-                    _forced = -1;
-                    break;
+                    ClearForced(fv);
                 }
             }
 
@@ -116,7 +153,7 @@ namespace Urbe.Sim.Vehicles
 
         public void OnVehicleRemoved(int vehicle)
         {
-            if (_forced == vehicle) _forced = -1;
+            ClearForced(vehicle);
         }
 
         public void OnPermitCancelled(int vehicle) { }

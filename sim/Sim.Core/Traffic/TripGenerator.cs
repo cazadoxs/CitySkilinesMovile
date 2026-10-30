@@ -39,6 +39,11 @@ namespace Urbe.Sim.Traffic
         /// <summary>Un viaje que no consigue salir en este tiempo se pierde.</summary>
         public float MaxWaitSeconds = 120f;
         public int MaxRerouteAttempts = 20;
+        /// <summary>
+        /// Tiempo maximo que un vehiculo marcado para re-ruta espera con la trasera aun en una conexion (no se puede sustituir su ruta
+        /// ni cuenta como intento); pasado, se da de baja (carril corto y vehiculo largo que nunca la libera).
+        /// </summary>
+        public float MaxRerouteBlockedSeconds = 60f;
         /// <summary>Rutas que se piden por viaje si el alta falla por ruta invalida (con cambio de carril, M1-08, no deberia ocurrir).</summary>
         public int MaxPlans = 8;
         /// <summary>Posicion de salida y de llegada dentro del carril, como fraccion de la longitud del segmento.</summary>
@@ -93,6 +98,8 @@ namespace Urbe.Sim.Traffic
         private readonly EntityId[] _destSeg;
         private readonly int[] _rerouteId;
         private readonly byte[] _rerouteTries;
+        private readonly int[] _rerouteBlocked;
+        private readonly int _rerouteBlockedLimit;
         private readonly int[] _rerouteList;
         private int _rerouteCount;
         private readonly bool[] _inRerouteList;
@@ -138,6 +145,8 @@ namespace Urbe.Sim.Traffic
             _destSeg = new EntityId[cap];
             _rerouteId = new int[cap];
             _rerouteTries = new byte[cap];
+            _rerouteBlocked = new int[cap];
+            _rerouteBlockedLimit = Math.Max(1, (int)Math.Round(_cfg.MaxRerouteBlockedSeconds / vehicles.Config.Dt));
             _rerouteList = new int[cap];
             _inRerouteList = new bool[cap];
             _veh.DestinationSegmentChanged += OnDestinationSegmentChanged;
@@ -202,6 +211,7 @@ namespace Urbe.Sim.Traffic
                     _inRerouteList[i] = true;
                     _rerouteId[i] = 0;
                     _rerouteTries[i] = 0;
+                    _rerouteBlocked[i] = 0;
                     _rerouteList[_rerouteCount++] = i;
                 }
             }
@@ -388,6 +398,7 @@ namespace Urbe.Sim.Traffic
             _destSeg[i] = t.Destination;
             _rerouteId[i] = 0;
             _rerouteTries[i] = 0;
+            _rerouteBlocked[i] = 0;
             _inRerouteList[i] = false;
             t.State = State.Free;
             _pending--;
@@ -417,11 +428,18 @@ namespace Urbe.Sim.Traffic
         /// <summary>True si el vehiculo sale de la lista (re-rutado o dado de baja).</summary>
         private bool StepReroute(int i, in Vehicle v)
         {
-            LaneId cur = _veh.GetRouteStep(i, v.RouteCursor).Lane;
+            LaneId cur = _veh.GetCurrentLane(i);
             EntityId curSeg = _net.SegmentIdAt(cur.SegmentIndex);
             EntityId dest = _destSeg[i];
             if (!curSeg.IsValid || !_net.IsSegmentAlive(dest))
             {
+                Abandon(i);
+                return true;
+            }
+            // Con la trasera aun en una conexion (o dentro de ella) la ruta no se puede sustituir: se espera sin pedir ruta ni contar intento.
+            if (v.Kind == TrackKind.Connection || v.PrevConnection >= 0)
+            {
+                if (++_rerouteBlocked[i] <= _rerouteBlockedLimit) return false;
                 Abandon(i);
                 return true;
             }

@@ -38,11 +38,16 @@ namespace Urbe.Sim.Tests.Gridlock
             Inner.OnVehicleRemoved(vehicle);
         }
 
-        public void ForceNextGrant(int vehicle)
+        public void ForceNextGrant(int vehicle) => ForceNextGrant(vehicle, true);
+
+        public void ForceNextGrant(int vehicle, bool exitInCycle)
         {
+            Calls.Add((vehicle, exitInCycle));
             if (RefuseAll || Refuse.Contains(vehicle)) _pending.Add(vehicle);
-            else Inner.ForceNextGrant(vehicle);
+            else Inner.ForceNextGrant(vehicle, exitInCycle);
         }
+
+        public readonly List<(int Vehicle, bool ExitInCycle)> Calls = new List<(int, bool)>();
 
         public bool IsForced(int vehicle) => _pending.Contains(vehicle) || Inner.IsForced(vehicle);
 
@@ -210,6 +215,21 @@ namespace Urbe.Sim.Tests.Gridlock
             Assert.Equal(0, st.Despawns);
             // Los intentos fallidos se cancelaron: la puerta no los deja pendientes.
             foreach (int v in new[] { 0, 1, 2 }) Assert.False(fg.IsForced(v));
+        }
+
+        [Fact]
+        public void ForcedPasses_OfARing_AreFlaggedAsExitInCycle_AndTheRingStillClears()
+        {
+            ForceFilterGate gate = null!;
+            var sc = new BlockScenario(1, null, net => gate = new ForceFilterGate(net));
+            Assert.True(sc.Lock());
+            GridlockStats st = sc.Sim.Metrics.Gridlock;
+            for (int t = 1; t <= 900 && sc.Vehicles.AliveCount > 0 && sc.MaxWait() >= DetectTicks; t++) sc.Sim.Step();
+            Assert.True(st.ForcedAttempts >= 1);
+            Assert.True(gate.Calls.Count >= 1);
+            // En un anillo el carril de salida de cada forzado lo ocupa otro miembro del ciclo: no se exige hueco previo.
+            foreach (var c in gate.Calls) Assert.True(c.ExitInCycle);
+            Assert.True(sc.MaxWait() < DetectTicks);
         }
 
         [Fact]

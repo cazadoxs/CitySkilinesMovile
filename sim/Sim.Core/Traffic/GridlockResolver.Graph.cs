@@ -24,7 +24,8 @@ namespace Urbe.Sim.Traffic
             if (a.PrevConnection >= 0) return -1; // la trasera aun cruza: lo que le queda es avanzar
 
             int conn = FindConnection(new LaneId(a.Track), to);
-            if (conn < 0) return -1;
+            // Carril equivocado: espera a quien le impide el cambio de carril (lider o seguidor del carril destino).
+            if (conn < 0) return Waiting(_veh.LaneChangeBlocker(v));
             if ((a.Flags & VehicleFlags.HasEntryPermit) != 0)
             {
                 int ct = _veh.ConnectionTail(conn);
@@ -46,6 +47,9 @@ namespace Urbe.Sim.Traffic
             float need = t.Space < laneLen ? t.Space : laneLen;
             return _veh.FreeSpace(to) + 1e-4f < need ? ExitBlocker(v, conn, to) : -1;
         }
+
+        /// <summary>Diagnostico: a quien espera el vehiculo en el grafo de bloqueos (-1 si a nadie o si aun no cuenta como parado).</summary>
+        public int WaitsFor(int vehicle) => Qualifies(vehicle) ? Blocker(vehicle) : -1;
 
         /// <summary><paramref name="b"/> si existe y esta parado desde hace al menos el umbral; si no, -1.</summary>
         private int Waiting(int b) => b >= 0 && Qualifies(b) ? b : -1;

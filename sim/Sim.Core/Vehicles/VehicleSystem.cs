@@ -109,7 +109,15 @@ namespace Urbe.Sim.Vehicles
         public int ConnectionHead(int connection) => connection < _connHead.Length ? _connHead[connection] : -1;
         public int ConnectionTail(int connection) => connection < _connTail.Length ? _connTail[connection] : -1;
 
+        /// <summary>
+        /// Paso <paramref name="step"/> de la ruta del vehiculo. Ojo: <see cref="RouteStep.Lane"/> tiene doble semantica. En el paso del
+        /// cursor (<c>RouteCursor</c>) es el carril actual; en los siguientes, el carril de llegada previsto (no fijado hasta el permiso).
+        /// Para el carril actual usa <see cref="GetCurrentLane"/>.
+        /// </summary>
         public RouteStep GetRouteStep(int vehicle, int step) => _routes.Steps[_veh[vehicle].RouteOffset + step];
+
+        /// <summary>Carril actual del vehiculo en su ruta (el origen de la conexion si esta en una); no es el carril de llegada del paso siguiente.</summary>
+        public LaneId GetCurrentLane(int vehicle) => _routes.Steps[_veh[vehicle].RouteOffset + _veh[vehicle].RouteCursor].Lane;
 
         public ushort GetWaitTicks(int vehicle) => _veh[vehicle].WaitTicks;
 
@@ -424,8 +432,8 @@ namespace Urbe.Sim.Vehicles
             if (off < 0) return false;
             RouteStep[] steps = _routes.Steps;
             for (int k = 0; k < lanes.Length; k++) steps[off + k] = new RouteStep(_net.GetLane(lanes[k]).Segment, lanes[k]);
-            // Con el reintento un permiso concedido sigue valido solo si el siguiente carril no cambia.
-            if ((v.Flags & VehicleFlags.HasEntryPermit) != 0 && (lanes.Length < 2 || v.Kind != TrackKind.Lane || lanes[1] != old[v.RouteOffset + v.RouteCursor + 1].Lane))
+            // Un permiso concedido sigue valido solo si el carril de salida no cambia (tambien con el vehiculo ya dentro de la conexion).
+            if ((v.Flags & VehicleFlags.HasEntryPermit) != 0 && (lanes.Length < 2 || lanes[1] != old[v.RouteOffset + v.RouteCursor + 1].Lane))
             {
                 _laneReservedCm[old[v.RouteOffset + v.RouteCursor + 1].Lane.Value] -= v.ReservedCm;
                 v.ReservedCm = 0;

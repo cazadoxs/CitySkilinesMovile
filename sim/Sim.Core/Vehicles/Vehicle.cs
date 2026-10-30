@@ -24,6 +24,13 @@ namespace Urbe.Sim.Vehicles
     public readonly struct RouteStep
     {
         public readonly EntityId Segment;
+
+        /// <summary>
+        /// Carril del paso, con dos lecturas segun la posicion en la ruta: en el paso del cursor (<see cref="Vehicle.RouteCursor"/>) es el
+        /// carril ACTUAL del vehiculo (cambia con los cambios de carril); en los pasos siguientes es el carril de LLEGADA previsto al
+        /// entrar en ese segmento (lo replanifica el <see cref="LanePlanner"/> y puede cambiar mientras no haya permiso). Para el carril
+        /// actual usa <see cref="VehicleSystem.GetCurrentLane"/>.
+        /// </summary>
         public readonly LaneId Lane;
 
         public RouteStep(EntityId segment, LaneId lane)
