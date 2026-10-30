@@ -18,6 +18,9 @@ namespace Urbe.Sim.Runner
             bool bench = false, quick = false;
             string? benchJson = null;
             int vehicles = 1000, size = 800, frameTicks = 10;
+            bool seedSet = false, vehiclesSet = false, secondsSet = false, tripsSet = false, frameSet = false;
+            float? openAt = null;
+            float tripsAfter = 0.3f, trunk = 4f;
             float tripsPerSecond = 3f; // M1-07b: con el JunctionController por defecto, 8 viajes/s saturan la cuadricula 8x8
 
             try
@@ -31,15 +34,18 @@ namespace Urbe.Sim.Runner
                         case "--bench-json": benchJson = Next(args, ref i); break;
                         case "--render": png = Next(args, ref i); break;
                         case "--csv": csv = Next(args, ref i); break;
-                        case "--trips-per-sec": tripsPerSecond = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--trips-after": tripsAfter = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--trunk": trunk = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--open-at": openAt = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--trips-per-sec": tripsSet = true; tripsPerSecond = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
                         case "--gif": gif = Next(args, ref i); break;
-                        case "--seconds": seconds = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
-                        case "--seed": seed = ulong.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--seconds": secondsSet = true; seconds = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--seed": seedSet = true; seed = ulong.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
                         case "--scenario": scenarioName = Next(args, ref i); break;
                         case "--layer": layerName = Next(args, ref i); break;
-                        case "--vehicles": vehicles = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--vehicles": vehiclesSet = true; vehicles = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
                         case "--size": size = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
-                        case "--frame-ticks": frameTicks = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--frame-ticks": frameSet = true; frameTicks = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
                         default: Console.Error.WriteLine("Argumento desconocido: " + args[i]); return 2;
                     }
                 }
@@ -54,6 +60,16 @@ namespace Urbe.Sim.Runner
             if (png == null && gif == null && csv == null) return 0;
             if (layerName != "vehicles" && layerName != "flow") { Console.Error.WriteLine("--layer: vehicles | flow"); return 2; }
             if (frameTicks < 1) frameTicks = 1;
+
+            if (scenarioName == "bottleneck")
+            {
+                if (!seedSet) seed = 7;
+                if (!vehiclesSet) vehicles = 2000;
+                if (!secondsSet) seconds = 1300f;
+                if (!tripsSet) tripsPerSecond = 4f;
+                if (!frameSet) frameTicks = 80;
+                return Demo.Run(gif, png, seconds, seed, vehicles, tripsPerSecond, frameTicks, openAt ?? 120f, tripsAfter, trunk);
+            }
 
             Scenario sc = Scenarios.Create(scenarioName, seed, vehicles, tripsPerSecond);
             RenderLayer layer = layerName == "flow" ? RenderLayer.Flow : RenderLayer.Vehicles;
