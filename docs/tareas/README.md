@@ -14,11 +14,11 @@
 | [M0-10](M0-10.md) | Banda sonora original v1 | Opus · medium (esta sesión) | M0-02 | ✅ hecho |
 | [M1-01](M1-01.md) | Solución .NET y proyectos base | Sonnet · low | M0-04 | ✅ hecho |
 | [M1-02](M1-02.md) | Geometría: Bézier y longitud por arco | Sonnet · medium | M1-01 | ✅ hecho |
-| [M1-03a](M1-03a.md) | ADR de red viaria | Opus · medium | M1-01 | ⬜ pendiente |
+| [M1-03a](M1-03a.md) | ADR de red viaria | Opus · medium | M1-01 | ✅ hecho |
 | [M1-03b](M1-03b.md) | Implementar la red viaria | Sonnet · high | M1-02, M1-03a | ⬜ pendiente |
 | [M1-04](M1-04.md) | Comandos BuildRoad y Demolish | Sonnet · medium | M1-03b | ⬜ pendiente |
 | [M1-05](M1-05.md) | Pathfinding A* | Sonnet · high | M1-03b | ⬜ pendiente |
-| [M1-06a](M1-06a.md) | ADR de vehículos (IDM) | Opus · medium | M1-03b | ⬜ pendiente |
+| [M1-06a](M1-06a.md) | ADR de vehículos (IDM) | Opus · medium | M1-03b | ✅ hecho |
 | [M1-06b](M1-06b.md) | Movimiento de vehículos con IDM | Sonnet · high | M1-06a, M1-05 | ⬜ pendiente |
 | [M1-07](M1-07.md) | Intersecciones y semáforos | **Opus · high** (diseño + implementación del núcleo; tarjeta crítica) | M1-06b | ⬜ pendiente |
 | [M1-08](M1-08.md) | Elección y cambio de carril | Sonnet · high | M1-07 | ⬜ pendiente |
