@@ -79,6 +79,8 @@ namespace Urbe.Sim.Junctions
         public JunctionConfig Config => _cfg;
         public RoadNetwork Network => _net;
         public ulong CurrentTick => _tick;
+        /// <summary>Cruces con semaforo.</summary>
+        public int SignalCount => _signalCount;
 
         public void Bind(IVehicleView view, int vehicleCapacity)
         {

@@ -15,6 +15,8 @@ namespace Urbe.Sim.Runner
             string layerName = "vehicles";
             float seconds = 20f;
             ulong seed = 1;
+            bool bench = false, quick = false;
+            string? benchJson = null;
             int vehicles = 1000, size = 800, frameTicks = 10;
             float tripsPerSecond = 3f; // M1-07b: con el JunctionController por defecto, 8 viajes/s saturan la cuadricula 8x8
 
@@ -24,7 +26,9 @@ namespace Urbe.Sim.Runner
                 {
                     switch (args[i])
                     {
-                        case "--bench": Console.WriteLine("--bench: pendiente M1-12"); break;
+                        case "--bench": bench = true; break;
+                        case "--quick": quick = true; break;
+                        case "--bench-json": benchJson = Next(args, ref i); break;
                         case "--render": png = Next(args, ref i); break;
                         case "--csv": csv = Next(args, ref i); break;
                         case "--trips-per-sec": tripsPerSecond = float.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
@@ -46,6 +50,7 @@ namespace Urbe.Sim.Runner
                 return 2;
             }
 
+            if (bench) return Bench.Run(quick, benchJson, seed);
             if (png == null && gif == null && csv == null) return 0;
             if (layerName != "vehicles" && layerName != "flow") { Console.Error.WriteLine("--layer: vehicles | flow"); return 2; }
             if (frameTicks < 1) frameTicks = 1;

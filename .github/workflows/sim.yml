@@ -46,6 +46,10 @@ jobs:
       - name: Test
         run: dotnet test sim/Sim.sln -c Release --no-build --logger "trx" --results-directory TestResults
 
+      - name: Bench (informativo)
+        continue-on-error: true
+        run: dotnet sim/Sim.Runner/bin/Release/net8.0/Sim.Runner.dll --bench --quick --bench-json bench-quick.json
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

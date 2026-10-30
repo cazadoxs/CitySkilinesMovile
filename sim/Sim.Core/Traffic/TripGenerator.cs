@@ -109,6 +109,9 @@ namespace Urbe.Sim.Traffic
         public long Dropped { get; private set; }
         public long Rerouted { get; private set; }
         public int Pending => _pending;
+        /// <summary>Estado del RNG del generador (para el hash de estado, M1-12).</summary>
+        public ulong RngState => _rng.State;
+        public ulong RngIncrement => _rng.Increment;
 
         /// <summary>True si el vehiculo lo dio de alta este generador (y por tanto puede rehacerle la ruta; M1-11).</summary>
         public bool CanReroute(int vehicle) => vehicle >= 0 && vehicle < _tracked.Length && _tracked[vehicle];

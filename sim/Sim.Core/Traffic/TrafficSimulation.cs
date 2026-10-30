@@ -49,6 +49,8 @@ namespace Urbe.Sim.Traffic
         private double _csvSeconds;
 
         public RoadNetwork Network { get; }
+        /// <summary>Puerta de cruces en uso (JunctionController por defecto).</summary>
+        public IJunctionGate Gate { get; }
         public VehicleSystem Vehicles { get; }
         public PathFinder Paths { get; }
         public PathRequestQueue PathQueue { get; }
@@ -66,6 +68,7 @@ namespace Urbe.Sim.Traffic
             _opt = options ?? new TrafficSimulationOptions();
             Network = network ?? throw new ArgumentNullException(nameof(network));
             IJunctionGate junctions = gate ?? (_opt.UseGapOnlyGate ? (IJunctionGate)new GapOnlyGate(network) : new JunctionController(network));
+            Gate = junctions;
             Vehicles = new VehicleSystem(network, junctions, _opt.VehicleCapacity, seed, _opt.Vehicle);
             Paths = new PathFinder(network, _opt.PathCost);
             PathQueue = new PathRequestQueue(Paths, _opt.PathResultCapacity, _opt.Trips.MaxRouteLength);
@@ -110,6 +113,48 @@ namespace Urbe.Sim.Traffic
                 PublishCongestion();
             }
             if (_csv != null && Vehicles.CurrentTick % (ulong)_ticksPerMinute == 0) WriteCsvLine();
+        }
+
+        /// <summary>
+        /// Hash del estado completo (GDD 8.14, M1-12): red, vehiculos (con su RNG), cruces y semaforos, RNG del generador de viajes
+        /// y contadores enteros de viajes, bloqueo total y cola. Solo enteros: no depende de formato ni de cultura.
+        /// </summary>
+        public ulong ComputeHash()
+        {
+            ulong h = Mix(0x5452414646494355UL, Vehicles.CurrentTick);
+            h = Mix(h, Network.ComputeHash());
+            h = Mix(h, Vehicles.ComputeHash());
+            if (Gate is JunctionController jc) h = Mix(h, jc.ComputeHash());
+            h = Mix(h, Trips.RngState);
+            h = Mix(h, Trips.RngIncrement);
+            h = Mix(h, (ulong)Trips.Generated);
+            h = Mix(h, (ulong)Trips.Completed);
+            h = Mix(h, (ulong)Trips.Lost);
+            h = Mix(h, (ulong)Trips.Unroutable);
+            h = Mix(h, (ulong)Trips.Dropped);
+            h = Mix(h, (ulong)Trips.Rerouted);
+            h = Mix(h, (ulong)Trips.Pending);
+            h = Mix(h, (ulong)Vehicles.AliveCount);
+            GridlockStats g = Metrics.Gridlock;
+            h = Mix(h, (ulong)g.Cycles);
+            h = Mix(h, (ulong)g.ForcedAttempts);
+            h = Mix(h, (ulong)g.ForcedPasses);
+            h = Mix(h, (ulong)g.ForcedFailed);
+            h = Mix(h, (ulong)g.Reroutes);
+            h = Mix(h, (ulong)g.Despawns);
+            h = Mix(h, (ulong)g.Unresolved);
+            return h;
+        }
+
+        private static ulong Mix(ulong h, ulong x)
+        {
+            unchecked
+            {
+                ulong z = (h ^ x) + 0x9E3779B97F4A7C15UL;
+                z = (z ^ (z >> 30)) * 0xBF58476D1CE4E5B9UL;
+                z = (z ^ (z >> 27)) * 0x94D049BB133111EBUL;
+                return z ^ (z >> 31);
+            }
         }
 
         public void Run(int ticks)

@@ -27,7 +27,7 @@ namespace Urbe.Sim.Runner
         }
 
         /// <summary>Cuadricula de calles con una avenida cada 3 lineas en ambos ejes; las avenidas atraen mas viajes.</summary>
-        public static Scenario Grid(ulong seed, int maxVehicles, float tripsPerSecond, int cells, float spacing)
+        public static Scenario Grid(ulong seed, int maxVehicles, float tripsPerSecond, int cells, float spacing, int pathsPerTick = 0)
         {
             var net = new RoadNetwork(RoadTypeCatalog.CreateDefault(), new NetworkConfig());
             int m = cells + 1;
@@ -44,6 +44,7 @@ namespace Urbe.Sim.Runner
             var opt = new TrafficSimulationOptions { VehicleCapacity = Math.Max(maxVehicles * 2, 256) };
             opt.Trips.TripsPerSecond = tripsPerSecond;
             opt.Trips.MaxActiveVehicles = maxVehicles;
+            if (pathsPerTick > 0) opt.PathsPerTick = pathsPerTick;
             var sim = new TrafficSimulation(net, seed, opt);
             for (int i = 0; i < net.SegmentIndexBound; i++)
             {
