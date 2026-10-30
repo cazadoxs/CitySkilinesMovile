@@ -49,6 +49,8 @@ namespace Urbe.Sim.Vehicles
     /// <summary>
     /// Estado de un vehiculo (ADR 002 + 004). S es la posicion del FRENTE sobre la pista actual (carril o conexion).
     /// En un carril, cursor = paso actual; en una conexion, cursor = paso del carril de origen (el destino es cursor + 1).
+    /// M1-08: <c>Lane</c> del paso del cursor es SIEMPRE el carril actual (el cambio de carril lo reescribe); el de los pasos
+    /// siguientes es el carril de LLEGADA planeado, al que no tiene por que conectar el carril de salida actual (hay cambio de carril).
     /// </summary>
     public struct Vehicle
     {
@@ -74,6 +76,18 @@ namespace Urbe.Sim.Vehicles
         /// <summary>Conexion de la que el frente ya salio pero la trasera aun no (-1 = ninguna). ADR 004.</summary>
         public int PrevConnection;
         public int Generation;
+        /// <summary>Carril del que el vehiculo se esta desplazando lateralmente (cambio de carril en curso, M1-08); -1 = ninguno.</summary>
+        public int LcFrom;
+        /// <summary>Siguiente fantasma en la lista de fantasmas del carril LcFrom (-1 = fin). Solo valido mientras LcTicks &gt; 0.</summary>
+        public int GhostNext;
+        /// <summary>Desplazamiento lateral inicial respecto al carril actual (m, + = derecha del sentido de marcha). Solo para el snapshot.</summary>
+        public float LcLateral0;
+        /// <summary>Ticks que quedan de la maniobra de cambio de carril (0 = sin maniobra).</summary>
+        public byte LcTicks;
+        /// <summary>Ticks de espera tras una maniobra antes de poder iniciar otra.</summary>
+        public byte LcCooldown;
+        /// <summary>Ticks parado en un carril que no conecta con el siguiente paso sin conseguir hueco para cambiar.</summary>
+        public ushort LcWait;
 
         public bool IsAlive => (Flags & VehicleFlags.Alive) != 0;
     }

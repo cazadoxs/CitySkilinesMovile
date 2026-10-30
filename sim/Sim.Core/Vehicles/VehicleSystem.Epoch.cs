@@ -21,6 +21,7 @@ namespace Urbe.Sim.Vehicles
             Array.Fill(_laneTail, -1);
             Array.Fill(_laneLast, -1);
             Array.Fill(_laneReservedCm, 0);
+            Array.Fill(_laneGhost, -1);
             Array.Fill(_connHead, -1);
             Array.Fill(_connTail, -1);
 
@@ -73,6 +74,10 @@ namespace Urbe.Sim.Vehicles
                     FreeRecord(i);
                     continue;
                 }
+                // Las maniobras de cambio de carril en curso se dan por terminadas (los fantasmas se reinician).
+                v.LcFrom = -1;
+                v.GhostNext = -1;
+                v.LcTicks = 0;
 
                 // Ruta por delante: primer punto roto -> se trunca ahi y queda NeedsReroute.
                 int last = v.RouteLast;
@@ -80,7 +85,7 @@ namespace Urbe.Sim.Vehicles
                 for (int k = cursor + (v.Kind == TrackKind.Connection ? 1 : 0); k <= last; k++)
                 {
                     if (!_net.IsSegmentAlive(steps[off + k].Segment)) { firstBad = k; break; }
-                    if (k < last && FindConn(steps[off + k].Lane.Value, steps[off + k + 1].Lane.Value) < 0) { firstBad = k + 1; break; }
+                    if (k < last && NearestDeparture(steps[off + k].Lane.Value, steps[off + k + 1].Lane.Value) < 0) { firstBad = k + 1; break; }
                 }
                 if (firstBad >= 0)
                 {

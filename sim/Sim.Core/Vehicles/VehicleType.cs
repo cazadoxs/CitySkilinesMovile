@@ -65,5 +65,25 @@ namespace Urbe.Sim.Vehicles
         public float ArrivalTolerance = 0.5f;
         /// <summary>Factor del conductor aleatorio en [0,9, 1,1]; si es false vale 1,0.</summary>
         public bool DriverVariation = true;
+
+        // ---- Cambio de carril (M1-08) ----
+        /// <summary>false desactiva el cambio de carril (los vehiculos en un carril que no conecta se quedan en el).</summary>
+        public bool LaneChangeEnabled = true;
+        /// <summary>Duracion de la maniobra lateral (ticks): el render interpola el desplazamiento y el carril de origen conserva un fantasma.</summary>
+        public int LaneChangeTicks = 25;
+        /// <summary>Ticks de espera tras una maniobra antes de iniciar otra.</summary>
+        public int LaneChangeCooldownTicks = 10;
+        /// <summary>Frenada maxima (m/s2) que un cambio puede imponer al nuevo seguidor o al propio vehiculo.</summary>
+        public float BSafe = 3f;
+        /// <summary>Con urgencia 1 (al final del carril) se tolera que el nuevo seguidor frene hasta BSafe + esto (los demas ceden).</summary>
+        public float LaneChangeUrgentExtraBrake = 2f;
+        /// <summary>Hueco extra (m, se anula con urgencia 1) respecto al espacio reservado al inicio del carril para cambiar de carril con alguien entrando.</summary>
+        public float LaneChangeEntryClearance = 15f;
+        /// <summary>Distancia (m) que se considera necesaria por cada cambio de carril al calcular la urgencia.</summary>
+        public float LaneChangeNominalDistance = 60f;
+        /// <summary>Ticks parado en el carril equivocado tras los que se relaja el plan de carriles (salir desde el carril actual).</summary>
+        public int LaneChangeRelaxWaitTicks = 150;
+        /// <summary>Ticks parado en el carril equivocado tras los que se pide re-ruta (ultimo recurso).</summary>
+        public int LaneChangeRerouteWaitTicks = 600;
     }
 }

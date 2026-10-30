@@ -39,7 +39,7 @@ namespace Urbe.Sim.Traffic
         /// <summary>Un viaje que no consigue salir en este tiempo se pierde.</summary>
         public float MaxWaitSeconds = 120f;
         public int MaxRerouteAttempts = 20;
-        /// <summary>Rutas que se piden por viaje si las anteriores no tienen cadena de carriles valida.</summary>
+        /// <summary>Rutas que se piden por viaje si el alta falla por ruta invalida (con cambio de carril, M1-08, no deberia ocurrir).</summary>
         public int MaxPlans = 8;
         /// <summary>Posicion de salida y de llegada dentro del carril, como fraccion de la longitud del segmento.</summary>
         public float EndpointFraction = 0.4f;
@@ -65,6 +65,8 @@ namespace Urbe.Sim.Traffic
             public EntityId Destination;
             public byte Plans;
             public int RouteLength;
+            /// <summary>Semilla del conductor para repartir los viajes entre carriles equivalentes (eleccion de carril, M1-08).</summary>
+            public uint LaneSeed;
         }
 
         private readonly RoadNetwork _net;
@@ -81,8 +83,7 @@ namespace Urbe.Sim.Traffic
         private readonly Trip[] _trips;
         private readonly PathStep[] _tripRoutes;
         private readonly PathStep[] _scratch;
-        private readonly int[] _choice;
-        private readonly LaneId[] _laneScratch;
+        private readonly RouteSegment[] _segScratch;
         private float _acc;
         private int _pending;
 
@@ -128,8 +129,7 @@ namespace Urbe.Sim.Traffic
             _trips = new Trip[_cfg.MaxPending];
             _tripRoutes = new PathStep[_cfg.MaxPending * _cfg.MaxRouteLength];
             _scratch = new PathStep[_cfg.MaxRouteLength];
-            _choice = new int[_cfg.MaxRouteLength * 8];
-            _laneScratch = new LaneId[_cfg.MaxRouteLength];
+            _segScratch = new RouteSegment[_cfg.MaxRouteLength];
             _tracked = new bool[cap];
             _spawnTick = new ulong[cap];
             _destSeg = new EntityId[cap];
@@ -256,13 +256,14 @@ namespace Urbe.Sim.Traffic
             if (!_net.IsSegmentAlive(os) || !_net.IsSegmentAlive(ds)) return;
 
             byte type = _rng.NextFloat() < _cfg.TruckFraction ? VehicleTypeId.Truck : VehicleTypeId.Car;
+            uint driverSeed = _rng.NextUInt();
             var req = new PathRequest
             {
                 OriginSegment = os,
                 OriginDirs = TravelDirs.Both,
                 DestinationSegment = ds,
                 DestinationDirs = TravelDirs.Both,
-                Options = PathOptions.WithSeed(_rng.NextUInt(), type),
+                Options = PathOptions.WithSeed(driverSeed, type),
                 Priority = PathPriority.Private,
             };
             if (!_queue.TryEnqueue(in req, out int id))
@@ -273,7 +274,7 @@ namespace Urbe.Sim.Traffic
             for (int s = 0; s < _trips.Length; s++)
             {
                 if (_trips[s].State != State.Free) continue;
-                _trips[s] = new Trip { State = State.Awaiting, Type = type, RequestId = id, Created = now, NextAttempt = now, Origin = os, Destination = ds, Plans = 1 };
+                _trips[s] = new Trip { State = State.Awaiting, Type = type, RequestId = id, Created = now, NextAttempt = now, Origin = os, Destination = ds, Plans = 1, LaneSeed = driverSeed };
                 _pending++;
                 Generated++;
                 return;
@@ -323,8 +324,8 @@ namespace Urbe.Sim.Traffic
         }
 
         /// <summary>
-        /// La ruta por segmentos no tiene cadena de carriles valida (el pathfinding no conoce los carriles y no hay cambio de
-        /// carril): pide otra ruta con mas ruido de conductor; tras <see cref="TripGeneratorConfig.MaxPlans"/> intentos, el viaje se pierde.
+        /// La ruta por segmentos no es valida para el alta (con eleccion anticipada y cambio de carril solo ocurre si los segmentos
+        /// no se conectan): pide otra ruta con mas ruido de conductor; tras <see cref="TripGeneratorConfig.MaxPlans"/> intentos, el viaje se pierde.
         /// </summary>
         private void Replan(ref Trip t, ulong now)
         {
@@ -356,12 +357,19 @@ namespace Urbe.Sim.Traffic
         private bool TrySpawn(int slot, ref Trip t, ulong now)
         {
             int off = slot * _cfg.MaxRouteLength;
-            if (!ResolveLanes(_tripRoutes, off, t.RouteLength, LaneId.None, out float startS, out float targetS)) { Replan(ref t, now); return false; }
+            for (int k = 0; k < t.RouteLength; k++) _segScratch[k] = new RouteSegment(_tripRoutes[off + k].Segment, _tripRoutes[off + k].Forward);
+            var route = new ReadOnlySpan<RouteSegment>(_segScratch, 0, t.RouteLength);
+            if (!_net.IsSegmentAlive(route[0].Segment) || !_net.IsSegmentAlive(route[t.RouteLength - 1].Segment)) { Replan(ref t, now); return false; }
+            float startS = EndpointS(route[0]);
+            float targetS = EndpointS(route[t.RouteLength - 1]);
             VehicleType vt = _veh.GetVehicleType(t.Type);
-            if (startS < vt.Length) startS = Math.Min(vt.Length, _net.GetLane(_laneScratch[0]).Length);
+            if (startS < vt.Length) startS = Math.Min(vt.Length, LaneLength(route[0]));
             if (t.RouteLength == 1 && targetS < startS) targetS = startS;
-            if (!_veh.TrySpawn(t.Type, new ReadOnlySpan<LaneId>(_laneScratch, 0, t.RouteLength), startS, targetS, 0f, out EntityId id))
+            if (!_veh.TrySpawn(t.Type, route, startS, targetS, 0f, out EntityId id, t.LaneSeed | 1u))
+            {
+                if (_veh.LastSpawnFailure == SpawnFailure.InvalidRoute) Replan(ref t, now);
                 return false;
+            }
             int i = id.Index;
             // Si el alta provoco el cambio de epoca, el vehiculo anterior de este hueco ya se dio de baja sin pasar por CollectFinished.
             if (_tracked[i]) Lost++;
@@ -430,8 +438,7 @@ namespace Urbe.Sim.Traffic
                 return true;
             }
             if (st == PathStatus.Found && _queue.TryGetResult(_rerouteId[i], _scratch, out int len, out _)
-                && len >= 1 && _scratch[0].Segment == curSeg && ResolveLanes(_scratch, 0, len, cur, out _, out float targetS)
-                && _veh.TryReplaceRoute(_veh.IdOf(i), new ReadOnlySpan<LaneId>(_laneScratch, 0, len), targetS))
+                && len >= 1 && _scratch[0].Segment == curSeg && ReplaceRoute(i, len))
             {
                 Rerouted++;
                 _rerouteId[i] = 0;
@@ -451,76 +458,21 @@ namespace Urbe.Sim.Traffic
             _veh.Despawn(_veh.IdOf(i));
         }
 
-        /// <summary>
-        /// Elige un carril por paso (en _laneScratch) tal que cada par consecutivo tenga conexion: programacion dinamica hacia
-        /// atras, prefiriendo la menor ranura. Con <paramref name="forcedFirst"/> valido, el primer carril es ese.
-        /// </summary>
-        private bool ResolveLanes(PathStep[] steps, int off, int len, LaneId forcedFirst, out float startS, out float targetS)
+        /// <summary>Re-ruta con la ruta de segmentos de _scratch; los carriles los planifica el VehicleSystem desde el carril actual.</summary>
+        private bool ReplaceRoute(int i, int len)
         {
-            startS = 0f;
-            targetS = 0f;
-            for (int k = len - 1; k >= 0; k--)
-            {
-                PathStep st = steps[off + k];
-                if (!_net.IsSegmentAlive(st.Segment)) return false;
-                ref readonly Segment sg = ref _net.GetSegment(st.Segment);
-                int lo = st.Forward ? 0 : sg.LanesForward;
-                int hi = st.Forward ? sg.LanesForward : sg.LanesForward + sg.LanesBackward;
-                int any = 0;
-                for (int slot = 0; slot < 8; slot++)
-                {
-                    int c = -2;
-                    if (slot >= lo && slot < hi)
-                    {
-                        var cand = new LaneId(st.Segment.Index, slot);
-                        if (k == len - 1) c = -1;
-                        else
-                        {
-                            PathStep nx = steps[off + k + 1];
-                            ref readonly Segment ns = ref _net.GetSegment(nx.Segment);
-                            int nlo = nx.Forward ? 0 : ns.LanesForward;
-                            int nhi = nx.Forward ? ns.LanesForward : ns.LanesForward + ns.LanesBackward;
-                            for (int ns2 = nlo; ns2 < nhi; ns2++)
-                            {
-                                if (_choice[(k + 1) * 8 + ns2] == -2) continue;
-                                if (HasConnection(cand, new LaneId(nx.Segment.Index, ns2))) { c = ns2; break; }
-                            }
-                        }
-                    }
-                    _choice[k * 8 + slot] = c;
-                    if (c != -2) any++;
-                }
-                if (any == 0) return false;
-            }
-            int first = -1;
-            if (forcedFirst.IsValid)
-            {
-                if (forcedFirst.SegmentIndex != steps[off].Segment.Index || _choice[forcedFirst.Slot] == -2) return false;
-                first = forcedFirst.Slot;
-            }
-            else
-            {
-                for (int slot = 0; slot < 8; slot++)
-                    if (_choice[slot] != -2) { first = slot; break; }
-            }
-            if (first < 0) return false;
-            int cur = first;
-            for (int k = 0; k < len; k++)
-            {
-                _laneScratch[k] = new LaneId(steps[off + k].Segment.Index, cur);
-                cur = _choice[k * 8 + cur];
-            }
-            startS = _net.GetLane(_laneScratch[0]).Length * _cfg.EndpointFraction;
-            targetS = _net.GetLane(_laneScratch[len - 1]).Length * _cfg.EndpointFraction;
-            return true;
+            for (int k = 0; k < len; k++) _segScratch[k] = new RouteSegment(_scratch[k].Segment, _scratch[k].Forward);
+            var route = new ReadOnlySpan<RouteSegment>(_segScratch, 0, len);
+            return _veh.TryReplaceRoute(_veh.IdOf(i), route, EndpointS(route[len - 1]));
         }
 
-        private bool HasConnection(LaneId from, LaneId to)
+        /// <summary>Primer carril del sentido de marcha del paso (todos miden casi lo mismo).</summary>
+        private float LaneLength(RouteSegment step)
         {
-            ReadOnlySpan<LaneConnection> span = _net.GetConnectionsFrom(from);
-            for (int i = 0; i < span.Length; i++)
-                if (span[i].To == to) return true;
-            return false;
+            ref readonly Segment sg = ref _net.GetSegment(step.Segment);
+            return _net.GetLane(new LaneId(step.Segment.Index, step.Forward ? 0 : sg.LanesForward)).Length;
         }
+
+        private float EndpointS(RouteSegment step) => LaneLength(step) * _cfg.EndpointFraction;
     }
 }

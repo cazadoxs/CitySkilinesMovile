@@ -13,6 +13,11 @@ namespace Urbe.Sim.Vehicles
         public float Elevation;
         public Vec2 Tangent;
         public float Speed;
+        /// <summary>
+        /// Desplazamiento lateral (m, + = derecha del sentido de marcha) que ya esta incluido en Position durante un cambio de carril;
+        /// decae a 0 en la maniobra. El render interpola Position y no necesita aplicarlo, pero puede usarlo (p. ej. para el guinada).
+        /// </summary>
+        public float Lateral;
     }
 
     /// <summary>Un snapshot publicado: los datos son validos mientras el lector lo tenga adquirido.</summary>
