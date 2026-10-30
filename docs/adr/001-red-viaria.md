@@ -117,7 +117,7 @@ ref readonly LaneConnection GetConnection(int index);
 void SampleLane(LaneId lane, float s, out Vec2 pos, out Vec2 tangent);  void SampleConnection(int index, float s, out Vec2 pos, out Vec2 tangent);
 int QuerySegments(in Aabb2 box, Span<EntityId> results);
 bool NearestSegment(Vec2 p, float maxDist, out EntityId seg, out float t, out float dist);  EntityId NearestNode(Vec2 p, float radius);
-ulong ComputeHash();  void ConsumeChanges(out ReadOnlySpan<EntityId> nodes, out ReadOnlySpan<EntityId> segments);
+ulong ComputeHash();  int Subscribe();  void ConsumeChanges(int subscriber, out ReadOnlySpan<EntityId> nodes, out ReadOnlySpan<EntityId> segments);
 ```
 `NetworkEdit` guarda: nodos y segmentos creados, y `SegmentRecord { Vec2 PosA, PosB; float ElevA, ElevB; Bezier3 Curve; ushort RoadTypeId }`
 de los eliminados. Inverso de M1-04: `RemoveSegment` de los creados, después `AddSegmentRaw` de los registros (nodos con `FindNodeAt` o `AddNodeRaw`).
@@ -168,3 +168,11 @@ derivados y no entran; la época tampoco.
 - Las conexiones van del extremo retranqueado del carril de entrada al del de salida (`LaneEndpoint` usa `TLaneA/B`): cruzan el área real del cruce (rectas ≥ 12 m en una X de calles
   1+1; antes ≈ 0). Efecto en ADR 004: las derechas opuestas y el recto que no cruza la derecha de la secundaria dejan de estar en conflicto; las zonas se recalculan solas al regenerar el nodo.
 - Un carril de salida o de entrada es ~retranqueo más corto que su brazo: el código que fije posiciones por `Length` del segmento (tests, generadores) debe usar `Lane.Length`.
+
+## Cambios durante la implementación (M1-15: registro de cambios por suscriptor)
+- `ConsumeChanges` ya no tiene un único consumidor: `Subscribe()` devuelve un id con su propio cursor (empieza al final: no ve lo anterior; el suscriptor se inicializa con el estado completo
+  de la red) y `ConsumeChanges(id, out nodos, out segmentos[, out splits])` entrega lo tocado desde SU última consulta. El log es compartido, no registra nada sin suscriptores, se vacía cuando todos
+  los cursores llegan al final y se compacta el prefijo ya leído si se llena (sin asignaciones en régimen estable). Los spans valen hasta la siguiente mutación o consulta de cualquier suscriptor.
+- Cada segmento tocado lleva su **estado previo** (`TryGetPreState`: longitud, retranqueos y longitud de cada carril antes de la primera mutación no consumida) y cada split un `SegmentSplit`
+  (viejo → mitades + distancia de corte sobre la curva central): bastan para recolocar vehículos por distancia de arco y remapear `S` tras un cambio de retranqueo.
+- `Node.Version` sube con cada toque; los cruces (`JunctionNode.BuiltVersion`) la comparan en el respaldo de `NodeFor`.

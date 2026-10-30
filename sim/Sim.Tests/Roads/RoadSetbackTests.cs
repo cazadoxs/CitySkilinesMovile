@@ -82,7 +82,7 @@ namespace Urbe.Sim.Tests.Roads
             EntityId main = n.SegmentIdAt(0);
             Assert.Equal(0f, n.GetSegment(main).SetbackA);
             float fullLen = n.GetLane(new LaneId(main.Index, 0)).Length;
-            n.ConsumeChanges(out _, out _);
+            int sub = n.Subscribe();
             ulong epoch = n.Epoch;
 
             // Una calle que termina en el interior: split + T. Las dos mitades pasan a tener el nodo como Junction.
@@ -90,7 +90,7 @@ namespace Urbe.Sim.Tests.Roads
             EntityId center = Kit.At(n, 0, 0);
             Assert.Equal(JunctionKind.Junction, n.GetNode(center).Kind);
             Assert.True(n.Epoch > epoch);
-            n.ConsumeChanges(out ReadOnlySpan<EntityId> nodes, out ReadOnlySpan<EntityId> segs);
+            n.ConsumeChanges(sub, out ReadOnlySpan<EntityId> nodes, out ReadOnlySpan<EntityId> segs);
             ulong hashT = n.ComputeHash();
             int checkedArms = 0;
             foreach (EntityId s in n.GetNodeSegments(center).ToArray())
@@ -106,11 +106,11 @@ namespace Urbe.Sim.Tests.Roads
             Assert.True(Contains(nodes, center));
 
             // Quitar la calle: el nodo vuelve a Continuation y las mitades recuperan el 100 % de su carril.
-            n.ConsumeChanges(out _, out _);
+            n.ConsumeChanges(sub, out _, out _);
             EntityId stem = Kit.ArmTo(n, center, 0, 100);
             Assert.True(n.RemoveSegment(stem, new NetworkEdit()));
             Assert.Equal(JunctionKind.Continuation, n.GetNode(center).Kind);
-            n.ConsumeChanges(out _, out ReadOnlySpan<EntityId> after);
+            n.ConsumeChanges(sub, out _, out ReadOnlySpan<EntityId> after);
             foreach (EntityId s in n.GetNodeSegments(center).ToArray())
             {
                 Assert.Equal(0f, n.GetSegment(s).SetbackA);

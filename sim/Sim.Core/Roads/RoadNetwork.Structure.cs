@@ -110,6 +110,7 @@ namespace Urbe.Sim.Roads
                 float sa = ComputeSetback(sg.NodeA.Index, si);
                 float sbk = ComputeSetback(sg.NodeB.Index, si);
                 if (sa == sg.SetbackA && sbk == sg.SetbackB) continue;
+                TouchSegmentExisting(sid);
                 sg.SetbackA = sa;
                 sg.SetbackB = sbk;
                 var table = new ReadOnlySpan<float>(_arcTables, sg.ArcTableOffset, ArcSamples);
@@ -121,7 +122,6 @@ namespace Urbe.Sim.Roads
                     ref Lane l = ref _lanes[si * MaxLanesPerSegment + slot];
                     l.Length = OffsetCurve.Length(sg.Curve, l.Offset, sg.TLaneA, sg.TLaneB, PolylineSamples);
                 }
-                TouchSegment(sid);
             }
         }
 
@@ -156,7 +156,7 @@ namespace Urbe.Sim.Roads
             AdjInsert(b.Index, id);
             RefreshKind(a.Index);
             RefreshKind(b.Index);
-            TouchSegment(id);
+            TouchSegmentNew(id);
             TouchNode(a);
             TouchNode(b);
             RefreshNodeGeometry(a.Index);
@@ -170,6 +170,7 @@ namespace Urbe.Sim.Roads
             int si = id.Index;
             EntityId a = _segments[si].NodeA;
             EntityId b = _segments[si].NodeB;
+            TouchSegmentExisting(id);
             GridRegister(si, false);
             AdjRemove(a.Index, id);
             AdjRemove(b.Index, id);
@@ -184,7 +185,6 @@ namespace Urbe.Sim.Roads
             _segIds.Free(id);
             RefreshKind(a.Index);
             RefreshKind(b.Index);
-            TouchSegment(id);
             TouchNode(a);
             TouchNode(b);
             RefreshNodeGeometry(a.Index);
@@ -199,12 +199,16 @@ namespace Urbe.Sim.Roads
             if (FindSegmentBetween(a, b).IsValid) return EntityId.None;
             if (_nodes[a.Index].SegmentCount >= MaxSegmentsPerNode || _nodes[b.Index].SegmentCount >= MaxSegmentsPerNode) return EntityId.None;
 
+            uint verA = _nodes[a.Index].Version, verB = _nodes[b.Index].Version;
             EntityId id = InsertSegment(a, b, curve, typeId, flags);
             int ca = GenerateNode(a.Index, _genA, out bool ofA);
             int cb = GenerateNode(b.Index, _genB, out bool ofB);
             if (ofA || ofB)
             {
                 DetachSegment(id);
+                // Rechazo sin cambios: los nodos vuelven a su version (no hay epoca nueva, asi que nadie debe ver un cambio).
+                _nodes[a.Index].Version = verA;
+                _nodes[b.Index].Version = verB;
                 return EntityId.None;
             }
             CommitNode(a.Index, _genA, ca);
@@ -254,6 +258,9 @@ namespace Urbe.Sim.Roads
             Bezier3 curve = _segments[si].Curve;
             float elev = _nodes[a.Index].Elevation + (_nodes[b.Index].Elevation - _nodes[a.Index].Elevation) * t;
             curve.Split(t, out Bezier3 c1, out Bezier3 c2);
+            float oldLength = _segments[si].Length;
+            float cut = DistanceAtParam(si, t);
+            byte lanesForward = _segments[si].LanesForward;
 
             if (edit != null)
             {
@@ -264,6 +271,7 @@ namespace Urbe.Sim.Roads
             node = AddNodeInternal(c1.P3, elev, edit);
             half1 = InsertSegment(a, node, c1, typeId, flags);
             half2 = InsertSegment(node, b, c2, typeId, flags);
+            LogSplit(seg, half1, half2, node, cut, oldLength, lanesForward);
             edit?.AddCreatedSegment(half1);
             edit?.AddCreatedSegment(half2);
             RebuildNodeForced(a.Index);
@@ -299,6 +307,12 @@ namespace Urbe.Sim.Roads
         private void FinishMutation()
         {
             _epoch++;
+            if (++_mutStamp == int.MaxValue)
+            {
+                Array.Clear(_nodeTouchStamp, 0, _nodeTouchStamp.Length);
+                Array.Clear(_segTouchStamp, 0, _segTouchStamp.Length);
+                _mutStamp = 1;
+            }
             MaybeCompactConnections();
         }
     }

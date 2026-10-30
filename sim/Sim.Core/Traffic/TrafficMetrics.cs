@@ -50,6 +50,8 @@ namespace Urbe.Sim.Traffic
         private int _ticksInSegUpdate;
         private readonly float _alpha;
         private readonly float _alphaIdle;
+        private readonly int _netSub;
+        private ulong _lastEpoch;
 
         public TrafficMetrics(RoadNetwork network, VehicleSystem vehicles, TrafficMetricsConfig? config = null)
         {
@@ -69,7 +71,15 @@ namespace Urbe.Sim.Traffic
             _segFlow = NewOnes(n);
             _segV = new float[n];
             _segF = new float[n];
+            _lastEpoch = network.Epoch;
+            _netSub = network.Subscribe();
         }
+
+        /// <summary>
+        /// Se invoca (una vez por cambio de epoca de la red) tras reiniciar el flujo de los segmentos creados o eliminados; el dueno
+        /// (<see cref="TrafficSimulation"/>) lo usa para republicar la congestion al pathfinding.
+        /// </summary>
+        public Action? SegmentFlowReset;
 
         private static float[] NewOnes(int n)
         {
@@ -105,6 +115,7 @@ namespace Urbe.Sim.Traffic
         {
             int bound = _net.SegmentIndexBound;
             if (bound > _segFlow.Length) Grow(bound);
+            if (_net.Epoch != _lastEpoch) ResetChangedSegments();
 
             double sv = 0, sf = 0;
             int high = _veh.HighWater;
@@ -168,6 +179,50 @@ namespace Urbe.Sim.Traffic
                 UpdateSegments(bound);
             }
         }
+
+        /// <summary>
+        /// El indice de un segmento eliminado se reutiliza: el flujo (EMA) del tramo nuevo no debe heredar el atasco del derribado.
+        /// Se reinician a 1 los segmentos creados o eliminados desde el ultimo muestreo; las mitades de un segmento dividido heredan
+        /// el flujo del original (es la misma via). Los segmentos que solo cambiaron de retranqueo conservan el suyo.
+        /// </summary>
+        private void ResetChangedSegments()
+        {
+            _lastEpoch = _net.Epoch;
+            _net.ConsumeChanges(_netSub, out _, out ReadOnlySpan<EntityId> segs, out ReadOnlySpan<SegmentSplit> splits);
+            int bound = _net.SegmentIndexBound;
+            if (bound > _segFlow.Length) Grow(bound);
+            // Flujo de partida de las mitades, leido antes de reiniciar nada (el indice del original puede reutilizarse).
+            if (_splitFlow.Length < splits.Length) _splitFlow = new float[Math.Max(splits.Length, _splitFlow.Length * 2)];
+            for (int k = 0; k < splits.Length; k++)
+            {
+                EntityId old = splits[k].Old;
+                float f = old.Index < _segFlow.Length ? _segFlow[old.Index] : 1f;
+                for (int j = 0; j < k; j++)
+                {
+                    if (splits[j].Half1 == old || splits[j].Half2 == old) f = _splitFlow[j];
+                }
+                _splitFlow[k] = f;
+            }
+            for (int k = 0; k < segs.Length; k++)
+            {
+                EntityId id = segs[k];
+                if (id.Index >= _segFlow.Length) continue;
+                // Vivo y ya existente antes: conserva su flujo; en cualquier otro caso (eliminado, o creado desde la ultima consulta) se reinicia.
+                if (_net.IsSegmentAlive(id) && _net.TryGetPreState(id, out _)) continue;
+                _segFlow[id.Index] = 1f;
+                _segV[id.Index] = 0f;
+                _segF[id.Index] = 0f;
+            }
+            for (int k = 0; k < splits.Length; k++)
+            {
+                SegmentSplit sp = splits[k];
+                if (_net.IsSegmentAlive(sp.Half1) && sp.Half1.Index < _segFlow.Length) _segFlow[sp.Half1.Index] = _splitFlow[k];
+                if (_net.IsSegmentAlive(sp.Half2) && sp.Half2.Index < _segFlow.Length) _segFlow[sp.Half2.Index] = _splitFlow[k];
+            }
+            SegmentFlowReset?.Invoke();
+        }
+
+        private float[] _splitFlow = new float[8];
 
         private void UpdateSegments(int bound)
         {

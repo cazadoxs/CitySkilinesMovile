@@ -309,11 +309,12 @@ namespace Urbe.Sim.Tests.Junctions
             Assert.Equal(ControlKind.Signal, JunctionBuilder.ResolveControl(t.Net, t.Center));
             Crossing ts = JK.T(RoadTypeIds.Street2, RoadTypeIds.Avenue4);
             Assert.Equal(ControlKind.Priority, JunctionBuilder.ResolveControl(ts.Net, ts.Center));
+            int sub = ts.Net.Subscribe();
             ulong e = ts.Net.Epoch, h = ts.Net.ComputeHash();
             Assert.True(ts.Net.SetNodeControl(ts.Center, JunctionControlIds.Stop));
             Assert.Equal(e + 1, ts.Net.Epoch);
             Assert.NotEqual(h, ts.Net.ComputeHash());
-            ts.Net.ConsumeChanges(out ReadOnlySpan<EntityId> changed, out _);
+            ts.Net.ConsumeChanges(sub, out ReadOnlySpan<EntityId> changed, out _);
             Assert.True(changed.ToArray().Length >= 1 && Array.IndexOf(changed.ToArray(), ts.Center) >= 0);
             Assert.Equal(ControlKind.Stop, JunctionBuilder.ResolveControl(ts.Net, ts.Center));
             JunctionNode jn = Layout(ts);

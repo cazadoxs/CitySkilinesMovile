@@ -14,6 +14,8 @@ namespace Urbe.Sim.Junctions
         public const byte NoSlot = 255;
 
         public EntityId Node = EntityId.None;
+        /// <summary>Version del nodo de la red (<c>RoadNetwork.GetNodeVersion</c>) con la que se construyo; si difiere, los datos estan obsoletos.</summary>
+        public uint BuiltVersion;
         public int ConnCount;
         public ConnGate[] Gates = Array.Empty<ConnGate>();
         public ConflictEntry[] Entries = Array.Empty<ConflictEntry>();

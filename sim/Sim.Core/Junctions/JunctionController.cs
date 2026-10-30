@@ -87,6 +87,33 @@ namespace Urbe.Sim.Junctions
             _view = view ?? throw new ArgumentNullException(nameof(view));
             if (vehicleCapacity > MaxVehicles) throw new ArgumentOutOfRangeException(nameof(vehicleCapacity), "maximo 2^20 vehiculos (clave de orden)");
             EnsureVehicleCapacity(vehicleCapacity);
+            SyncWithNetwork();
+        }
+
+        /// <summary>
+        /// M1-15: al enlazar con el sistema de vehiculos (que se suscribe a los cambios de la red desde ese momento) se garantiza que
+        /// todos los cruces reflejen el estado actual de la red, aunque se editara entre la construccion del controlador y ahora.
+        /// Aun no hay vehiculos, asi que no hay permisos que olvidar.
+        /// </summary>
+        private void SyncWithNetwork()
+        {
+            bool changed = false;
+            int bound = _net.NodeIndexBound;
+            for (int i = 0; i < bound; i++)
+            {
+                EntityId id = _net.NodeIdAt(i);
+                if (!id.IsValid)
+                {
+                    if (i < _nodes.Length && _nodes[i] != null) { _nodes[i] = null; changed = true; }
+                    continue;
+                }
+                EnsureNodeCapacity(i);
+                JunctionNode? jn = _nodes[i];
+                if (jn != null && jn.Node == id && jn.BuiltVersion == _net.GetNodeVersion(id)) continue;
+                _nodes[i] = _builder.Build(_net, id, jn);
+                changed = true;
+            }
+            if (changed) RebuildSignalList();
         }
 
         // ------------------------------------------------------------------ capacidad (fuera del tick)
@@ -267,11 +294,13 @@ namespace Urbe.Sim.Junctions
             }
         }
 
-        /// <summary>Nodo construido para el indice; si falta o esta obsoleto (cambio no notificado) se reconstruye (asigna).</summary>
+        /// <summary>Nodo construido para el indice; si falta o su version de red no coincide (cambio no notificado) se reconstruye (asigna).</summary>
         private JunctionNode NodeFor(int ni, EntityId id)
         {
             JunctionNode? jn = ni < _nodes.Length ? _nodes[ni] : null;
-            if (jn != null && jn.Node == id && jn.ConnCount == _net.GetNode(id).ConnCount) return jn;
+            if (jn != null && jn.Node == id && jn.BuiltVersion == _net.GetNodeVersion(id)) return jn;
+            // Cambio no notificado (no deberia ocurrir: el sistema de vehiculos notifica en HandleEpoch). Se reconstruye y se anota.
+            Stats.StaleRebuilds++;
             EnsureNodeCapacity(ni);
             _markStamp++;
             _nodeMark[ni] = _markStamp;
