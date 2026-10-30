@@ -337,6 +337,7 @@ namespace Urbe.Sim.Vehicles
                 _laneReservedCm[old[v.RouteOffset + v.RouteCursor + 1].Lane.Value] -= v.ReservedCm;
                 v.ReservedCm = 0;
                 v.Flags &= ~VehicleFlags.HasEntryPermit;
+                _gate.OnPermitCancelled(id.Index);
             }
             _routes.Free(v.RouteOffset, v.RouteLength);
             v.RouteOffset = off;

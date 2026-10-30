@@ -29,7 +29,7 @@ namespace Urbe.Sim.Roads
         public float Elevation;
         public byte SegmentCount;
         public JunctionKind Kind;
-        /// <summary>Reservado para M1-07 (semaforos, prioridades).</summary>
+        /// <summary>Control del cruce (ADR 004): 0 = auto, 1 = prioridad, 2 = stop, 3 = semaforo. Se cambia con SetNodeControl.</summary>
         public ushort ControlId;
         public int ConnFirst;
         public ushort ConnCount;

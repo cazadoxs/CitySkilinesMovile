@@ -63,5 +63,10 @@ namespace Urbe.Sim.Vehicles
         void OnExited(int connection, int vehicle);
         /// <summary>Baja del vehiculo (despawn, llegada o borrado por edicion) estuviera donde estuviera.</summary>
         void OnVehicleRemoved(int vehicle);
+        /// <summary>
+        /// El vehiculo pierde un permiso concedido sin entrar ni darse de baja (re-ruta que cambia el carril siguiente). M1-07: sin
+        /// este aviso la puerta contaria para siempre un permiso fantasma que bloquearia los flujos en conflicto.
+        /// </summary>
+        void OnPermitCancelled(int vehicle);
     }
 }
