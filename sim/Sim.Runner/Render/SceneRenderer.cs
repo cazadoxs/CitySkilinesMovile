@@ -15,6 +15,7 @@ namespace Urbe.Sim.Runner.Render
         private readonly Scenario _sc;
         private readonly RenderLayer _layer;
         private readonly int _size;
+        private readonly int _height;
         private readonly SKBitmap _bitmap;
         private readonly SKCanvas _canvas;
         private readonly SKTypeface _face = SKTypeface.Default;
@@ -30,12 +31,13 @@ namespace Urbe.Sim.Runner.Render
         private float _offX;
         private float _offY;
 
-        public SceneRenderer(Scenario scenario, int size, RenderLayer layer)
+        public SceneRenderer(Scenario scenario, int size, RenderLayer layer, int height = 0)
         {
             _sc = scenario;
             _size = size;
+            _height = height > 0 ? height : size;
             _layer = layer;
-            _bitmap = new SKBitmap(new SKImageInfo(size, size, SKColorType.Rgba8888, SKAlphaType.Premul));
+            _bitmap = new SKBitmap(new SKImageInfo(size, _height, SKColorType.Rgba8888, SKAlphaType.Premul));
             _canvas = new SKCanvas(_bitmap);
             _font = new SKFont(_face, Math.Max(11f, size / 62f));
             int bound = scenario.Network.SegmentIndexBound;
@@ -46,6 +48,11 @@ namespace Urbe.Sim.Runner.Render
         }
 
         public int Size => _size;
+        public int Height => _height;
+        public SKBitmap Bitmap => _bitmap;
+        /// <summary>Rotulo grande opcional (demo M1-14) y su color de acento.</summary>
+        public string? Caption;
+        public SKColor CaptionColor = new SKColor(235, 238, 242);
 
         /// <summary>Encuadre automatico a los limites de la red (nodos y semianchura de calle) con margen.</summary>
         private void FitCamera()
@@ -63,9 +70,9 @@ namespace Urbe.Sim.Runner.Render
             if (minX > maxX) { minX = minZ = 0f; maxX = maxZ = 100f; }
             float w = Math.Max(maxX - minX, 1f), h = Math.Max(maxZ - minZ, 1f);
             float margin = _size * 0.07f;
-            _scale = (_size - 2f * margin) / Math.Max(w, h);
+            _scale = Math.Min((_size - 2f * margin) / w, (_height - 2f * margin) / h);
             _offX = (_size - w * _scale) * 0.5f - minX * _scale;
-            _offY = (_size + h * _scale) * 0.5f + minZ * _scale; // y = offY - z * scale
+            _offY = (_height + h * _scale) * 0.5f + minZ * _scale; // y = offY - z * scale
         }
 
         private float PX(float x) => x * _scale + _offX;
@@ -84,6 +91,7 @@ namespace Urbe.Sim.Runner.Render
             DrawHud(count, meanSpeed);
             DrawLegend();
             DrawScaleBar();
+            DrawCaption();
         }
 
         // ------------------------------------------------------------------ carreteras
@@ -293,16 +301,28 @@ namespace Urbe.Sim.Runner.Render
             VehicleSystem vs = _sc.Vehicles;
             float seconds = vs.CurrentTick * vs.Config.Dt;
             string text = "tick " + vs.CurrentTick + "  t=" + seconds.ToString("0.0") + " s  vehiculos " + count
-                + "  v media " + (meanSpeed * 3.6f).ToString("0.0") + " km/h";
+                + "  v media " + (meanSpeed * 3.6f).ToString("0.0") + " km/h  flujo " + _sc.Sim.Metrics.CityFlowPercent.ToString("0") + " %";
             _fill.Color = new SKColor(0, 0, 0, 150);
             _canvas.DrawRect(8, 8, _font.MeasureText(text) + 16, _font.Size + 14, _fill);
             DrawText(text, 16, 8 + _font.Size + 3);
         }
 
+        private void DrawCaption()
+        {
+            if (string.IsNullOrEmpty(Caption)) return;
+            using var big = new SKFont(_face, Math.Max(18f, _size / 30f));
+            float w = big.MeasureText(Caption) + 32f;
+            float x = (_size - w) * 0.5f, y = _font.Size * 3.4f;
+            _fill.Color = new SKColor(0, 0, 0, 190);
+            _canvas.DrawRect(x, y, w, big.Size * 1.9f, _fill);
+            _fill.Color = CaptionColor;
+            _canvas.DrawText(Caption, x + 16f, y + big.Size * 1.3f, SKTextAlign.Left, big, _fill);
+        }
+
         private void DrawLegend()
         {
             float x = 12f, w = _size * 0.22f, h = 12f;
-            float y = _size - 44f;
+            float y = _height - 44f;
             _fill.Color = new SKColor(0, 0, 0, 150);
             _canvas.DrawRect(x - 4, y - _font.Size - 8, w + 8 + _font.MeasureText("libre") + 6, _font.Size + h + 24, _fill);
             string title = _layer == RenderLayer.Flow ? "Flujo (v media / v libre)" : "Velocidad del vehiculo";
@@ -325,7 +345,7 @@ namespace Urbe.Sim.Runner.Render
             float m = target / mag;
             float nice = (m >= 5f ? 5f : m >= 2f ? 2f : 1f) * mag;
             float px = nice * _scale;
-            float x1 = _size - 16f, x0 = x1 - px, y = _size - 22f;
+            float x1 = _size - 16f, x0 = x1 - px, y = _height - 22f;
             string label = nice.ToString("0") + " m";
             _fill.Color = new SKColor(0, 0, 0, 150);
             _canvas.DrawRect(x0 - 10, y - _font.Size - 14, px + 20, _font.Size + 30, _fill);
