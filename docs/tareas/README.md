@@ -30,7 +30,7 @@
 | [M1-13](M1-13.md) | Revisión de cierre de M1 | Opus · medium | M1-12 | ✅ hecho |
 | [M1-14](M1-14.md) | Demo M1: GIF de 2.000 coches | Haiku · low (ejecutar y publicar) | M1-13 | ⬜ pendiente |
 | [M1-15](M1-15.md) | Arreglos revisión: cambios de red y época | Sonnet · high | M1-13 | ⬜ pendiente |
-| [M1-16](M1-16.md) | Arreglos revisión: landmarks y validación | Sonnet · medium | M1-13 | ⬜ pendiente |
+| [M1-16](M1-16.md) | Arreglos revisión: landmarks y validación | Sonnet · medium | M1-13 | ✅ hecho |
 | [M1-17](M1-17.md) | Deuda de la revisión M1 | Sonnet · medium | M1-15 | ⬜ pendiente |
 | [M2-01](M2-01.md) | Proyecto Unity 6 e integración de Sim.Core | Sonnet · medium | M0-05, M1-12 | ⬜ pendiente |
 | [M2-02](M2-02.md) | SimHost: bucle de ticks | Sonnet · medium | M2-01 | ⬜ pendiente |
