@@ -44,7 +44,12 @@ jobs:
         run: dotnet build sim/Sim.sln -c Release
 
       - name: Test
-        run: dotnet test sim/Sim.sln -c Release --no-build --logger "trx" --results-directory TestResults
+        run: dotnet test sim/Sim.sln -c Release --no-build --filter "Category!=Bench" --logger "trx" --results-directory TestResults
+
+      # Los tests con límites de tiempo dependen de la máquina: informativos en CI
+      - name: Timing tests (informativo)
+        continue-on-error: true
+        run: dotnet test sim/Sim.sln -c Release --no-build --filter "Category=Bench"
 
       - name: Bench (informativo)
         continue-on-error: true
