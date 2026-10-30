@@ -19,6 +19,8 @@ namespace Urbe.Sim.Roads
         AngleTooSharp,
         /// <summary>Solo lo detecta AddSegment al aplicar (se deshace solo); CanAddSegment no puede preverlo.</summary>
         TooManyConnections,
+        /// <summary>El objetivo de un comando (segmento a demoler) no existe, esta repetido o no hay objetivos.</summary>
+        InvalidTarget,
     }
 
     public readonly struct SegmentRequest
