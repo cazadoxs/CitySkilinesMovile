@@ -20,7 +20,7 @@
 | [M1-05](M1-05.md) | Pathfinding A* | Sonnet · high | M1-03b | ✅ hecho |
 | [M1-06a](M1-06a.md) | ADR de vehículos (IDM) | Opus · medium | M1-03b | ✅ hecho |
 | [M1-06b](M1-06b.md) | Movimiento de vehículos con IDM | Sonnet · high | M1-06a, M1-05 | ✅ hecho |
-| [M1-07](M1-07.md) | Intersecciones y semáforos | **Opus · high** (diseño + implementación del núcleo; tarjeta crítica) | M1-06b | ⬜ pendiente |
+| [M1-07](M1-07.md) | Intersecciones y semáforos | **Opus · high** (diseño + implementación del núcleo; tarjeta crítica) | M1-06b | ✅ hecho |
 | [M1-08](M1-08.md) | Elección y cambio de carril | Sonnet · high | M1-07 | ⬜ pendiente |
 | [M1-09](M1-09.md) | Generador de viajes y flujo % | Sonnet · medium | M1-06b | ✅ hecho |
 | [M1-10](M1-10.md) | Visor PNG/GIF en Sim.Runner | Sonnet · medium | M1-06b | ✅ hecho |
