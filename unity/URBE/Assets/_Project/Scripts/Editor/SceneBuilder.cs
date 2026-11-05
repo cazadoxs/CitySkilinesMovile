@@ -2,9 +2,13 @@ using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
 using Urbe.Game.Sim;
+using Urbe.Game.UI;
 
 namespace Urbe.Game.Editor
 {
@@ -61,10 +65,53 @@ namespace Urbe.Game.Editor
             rigSo.ApplyModifiedPropertiesWithoutUndo();
             camGo.transform.SetPositionAndRotation(new Vector3(400f, 700f, -120f), Quaternion.Euler(55f, 0f, 0f));
 
+            BuildHud(host, rig);
+
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
             Debug.Log("[URBE] Escena generada: " + ScenePath);
+        }
+
+        private static void BuildHud(SimHost host, CityCameraController rig)
+        {
+            const string uiFolder = "Assets/_Project/UI/HUD";
+            var panel = EnsurePanelSettings();
+            var hudGo = new GameObject("HUD");
+            var doc = hudGo.AddComponent<UIDocument>();
+            doc.panelSettings = panel;
+            doc.visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uiFolder + "/Hud.uxml");
+            // UI Toolkit recibe los eventos de puntero/teclado por el EventSystem; con solo el Input System nuevo hace falta su módulo.
+            var es = new GameObject("EventSystem");
+            es.AddComponent<EventSystem>();
+            es.AddComponent<InputSystemUIInputModule>();
+            var hud = hudGo.AddComponent<HudController>();
+            SetRef(hud, "host", host);
+            SetRef(hud, "cameraController", rig);
+            SetRef(hud, "styleSheet", AssetDatabase.LoadAssetAtPath<StyleSheet>(uiFolder + "/Hud.uss"));
+        }
+
+        /// <summary>
+        /// PanelSettings del HUD: escala con la pantalla sobre 844x390 (el móvil horizontal lógico de docs/figma.md), así que 1 px de USS
+        /// es 1 dp en un móvil y la interfaz crece sola en PC. El ajuste mezcla ancho y alto (0,5) para que sirva también en vertical.
+        /// </summary>
+        private static PanelSettings EnsurePanelSettings()
+        {
+            const string path = "Assets/_Project/UI/HUD/HudPanelSettings.asset";
+            var ps = AssetDatabase.LoadAssetAtPath<PanelSettings>(path);
+            if (ps == null)
+            {
+                ps = ScriptableObject.CreateInstance<PanelSettings>();
+                AssetDatabase.CreateAsset(ps, path);
+            }
+            ps.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+            ps.referenceResolution = new Vector2Int(844, 390);
+            ps.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
+            ps.match = 0.5f;
+            ps.clearColor = false;
+            ps.sortingOrder = 10;
+            EditorUtility.SetDirty(ps);
+            return ps;
         }
 
         private static Material EnsureUnlit(string name, Color color, bool instancing)

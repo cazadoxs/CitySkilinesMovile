@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="hud-root" class="hud-root" picking-mode="Ignore">
+        <ui:VisualElement name="top-bar" class="top-bar">
+            <ui:VisualElement name="stats" class="stats">
+                <ui:VisualElement name="vehicles-chip" class="chip">
+                    <ui:Label text="Vehículos" class="chip-caption" />
+                    <ui:Label name="vehicle-count" text="0" class="chip-value" />
+                </ui:VisualElement>
+                <ui:VisualElement name="flow-chip" class="chip">
+                    <ui:Label text="Flujo" class="chip-caption" />
+                    <ui:Label name="flow-value" text="100%" class="chip-value" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="speed-controls" class="speed-controls">
+                <ui:Button name="btn-pause" text="II" class="hud-button" />
+                <ui:Button name="btn-x1" text="x1" class="hud-button" />
+                <ui:Button name="btn-x2" text="x2" class="hud-button" />
+                <ui:Button name="btn-x3" text="x3" class="hud-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

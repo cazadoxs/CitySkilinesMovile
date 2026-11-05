@@ -4,6 +4,7 @@
     "references": [
         "Game.Unity",
         "Unity.InputSystem",
+        "UnityEngine.UI",
         "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [

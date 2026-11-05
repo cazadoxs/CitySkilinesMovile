@@ -71,6 +71,7 @@ namespace Urbe.Game.CameraRig
 
         private void LateUpdate()
         {
+            if (!EnhancedTouchSupport.enabled) EnhancedTouchSupport.Enable(); // por si otro sistema lo desactivó (p. ej. al reiniciar el Input System)
             float dt = Time.unscaledDeltaTime;
             _model.ScreenSize = new Vector2(Mathf.Max(1, Screen.width), Mathf.Max(1, Screen.height));
 

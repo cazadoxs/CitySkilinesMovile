@@ -41,7 +41,7 @@
 | [M2-05](M2-05.md) | Herramienta de carreteras táctil | Sonnet · high | M2-04b, M2-02 | ⬜ pendiente |
 | [M2-06](M2-06.md) | Render instanciado de vehículos | Sonnet · high | M2-02 | ⬜ pendiente |
 | [M2-07](M2-07.md) | Vehículos CC0 con script de Blender | Sonnet · medium (script) → Haiku · medium (lote) | M0-07 | ⬜ pendiente |
-| [M2-08](M2-08.md) | HUD mínimo en UI Toolkit | Sonnet · medium | M2-02 | ⬜ pendiente |
+| [M2-08](M2-08.md) | HUD mínimo en UI Toolkit | Sonnet · medium | M2-02 | ✅ hecho |
 | [M2-09](M2-09.md) | Capa de tráfico por flujo | Sonnet · medium | M2-04b | ⬜ pendiente |
 | [M2-10](M2-10.md) | Build Android y medición de fps | Sonnet · medium | M2-05, M2-06 | ⬜ pendiente |
 | [M2-11](M2-11.md) | Prueba en la mano | **Álvaro** + Haiku · low (convertir notas en tarjetas) | M2-10 | ⬜ pendiente |
