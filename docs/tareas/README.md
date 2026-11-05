@@ -50,7 +50,7 @@
 | [M3-02](M3-02.md) | Edificios que crecen y demanda RCI | Sonnet · high | M3-01 | ✅ hecho |
 | [M3-03](M3-03.md) | Redes y edificios de servicio | Sonnet · high | M3-02 | ✅ hecho |
 | [M3-04](M3-04.md) | Población, empleo y rutinas | Sonnet · high | M3-03 | ✅ hecho |
-| [M3-05](M3-05.md) | Economía, valor del suelo e hitos | Sonnet · medium | M3-04 | ⬜ pendiente |
+| [M3-05](M3-05.md) | Economía, valor del suelo e hitos | Sonnet · medium | M3-04 | ✅ hecho |
 | [M3-06](M3-06.md) | Bot de ciudad y equilibrio | Sonnet · medium | M3-05 | ⬜ pendiente |
 | [M3-07](M3-07.md) | CitySimulation en Unity y partida nueva | Sonnet · medium | M3-06 | ⬜ pendiente |
 | [M3-08](M3-08.md) | Herramientas de zonas y servicios | Sonnet · high | M3-07 | ⬜ pendiente |

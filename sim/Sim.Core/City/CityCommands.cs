@@ -115,6 +115,7 @@ namespace Urbe.Sim.City
                 RoadResult = v;
                 return Result = v == ValidationResult.OutOfBounds ? CityResult.OutOfBounds : CityResult.RoadRejected;
             }
+            if (!city.IsRoadUnlocked(Request.RoadTypeId)) return Result = CityResult.NotUnlocked;
             if (city.Money < CostOf(city, Request)) return Result = CityResult.InsufficientFunds;
             return Result = CityResult.Ok;
         }

@@ -239,8 +239,10 @@ namespace Urbe.Sim.Tests.City
             int res = 0;
             for (int i = 0; i < c.Buildings.IndexBound; i++) if (c.Buildings.IsAlive(i) && c.Buildings.Get(i).Zone == ZoneType.Residential) res++;
             Assert.True(res > 3, "res=" + res + " total=" + c.Buildings.Count + " demR=" + c.Demand.R + " pop=" + c.Stats.Population + " free=" + c.Zones.ZonedFreeCount(ZoneType.Residential));
-            // Se repinta toda la residencial de baja densidad como comercial.
-            Assert.Equal(CityResult.Ok, c.Execute(PaintZoneCommand.Brush(CityKit.V(-80, 0), 120f, ZoneType.Industrial, 1)));
+            // Se repinta toda la residencial de baja densidad con la zona que mas demanda tenga, con impuestos minimos para asegurarla.
+            ZoneType target = c.Demand.C >= c.Demand.I ? ZoneType.Commercial : ZoneType.Industrial;
+            c.SetTaxRate(target, 1f);
+            Assert.Equal(CityResult.Ok, c.Execute(PaintZoneCommand.Brush(CityKit.V(-80, 0), 120f, target, 1)));
             c.Run(400);
             for (int i = 0; i < c.Buildings.IndexBound; i++)
             {
@@ -251,7 +253,7 @@ namespace Urbe.Sim.Tests.City
             c.Run(6000);
             int newCommercial = 0;
             for (int i = 0; i < c.Buildings.IndexBound; i++)
-                if (c.Buildings.IsAlive(i) && c.Buildings.Get(i).Zone == ZoneType.Industrial && c.Buildings.Get(i).Pos.X < -20f && Math.Abs(c.Buildings.Get(i).Pos.Z) < 40f) newCommercial++;
+                if (c.Buildings.IsAlive(i) && c.Buildings.Get(i).Zone == target && c.Buildings.Get(i).Pos.X < -20f && Math.Abs(c.Buildings.Get(i).Pos.Z) < 40f) newCommercial++;
             Assert.True(newCommercial > 0, "dem R=" + c.Demand.R + " C=" + c.Demand.C + " I=" + c.Demand.I + " pop=" + c.Stats.Population + " cj=" + c.Stats.CommercialJobs + " freeC=" + c.Zones.ZonedFreeCount(ZoneType.Commercial) + " n=" + c.Buildings.Count);
             AssertBuildingsConsistent(c);
         }

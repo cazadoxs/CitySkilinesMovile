@@ -114,6 +114,47 @@ namespace Urbe.Sim.City
         public float TruckChancePerJob = 0.0004f;
         public float TruckVehiclePerExport = 0.7f;
 
+        // ---------------------------------------------------------------- economia, campos e hitos (M3-05)
+        /// <summary>Impuesto semanal base por residente (R) o por empleo cubierto (C, I, O) al 9 % (indice = ZoneType), GDD 8.13.</summary>
+        public float[] TaxPerOccupant = { 0f, 3.0f, 5.0f, 4.5f, 7.0f };
+        /// <summary>Sube la recaudacion un 20 % por nivel por encima del 1.</summary>
+        public float TaxLevelBonus = 0.2f;
+        /// <summary>Mantenimiento semanal por metro de carretera (indice = tipo de carretera).</summary>
+        public float[] RoadMaintenancePerMeter = { 0.12f, 0.10f, 0.28f, 0.45f, 0.08f, 0.5f };
+        /// <summary>Presupuesto de cada servicio en % (50 a 150): multiplica su mantenimiento. Su efecto sobre la eficiencia llega con el despacho (M4).</summary>
+        public int DefaultServiceBudget = 100;
+        /// <summary>Poblacion de cada hito (GDD 3.3): 0 Asentamiento ... 10 Megalopolis.</summary>
+        public int[] MilestonePopulation = { 0, 400, 1000, 2500, 5000, 10000, 20000, 40000, 70000, 100000, 200000 };
+        public int MilestoneRoadAvenue4 = 4;
+        public int MilestoneRoadAvenue6 = 6;
+        /// <summary>Resolucion de los campos de valor del suelo y contaminacion del aire (m) y ticks entre pasadas (se reparten en 8).</summary>
+        public float FieldCellSize = 32f;
+        public int FieldInterval = 40;
+        public float IndustryAirPerJob = 0.25f;
+        public float IndustryAirRadius = 130f;
+        public float IndustryLandValue = -10f;
+        public float IndustryLandValueRadius = 90f;
+        /// <summary>Puntos de felicidad que resta cada unidad de contaminacion (con tope) y puntos de valor del suelo.</summary>
+        public float AirHappinessPerUnit = 0.25f;
+        public float AirHappinessMax = 20f;
+        public float AirLandValuePerUnit = 0.4f;
+
+        /// <summary>Hito de poblacion que desbloquea una zona y densidad (GDD 3.3): baja densidad desde el inicio, media y oficinas en 4, alta en 5.</summary>
+        public int ZoneMilestone(ZoneType zone, int density)
+        {
+            if (zone == ZoneType.Residential) return density >= 3 ? 5 : (density == 2 ? 4 : 0);
+            if (zone == ZoneType.Commercial) return density >= 2 ? 5 : 0;
+            if (zone == ZoneType.Office) return density >= 3 ? 5 : 4;
+            return 0;
+        }
+
+        public int RoadMilestone(ushort roadType)
+        {
+            if (roadType == RoadTypeIds.Avenue4) return MilestoneRoadAvenue4;
+            if (roadType == RoadTypeIds.Avenue6) return MilestoneRoadAvenue6;
+            return 0;
+        }
+
         public int RoadCost(ushort roadType, float length)
         {
             int idx = roadType < RoadCostPerMeter.Length ? roadType : 0;

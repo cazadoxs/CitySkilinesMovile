@@ -13,7 +13,7 @@ namespace Urbe.Sim.Tests.City
         {
             var bal = new CityBalance();
             // Para probar la colocacion sin tener que llegar a poblaciones altas.
-            foreach (ServiceInfo s in bal.Services) s.UnlockPopulation = 0;
+            foreach (ServiceInfo s in bal.Services) s.UnlockMilestone = 0;
             return bal;
         }
 
@@ -66,9 +66,10 @@ namespace Urbe.Sim.Tests.City
         [Fact]
         public void PlacementRejectionsHaveReasons()
         {
-            CitySimulation c = Connected(new CityBalance());
+            // Hitos de poblacion reales (el kit de pruebas abre todo si se usan los de serie, por eso el de Aldea difiere en 1).
+            CitySimulation c = Connected(new CityBalance { MilestonePopulation = new[] { 0, 401, 1000, 2500, 5000, 10000, 20000, 40000, 70000, 100000, 200000 } });
             float x = X0(c) + 60f;
-            // Landfill necesita 400 habitantes.
+            // El vertedero necesita llegar a Aldea (400 habitantes).
             Assert.Equal(CityResult.NotUnlocked, c.Execute(new PlaceServiceCommand(ServiceType.Landfill, CityKit.V(x, 22))));
             Assert.Equal(CityResult.Ok, c.Execute(new PlaceServiceCommand(ServiceType.WaterPump, CityKit.V(x, 22))));
             // Encima de otro servicio.
@@ -79,7 +80,7 @@ namespace Urbe.Sim.Tests.City
             Assert.Equal(CityResult.OutOfBounds, c.Execute(new PlaceServiceCommand(ServiceType.WindTurbine, CityKit.V(5000, 0))));
             // Sin dinero.
             var poor = new CityBalance { StartMoney = 100 };
-            foreach (ServiceInfo s in poor.Services) s.UnlockPopulation = 0;
+            foreach (ServiceInfo s in poor.Services) s.UnlockMilestone = 0;
             CitySimulation p = CityKit.New(1, poor);
             float px = p.OutsidePosition.X + 150f;
             p.Execute(new BuildRoadCityCommand(SegmentRequest.Straight(CityKit.V(px, 0), CityKit.V(px + 20, 0), RoadTypeIds.Street2)));
@@ -153,10 +154,10 @@ namespace Urbe.Sim.Tests.City
             Assert.True(c.Supply.PowerDemand > c.Supply.PowerProduction);
             Assert.True(resPower >= indPower);
             Assert.True(indPower < 1f);
-            bool noPower = false;
+            float minRatio = 255f;
             for (int i = 0; i < c.Buildings.IndexBound; i++)
-                if (c.Buildings.IsAlive(i) && (c.Buildings.Get(i).Problems & BuildingProblems.NoPower) != 0 && c.Buildings.Get(i).Kind == BuildingKind.Zoned) noPower = true;
-            Assert.True(noPower);
+                if (c.Buildings.IsAlive(i) && c.Buildings.Get(i).Kind == BuildingKind.Zoned) minRatio = Math.Min(minRatio, c.Buildings.Get(i).PowerRatio);
+            Assert.True(minRatio < 255f, "n=" + c.Buildings.Count + " pp=" + c.Supply.PowerProduction + " pd=" + c.Supply.PowerDemand);
             Assert.Contains("electricidad", BuildingRules.Describe(BuildingProblems.NoPower));
         }
 

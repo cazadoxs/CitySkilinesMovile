@@ -14,6 +14,7 @@ namespace Urbe.Sim.Tests.City
         {
             bal ??= new CityBalance();
             bal.VirtualPopulation = true;
+            if (bal.MilestonePopulation[1] == 400) bal.MilestonePopulation = new int[11]; // todo desbloqueado desde el principio (salvo hitos propios)
             return new CitySimulation(seed, bal);
         }
 

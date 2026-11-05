@@ -118,17 +118,18 @@ namespace Urbe.Sim.City
         internal void Spend(long amount, CityExpense category)
         {
             _money -= amount;
+            Economy.Record(category, amount);
         }
 
         internal void Refund(long amount, CityExpense category)
         {
             _money += amount;
+            Economy.Record(category, -amount);
         }
 
         // ------------------------------------------------------------------ desbloqueos
 
         /// <summary>True si el tipo y la densidad de zona estan desbloqueados por el hito de poblacion (GDD 3.3).</summary>
-        public bool IsZoneUnlocked(ZoneType zone, int density) => true;
 
         // ------------------------------------------------------------------ tick
 
@@ -150,6 +151,10 @@ namespace Urbe.Sim.City
             h = HashUtil.Mix(h, Coverage.ComputeHash());
             h = HashUtil.Mix(h, Population.ComputeHash());
             h = HashUtil.Mix(h, Trips.ComputeHash());
+            h = HashUtil.Mix(h, Economy.ComputeHash());
+            h = HashUtil.Mix(h, Fields.ComputeHash());
+            h = HashUtil.Mix(h, (ulong)MilestoneIndex);
+            for (int i = 0; i < _taxRates.Length; i++) h = HashUtil.MixF(h, _taxRates[i]);
             h = HashUtil.Mix(h, (ulong)PeakPopulation);
             h = HashUtil.MixF(h, _demand.R); h = HashUtil.MixF(h, _demand.C); h = HashUtil.MixF(h, _demand.I); h = HashUtil.MixF(h, _demand.O);
             h = HashUtil.Mix(h, (ulong)_money);

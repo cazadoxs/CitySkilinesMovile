@@ -18,7 +18,7 @@ namespace Urbe.Sim.Tests.City
         private static CityBalance Open()
         {
             var bal = new CityBalance();
-            foreach (ServiceInfo s in bal.Services) s.UnlockPopulation = 0;
+            foreach (ServiceInfo s in bal.Services) s.UnlockMilestone = 0;
             return bal;
         }
 

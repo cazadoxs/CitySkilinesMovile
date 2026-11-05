@@ -30,6 +30,7 @@ namespace Urbe.Sim.City
             for (int i = 0; i < _taxRates.Length; i++) _taxRates[i] = Balance.DefaultTaxRate;
             Buildings = new BuildingSystem(this, seed ^ 0x4255494CUL);
             InitServices();
+            InitEconomy();
             Population = new PopulationSystem(this, seed ^ 0x504F5055UL);
             Trips = new TripPlanner(this, Population, seed ^ 0x54524950UL);
             _demand.R = Balance.DemandBaseR;
@@ -54,6 +55,8 @@ namespace Urbe.Sim.City
             ProcessCommands();
             AfterNetworkChange();
             Supply.Update(tick);
+            Economy.Step(tick);
+            Fields.Step(tick);
             Coverage.Step(tick);
             if (tick % (ulong)Balance.StatsInterval == 0) RecomputeStats();
             if (tick % (ulong)Balance.DemandInterval == 0) UpdateDemand();

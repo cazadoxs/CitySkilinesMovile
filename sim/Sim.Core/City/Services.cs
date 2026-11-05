@@ -15,8 +15,8 @@ namespace Urbe.Sim.City
         public int Cost;
         /// <summary>Mantenimiento por semana al 100 % de presupuesto.</summary>
         public int Maintenance;
-        /// <summary>Poblacion que desbloquea el servicio (GDD 3.3).</summary>
-        public int UnlockPopulation;
+        /// <summary>Hito de poblacion (0 a 10, GDD 3.3) que desbloquea el servicio.</summary>
+        public int UnlockMilestone;
         public float WaterProduction;
         public float SewerCapacity;
         public float PowerProduction;
@@ -44,13 +44,13 @@ namespace Urbe.Sim.City
             a[(int)ServiceType.SewageOutlet] = new ServiceInfo { Type = ServiceType.SewageOutlet, Key = "sewage_outlet", Width = 2, Depth = 2, Cost = 3000, Maintenance = 70, SewerCapacity = 1500f, GroundPollution = 4f };
             a[(int)ServiceType.WindTurbine] = new ServiceInfo { Type = ServiceType.WindTurbine, Key = "wind_turbine", Width = 2, Depth = 2, Cost = 4500, Maintenance = 40, PowerProduction = 160f };
             a[(int)ServiceType.CoalPlant] = new ServiceInfo { Type = ServiceType.CoalPlant, Key = "coal_plant", Width = 3, Depth = 3, Cost = 26000, Maintenance = 420, PowerProduction = 1600f, AirPollution = 45f, LandValueBonus = -25f, LandValueRadius = 110f };
-            a[(int)ServiceType.Landfill] = new ServiceInfo { Type = ServiceType.Landfill, Key = "landfill", Width = 3, Depth = 3, Cost = 12000, Maintenance = 160, UnlockPopulation = 400, Coverage = (int)CoverageType.Garbage, GroundPollution = 12f, LandValueBonus = -12f, LandValueRadius = 80f, Water = 10f, Power = 15f };
-            a[(int)ServiceType.HealthCenter] = new ServiceInfo { Type = ServiceType.HealthCenter, Key = "health_center", Width = 2, Depth = 2, Cost = 8000, Maintenance = 200, UnlockPopulation = 400, Coverage = (int)CoverageType.Health, LandValueBonus = 8f, LandValueRadius = 90f, Water = 20f, Power = 25f };
-            a[(int)ServiceType.FireStation] = new ServiceInfo { Type = ServiceType.FireStation, Key = "fire_station", Width = 2, Depth = 2, Cost = 9000, Maintenance = 220, UnlockPopulation = 1000, Coverage = (int)CoverageType.Fire, LandValueBonus = 4f, LandValueRadius = 80f, Water = 10f, Power = 20f };
-            a[(int)ServiceType.PoliceStation] = new ServiceInfo { Type = ServiceType.PoliceStation, Key = "police_station", Width = 2, Depth = 2, Cost = 9000, Maintenance = 220, UnlockPopulation = 1000, Coverage = (int)CoverageType.Police, LandValueBonus = 5f, LandValueRadius = 80f, Water = 10f, Power = 20f };
-            a[(int)ServiceType.School] = new ServiceInfo { Type = ServiceType.School, Key = "school", Width = 3, Depth = 2, Cost = 12000, Maintenance = 260, UnlockPopulation = 1000, Coverage = (int)CoverageType.School, Students = 300, LandValueBonus = 6f, LandValueRadius = 100f, Water = 25f, Power = 30f };
-            a[(int)ServiceType.HighSchool] = new ServiceInfo { Type = ServiceType.HighSchool, Key = "high_school", Width = 3, Depth = 3, Cost = 25000, Maintenance = 420, UnlockPopulation = 5000, Coverage = (int)CoverageType.HighSchool, Students = 400, LandValueBonus = 8f, LandValueRadius = 110f, Water = 35f, Power = 45f };
-            a[(int)ServiceType.Park] = new ServiceInfo { Type = ServiceType.Park, Key = "park", Width = 2, Depth = 2, Cost = 3000, Maintenance = 30, UnlockPopulation = 400, Coverage = (int)CoverageType.Park, LandValueBonus = 22f, LandValueRadius = 90f };
+            a[(int)ServiceType.Landfill] = new ServiceInfo { Type = ServiceType.Landfill, Key = "landfill", Width = 3, Depth = 3, Cost = 12000, Maintenance = 160, UnlockMilestone = 1, Coverage = (int)CoverageType.Garbage, GroundPollution = 12f, LandValueBonus = -12f, LandValueRadius = 80f, Water = 10f, Power = 15f };
+            a[(int)ServiceType.HealthCenter] = new ServiceInfo { Type = ServiceType.HealthCenter, Key = "health_center", Width = 2, Depth = 2, Cost = 8000, Maintenance = 200, UnlockMilestone = 1, Coverage = (int)CoverageType.Health, LandValueBonus = 8f, LandValueRadius = 90f, Water = 20f, Power = 25f };
+            a[(int)ServiceType.FireStation] = new ServiceInfo { Type = ServiceType.FireStation, Key = "fire_station", Width = 2, Depth = 2, Cost = 9000, Maintenance = 220, UnlockMilestone = 2, Coverage = (int)CoverageType.Fire, LandValueBonus = 4f, LandValueRadius = 80f, Water = 10f, Power = 20f };
+            a[(int)ServiceType.PoliceStation] = new ServiceInfo { Type = ServiceType.PoliceStation, Key = "police_station", Width = 2, Depth = 2, Cost = 9000, Maintenance = 220, UnlockMilestone = 2, Coverage = (int)CoverageType.Police, LandValueBonus = 5f, LandValueRadius = 80f, Water = 10f, Power = 20f };
+            a[(int)ServiceType.School] = new ServiceInfo { Type = ServiceType.School, Key = "school", Width = 3, Depth = 2, Cost = 12000, Maintenance = 260, UnlockMilestone = 2, Coverage = (int)CoverageType.School, Students = 300, LandValueBonus = 6f, LandValueRadius = 100f, Water = 25f, Power = 30f };
+            a[(int)ServiceType.HighSchool] = new ServiceInfo { Type = ServiceType.HighSchool, Key = "high_school", Width = 3, Depth = 3, Cost = 25000, Maintenance = 420, UnlockMilestone = 4, Coverage = (int)CoverageType.HighSchool, Students = 400, LandValueBonus = 8f, LandValueRadius = 110f, Water = 35f, Power = 45f };
+            a[(int)ServiceType.Park] = new ServiceInfo { Type = ServiceType.Park, Key = "park", Width = 2, Depth = 2, Cost = 3000, Maintenance = 30, UnlockMilestone = 1, Coverage = (int)CoverageType.Park, LandValueBonus = 22f, LandValueRadius = 90f };
             return a;
         }
     }
@@ -148,7 +148,7 @@ namespace Urbe.Sim.City
         /// <summary>Mayor poblacion alcanzada (los hitos no se pierden al bajar de poblacion).</summary>
         public int PeakPopulation { get; private set; }
 
-        public bool IsServiceUnlocked(ServiceType type) => PeakPopulation >= Balance.Service(type).UnlockPopulation;
+        public bool IsServiceUnlocked(ServiceType type) => MilestoneIndex >= Balance.Service(type).UnlockMilestone;
 
         /// <summary>
         /// Comprueba y resuelve la colocacion de un servicio: ajusta la posicion a la calle mas cercana, calcula el giro y las celdas

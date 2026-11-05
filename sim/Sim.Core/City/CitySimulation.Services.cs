@@ -41,6 +41,7 @@ namespace Urbe.Sim.City
         partial void RecomputeStatsExtra()
         {
             if (Stats.Population > PeakPopulation) PeakPopulation = Stats.Population;
+            CheckMilestones();
         }
 
         /// <summary>Mantenimiento de un servicio: lo reengancha si su calle desaparecio y refleja sus problemas de suministro.</summary>
