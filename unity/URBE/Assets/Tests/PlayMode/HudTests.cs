@@ -149,7 +149,10 @@ namespace Urbe.Game.Tests
         {
             yield return LoadMain(90f);
             var cam = Object.FindFirstObjectByType<Camera>();
-            var panel = _hud.GetComponent<UIDocument>().panelSettings;
+            // Se clona el PanelSettings: cambiar targetTexture en el asset compartido deja la UI sin recibir clics en las pruebas posteriores.
+            var uiDoc = _hud.GetComponent<UIDocument>();
+            var panel = Object.Instantiate(uiDoc.panelSettings);
+            uiDoc.panelSettings = panel;
             var rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32);
             rt.Create();
             // 1) La cámara dibuja la escena (incluidos los Graphics.DrawMesh de LateUpdate) en el RenderTexture durante fotogramas normales.

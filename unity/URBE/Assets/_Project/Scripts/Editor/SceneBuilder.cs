@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
 using Urbe.Game.Rendering.Roads;
+using Urbe.Game.Tools.RoadTool;
 using Urbe.Game.Sim;
 using Urbe.Game.UI;
 
@@ -70,7 +71,12 @@ namespace Urbe.Game.Editor
             rigSo.ApplyModifiedPropertiesWithoutUndo();
             camGo.transform.SetPositionAndRotation(new Vector3(400f, 700f, -120f), Quaternion.Euler(55f, 0f, 0f));
 
-            BuildHud(host, rig);
+            var ghostGo = new GameObject("FantasmaCarreteras");
+            var ghost = ghostGo.AddComponent<RoadGhostRenderer>();
+            SetRef(ghost, "roadMaterial", roadSurface);
+            SetRef(ghost, "overlayMaterial", EnsureOverlayMaterial());
+
+            BuildHud(host, rig, roads, ghost);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
@@ -78,7 +84,7 @@ namespace Urbe.Game.Editor
             Debug.Log("[URBE] Escena generada: " + ScenePath);
         }
 
-        private static void BuildHud(SimHost host, CityCameraController rig)
+        private static void BuildHud(SimHost host, CityCameraController rig, RoadChunkRenderer roads, RoadGhostRenderer ghost)
         {
             const string uiFolder = "Assets/_Project/UI/HUD";
             var panel = EnsurePanelSettings();
@@ -94,6 +100,12 @@ namespace Urbe.Game.Editor
             SetRef(hud, "host", host);
             SetRef(hud, "cameraController", rig);
             SetRef(hud, "styleSheet", AssetDatabase.LoadAssetAtPath<StyleSheet>(uiFolder + "/Hud.uss"));
+            var tool = hudGo.AddComponent<RoadToolController>();
+            SetRef(tool, "host", host);
+            SetRef(tool, "cameraController", rig);
+            SetRef(tool, "roads", roads);
+            SetRef(tool, "ghost", ghost);
+            SetRef(tool, "pricesJson", AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/_Project/Data/road-prices.json"));
         }
 
         /// <summary>
@@ -117,6 +129,21 @@ namespace Urbe.Game.Editor
             ps.sortingOrder = 10;
             EditorUtility.SetDirty(ps);
             return ps;
+        }
+
+        /// <summary>Material de líneas y marcadores de la herramienta de carreteras (colores por vértice, sin luz).</summary>
+        private static Material EnsureOverlayMaterial()
+        {
+            string path = $"{MaterialsFolder}/ToolOverlay.mat";
+            var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (m == null)
+            {
+                m = new Material(Shader.Find("Sprites/Default"));
+                AssetDatabase.CreateAsset(m, path);
+            }
+            m.renderQueue = 3100;
+            EditorUtility.SetDirty(m);
+            return m;
         }
 
         private static Material EnsureUnlit(string name, Color color, bool instancing)

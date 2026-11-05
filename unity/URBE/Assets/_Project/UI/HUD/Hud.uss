@@ -80,3 +80,76 @@
     border-color: rgb(147, 187, 252);
     color: white;
 }
+
+
+/* Herramienta de carreteras (M2-05) y capa de tráfico (M2-09). Pantalla 5 de docs/figma.md: acciones frecuentes abajo, rojo solo para el motivo. */
+.bottom-area {
+    flex-grow: 1;
+    justify-content: flex-end;
+    align-items: stretch;
+    padding: 0 8px 6px 8px;
+}
+
+.bottom-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.tool-button { padding: 0 10px; font-size: 15px; }
+
+.build-toggle, .traffic-toggle { margin-left: 0; margin-right: 6px; }
+
+.road-panel {
+    display: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-self: center;
+    padding: 4px 6px;
+    margin-bottom: 6px;
+    border-radius: 10px;
+    background-color: rgba(30, 34, 42, 0.90);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.road-panel.open { display: flex; }
+
+.tool-group { flex-direction: row; margin: 0 6px 0 0; padding-right: 6px; border-right-width: 1px; border-right-color: rgba(255, 255, 255, 0.15); }
+.tool-group:last-child { border-right-width: 0; margin-right: 0; padding-right: 0; }
+
+.tool-confirm { background-color: rgb(34, 160, 90); border-color: rgb(120, 220, 160); color: white; min-width: 64px; }
+.tool-confirm:disabled { background-color: rgba(255, 255, 255, 0.08); color: rgb(130, 136, 148); border-color: rgba(255, 255, 255, 0.10); }
+.tool-cancel { min-width: 48px; }
+
+.tool-message {
+    display: none;
+    align-self: center;
+    margin-bottom: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(240, 243, 248);
+    background-color: rgba(30, 34, 42, 0.90);
+}
+
+.tool-message.show { display: flex; }
+.tool-message.tool-bad { color: white; background-color: rgb(200, 52, 56); }
+
+.hud-button.toggled { background-color: rgb(59, 130, 246); border-color: rgb(147, 187, 252); color: white; }
+
+.loupe {
+    display: none;
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    border-width: 3px;
+    border-color: white;
+    background-color: rgb(30, 34, 42);
+}
+
+.loupe.show { display: flex; }
+.loupe-cross { position: absolute; left: 56px; top: 56px; width: 8px; height: 8px; background-color: rgb(59, 130, 246); border-radius: 4px; }

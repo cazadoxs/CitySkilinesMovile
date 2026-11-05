@@ -11,7 +11,7 @@ using Urbe.Game.Sim;
 namespace Urbe.Game.Tests
 {
     /// <summary>M2-04b: la escena Main pinta las carreteras con RoadChunkRenderer. Captura real en docs/media/m2-carreteras.png.</summary>
-    public class RoadRenderTests
+    public class RoadRenderTests : UnityEngine.InputSystem.InputTestFixture
     {
         private SimHost _host = null!;
         private RoadChunkRenderer _roads = null!;

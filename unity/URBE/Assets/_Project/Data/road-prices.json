@@ -1,0 +1,11 @@
+{
+  "note": "Precios provisionales por metro (M2-05). No hay economía todavía; se sustituirán por los de la economía.",
+  "entries": [
+    { "key": "street_2", "perMeter": 8 },
+    { "key": "oneway_2", "perMeter": 7 },
+    { "key": "avenue_4", "perMeter": 22 },
+    { "key": "avenue_6", "perMeter": 38 },
+    { "key": "rural_2", "perMeter": 5 },
+    { "key": "highway_4", "perMeter": 60 }
+  ]
+}

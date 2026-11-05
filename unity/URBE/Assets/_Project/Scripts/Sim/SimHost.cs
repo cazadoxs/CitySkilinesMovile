@@ -143,6 +143,34 @@ namespace Urbe.Game.Sim
 
         public int PendingCommands => _sim != null ? _sim.Commands.Count : 0;
 
+        /// <summary>
+        /// Aplica ya los comandos encolados sin avanzar el tick (construir en pausa, M2-05). Devuelve cuántos se aplicaron.
+        /// Seguro: se llama en el hilo principal y nunca a mitad de un tick.
+        /// </summary>
+        public int FlushCommands()
+        {
+            if (_sim == null || _sim.Commands.Count == 0) return 0;
+            return _sim.Commands.Drain(_sim.Network, _sim.History);
+        }
+
+        /// <summary>Deshace el último comando aplicado (también en pausa). Los comandos pendientes se aplican antes.</summary>
+        public bool UndoLast()
+        {
+            if (_sim == null) return false;
+            FlushCommands();
+            return _sim.History.Undo(_sim.Network);
+        }
+
+        public bool RedoLast()
+        {
+            if (_sim == null) return false;
+            FlushCommands();
+            return _sim.History.Redo(_sim.Network);
+        }
+
+        public int UndoCount => _sim != null ? _sim.History.UndoCount : 0;
+        public int RedoCount => _sim != null ? _sim.History.RedoCount : 0;
+
         // ------------------------------------------------------------------ lectura para render
 
         /// <summary>
