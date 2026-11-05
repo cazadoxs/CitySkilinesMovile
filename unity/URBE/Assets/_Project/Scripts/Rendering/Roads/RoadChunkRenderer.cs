@@ -73,7 +73,21 @@ namespace Urbe.Game.Rendering.Roads
             new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 1),
         };
 
-        public Material? Material { get => material; set => material = value; }
+        private Material? _runtimeMaterial;
+
+        /// <summary>
+        /// Material de ejecución (copia del asset): la capa de tráfico cambia sus propiedades sin tocar el asset compartido,
+        /// que si no quedaría modificado entre sesiones del editor y entre pruebas.
+        /// </summary>
+        public Material? Material
+        {
+            get
+            {
+                if (_runtimeMaterial == null && material != null) _runtimeMaterial = new Material(material) { name = material.name + " (ejecución)" };
+                return _runtimeMaterial;
+            }
+            set { material = value; _runtimeMaterial = null; }
+        }
         public RoadNetwork? Network => _net;
         public RoadProfile[] Profiles => _profiles;
         public int ChunkCount => _chunks.Count;
@@ -358,7 +372,7 @@ namespace Urbe.Game.Rendering.Roads
             c.Filter = c.Go.AddComponent<MeshFilter>();
             c.Filter.sharedMesh = c.Mesh;
             var mr = c.Go.AddComponent<MeshRenderer>();
-            mr.sharedMaterial = material;
+            mr.sharedMaterial = Material;
             mr.shadowCastingMode = ShadowCastingMode.Off;
             mr.receiveShadows = false;
             mr.lightProbeUsage = LightProbeUsage.Off;

@@ -38,6 +38,11 @@
                     <ui:Button name="btn-confirm" text="OK" class="hud-button tool-button tool-confirm" />
                 </ui:VisualElement>
             </ui:VisualElement>
+            <ui:VisualElement name="traffic-legend" class="traffic-legend">
+                <ui:Label text="Fluido" class="legend-item legend-free" />
+                <ui:Label text="Lento" class="legend-item legend-slow" />
+                <ui:Label text="Atasco" class="legend-item legend-jam" />
+            </ui:VisualElement>
             <ui:VisualElement name="bottom-row" class="bottom-row" picking-mode="Ignore">
                 <ui:Button name="btn-build" text="Construir" class="hud-button tool-button build-toggle" />
                 <ui:Button name="btn-traffic" text="Trafico" class="hud-button tool-button traffic-toggle" />

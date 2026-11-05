@@ -153,3 +153,29 @@
 
 .loupe.show { display: flex; }
 .loupe-cross { position: absolute; left: 56px; top: 56px; width: 8px; height: 8px; background-color: rgb(59, 130, 246); border-radius: 4px; }
+
+/* Leyenda de la capa de tráfico: el estado va también en texto, no solo en color. */
+.traffic-legend {
+    display: none;
+    flex-direction: row;
+    align-self: flex-end;
+    margin-bottom: 6px;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: rgba(30, 34, 42, 0.90);
+}
+
+.traffic-legend.show { display: flex; }
+
+.legend-item {
+    padding: 3px 10px;
+    margin: 0 2px;
+    border-radius: 6px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(20, 22, 28);
+}
+
+.legend-free { background-color: rgb(51, 199, 92); }
+.legend-slow { background-color: rgb(250, 199, 38); }
+.legend-jam { background-color: rgb(235, 31, 31); color: white; }

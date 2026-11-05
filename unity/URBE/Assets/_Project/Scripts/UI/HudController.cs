@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
+using Urbe.Game.Rendering.Traffic;
 using Urbe.Game.Sim;
 
 namespace Urbe.Game.UI
@@ -19,6 +20,7 @@ namespace Urbe.Game.UI
         [SerializeField] private SimHost host = null!;
         [SerializeField] private CityCameraController? cameraController;
         [SerializeField] private StyleSheet? styleSheet;
+        [SerializeField] private TrafficLayer? trafficLayer;
 
         private UIDocument _doc = null!;
         private VisualElement _root = null!;
@@ -27,6 +29,8 @@ namespace Urbe.Game.UI
         private Label _flow = null!;
         private VisualElement _flowChip = null!;
         private Button _pause = null!, _x1 = null!, _x2 = null!, _x3 = null!;
+        private Button? _traffic;
+        private VisualElement? _legend;
         private Rect _lastSafe;
         private Vector2Int _lastScreen;
         private int _shownVehicles = -1, _shownFlow = -1;
@@ -52,6 +56,10 @@ namespace Urbe.Game.UI
             _x2 = _root.Q<Button>("btn-x2");
             _x3 = _root.Q<Button>("btn-x3");
 
+            _traffic = _root.Q<Button>("btn-traffic");
+            _legend = _root.Q<VisualElement>("traffic-legend");
+            if (trafficLayer == null) trafficLayer = FindFirstObjectByType<TrafficLayer>();
+            if (_traffic != null) _traffic.clicked += OnTraffic;
             _pause.clicked += OnPause;
             _x1.clicked += OnX1;
             _x2.clicked += OnX2;
@@ -69,10 +77,22 @@ namespace Urbe.Game.UI
         {
             if (host != null) host.SpeedChanged -= OnSpeedChanged;
             if (cameraController != null && cameraController.IsOverUi == IsOverHud) cameraController.IsOverUi = null;
+            if (_traffic != null) _traffic.clicked -= OnTraffic;
             if (_pause != null) { _pause.clicked -= OnPause; _x1.clicked -= OnX1; _x2.clicked -= OnX2; _x3.clicked -= OnX3; }
         }
 
         private void OnPause() => host.TogglePause();
+
+        /// <summary>Botón Tráfico (M2-09): activa o desactiva la capa de flujo y su leyenda.</summary>
+        public void ToggleTrafficLayer()
+        {
+            if (trafficLayer == null) return;
+            trafficLayer.Toggle();
+            _traffic?.EnableInClassList("toggled", trafficLayer.Active);
+            _legend?.EnableInClassList("show", trafficLayer.Active);
+        }
+
+        private void OnTraffic() => ToggleTrafficLayer();
         private void OnX1() => host.SetSpeed(SimSpeed.X1);
         private void OnX2() => host.SetSpeed(SimSpeed.X2);
         private void OnX3() => host.SetSpeed(SimSpeed.X3);
@@ -86,6 +106,7 @@ namespace Urbe.Game.UI
             if (kb.digit1Key.wasPressedThisFrame) host.SetSpeed(SimSpeed.X1);
             if (kb.digit2Key.wasPressedThisFrame) host.SetSpeed(SimSpeed.X2);
             if (kb.digit3Key.wasPressedThisFrame) host.SetSpeed(SimSpeed.X3);
+            if (kb.tKey.wasPressedThisFrame) ToggleTrafficLayer();
         }
 
         // ------------------------------------------------------------------ estado

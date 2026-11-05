@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
 using Urbe.Game.Rendering.Roads;
+using Urbe.Game.Rendering.Traffic;
 using Urbe.Game.Tools.RoadTool;
 using Urbe.Game.Sim;
 using Urbe.Game.UI;
@@ -76,7 +77,12 @@ namespace Urbe.Game.Editor
             SetRef(ghost, "roadMaterial", roadSurface);
             SetRef(ghost, "overlayMaterial", EnsureOverlayMaterial());
 
-            BuildHud(host, rig, roads, ghost);
+            var trafficGo = new GameObject("CapaTrafico");
+            var traffic = trafficGo.AddComponent<TrafficLayer>();
+            SetRef(traffic, "host", host);
+            SetRef(traffic, "roads", roads);
+
+            BuildHud(host, rig, roads, ghost, traffic);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
@@ -84,7 +90,7 @@ namespace Urbe.Game.Editor
             Debug.Log("[URBE] Escena generada: " + ScenePath);
         }
 
-        private static void BuildHud(SimHost host, CityCameraController rig, RoadChunkRenderer roads, RoadGhostRenderer ghost)
+        private static void BuildHud(SimHost host, CityCameraController rig, RoadChunkRenderer roads, RoadGhostRenderer ghost, TrafficLayer traffic)
         {
             const string uiFolder = "Assets/_Project/UI/HUD";
             var panel = EnsurePanelSettings();
@@ -100,6 +106,7 @@ namespace Urbe.Game.Editor
             SetRef(hud, "host", host);
             SetRef(hud, "cameraController", rig);
             SetRef(hud, "styleSheet", AssetDatabase.LoadAssetAtPath<StyleSheet>(uiFolder + "/Hud.uss"));
+            SetRef(hud, "trafficLayer", traffic);
             var tool = hudGo.AddComponent<RoadToolController>();
             SetRef(tool, "host", host);
             SetRef(tool, "cameraController", rig);
