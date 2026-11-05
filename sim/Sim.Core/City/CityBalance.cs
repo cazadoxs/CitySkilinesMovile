@@ -28,6 +28,44 @@ namespace Urbe.Sim.City
         public float ZoneInheritRadius = 4.5f;
         /// <summary>Profundidad maxima de celdas pintables por lado (GDD 4.4).</summary>
         public int ZoneMaxDepth = 4;
+        // ---------------------------------------------------------------- edificios (M3-02)
+        /// <summary>Ticks entre dos actualizaciones de un mismo edificio (se reparte 1/N por tick, GDD 8.1).</summary>
+        public int BuildingUpdateInterval = 20;
+        public int GrowthInterval = 20;
+        public int DemandInterval = 30;
+        public int StatsInterval = 100;
+        public int MaxNewBuildingsPerBatch = 2;
+        public float GrowthMinDemand = 5f;
+        public int GrowthCandidates = 6;
+        /// <summary>Residentes por celda segun densidad 1, 2 y 3 (nivel 1).</summary>
+        public float[] ResidentsPerCell = { 5f, 10f, 20f };
+        public float[] JobsPerCellCommercial = { 3f, 6f };
+        public float JobsPerCellIndustrial = 5f;
+        public float[] JobsPerCellOffice = { 8f, 8f, 12f };
+        public float[] LevelCapacityMult = { 1f, 1.35f, 1.8f, 2.4f, 3.1f };
+        public float HighSkillShareCommercial = 0.25f;
+        public float HighSkillShareIndustrial = 0.10f;
+        /// <summary>Valor del suelo y educacion media necesarios para cada nivel (GDD 4.5).</summary>
+        public int[] LevelLandValue = { 0, 20, 40, 60, 80 };
+        public float[] LevelEducation = { 0f, 0.5f, 1.0f, 1.8f, 2.4f };
+        /// <summary>Actualizaciones seguidas cumpliendo los requisitos para subir de nivel.</summary>
+        public int LevelUpUpdates = 60;
+        /// <summary>Actualizaciones seguidas sin agua o luz para abandonar, y con la zona cambiada (GDD 4.4).</summary>
+        public int AbandonUpdates = 45;
+        public int WrongZoneAbandonUpdates = 15;
+        /// <summary>Actualizaciones que un edificio abandonado sigue en pie antes de demolerse solo.</summary>
+        public int DemolishAbandonedUpdates = 90;
+        public float DefaultLandValue = 30f;
+        public float DemandBaseR = 35f;
+        public float DemandBaseC = 5f;
+        public float DemandBaseI = 30f;
+        public float CommercialJobsPerResident = 0.10f;
+        public float IndustrialJobsPerResident = 0.14f;
+        public float DefaultTaxRate = 9f;
+        /// <summary>Si true los edificios se llenan solos (sin ciudadanos): para pruebas de edificios, redes y economia (M3-02 a M3-05).</summary>
+        public bool VirtualPopulation = true;
+        public float WorkforceFraction = 0.55f;
+
 
         public int RoadCost(ushort roadType, float length)
         {

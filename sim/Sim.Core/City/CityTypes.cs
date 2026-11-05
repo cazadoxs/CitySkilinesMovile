@@ -49,3 +49,26 @@ namespace Urbe.Sim.City
     /// <summary>Categorias de ingreso: impuestos por zona.</summary>
     public enum CityIncome : byte { TaxResidential = 0, TaxCommercial = 1, TaxIndustrial = 2, TaxOffice = 3, Other = 4 }
 }
+
+namespace Urbe.Sim.City
+{
+    /// <summary>Tipos de cobertura que miden los requisitos de nivel (GDD 4.5) y la felicidad. El bit de la mascara es (1 &lt;&lt; tipo).</summary>
+    public enum CoverageType : byte { Garbage = 0, Health = 1, Police = 2, Fire = 3, School = 4, HighSchool = 5, Park = 6, Transit = 7, Leisure = 8 }
+
+    /// <summary>Catalogo de edificios de servicio de M3 (ADR 005). Los de M4 en adelante (hospital, metro...) se anaden al final.</summary>
+    public enum ServiceType : byte
+    {
+        None = 0,
+        WaterPump = 1,
+        SewageOutlet = 2,
+        WindTurbine = 3,
+        CoalPlant = 4,
+        Landfill = 5,
+        HealthCenter = 6,
+        FireStation = 7,
+        PoliceStation = 8,
+        School = 9,
+        HighSchool = 10,
+        Park = 11,
+    }
+}

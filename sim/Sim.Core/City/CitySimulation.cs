@@ -132,22 +132,6 @@ namespace Urbe.Sim.City
 
         // ------------------------------------------------------------------ tick
 
-        private void InitSystems(ulong seed) { }
-
-        /// <summary>Regenera lo que depende de la red viaria (celdas de zona y, mas adelante, edificios y redes).</summary>
-        private void AfterNetworkChange()
-        {
-            Zones.Refresh();
-        }
-
-        /// <summary>Un tick de ciudad, en el orden de GDD 8.1.</summary>
-        public void Step()
-        {
-            ProcessCommands();
-            AfterNetworkChange();
-            Traffic.Step();
-        }
-
         public void Run(int ticks)
         {
             for (int i = 0; i < ticks; i++) Step();
@@ -161,6 +145,8 @@ namespace Urbe.Sim.City
             ulong h = HashUtil.Mix(0x43495459UL, Traffic.Tick);
             h = HashUtil.Mix(h, Traffic.ComputeHash());
             h = HashUtil.Mix(h, Zones.ComputeHash());
+            h = HashUtil.Mix(h, Buildings.ComputeHash());
+            h = HashUtil.MixF(h, _demand.R); h = HashUtil.MixF(h, _demand.C); h = HashUtil.MixF(h, _demand.I); h = HashUtil.MixF(h, _demand.O);
             h = HashUtil.Mix(h, (ulong)_money);
             h = HashUtil.Mix(h, _rng.State);
             h = HashUtil.Mix(h, _rng.Increment);
