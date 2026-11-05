@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Urbe.Game.CameraRig;
 using Urbe.Game.Sim;
 
 namespace Urbe.Game.Editor
@@ -51,7 +52,14 @@ namespace Urbe.Game.Editor
             cam.nearClipPlane = 1f;
             cam.farClipPlane = 6000f;
             camGo.AddComponent<AudioListener>();
-            camGo.transform.SetPositionAndRotation(new Vector3(400f, 650f, -150f), Quaternion.Euler(60f, 0f, 0f));
+            var rig = camGo.AddComponent<CityCameraController>();
+            var rigSo = new SerializedObject(rig);
+            rigSo.FindProperty("settings.boundsMin").vector2Value = new Vector2(-300f, -300f);
+            rigSo.FindProperty("settings.boundsMax").vector2Value = new Vector2(1100f, 1100f);
+            rigSo.FindProperty("startFocus").vector2Value = new Vector2(400f, 400f);
+            rigSo.FindProperty("startHeight").floatValue = 700f;
+            rigSo.ApplyModifiedPropertiesWithoutUndo();
+            camGo.transform.SetPositionAndRotation(new Vector3(400f, 700f, -120f), Quaternion.Euler(55f, 0f, 0f));
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };

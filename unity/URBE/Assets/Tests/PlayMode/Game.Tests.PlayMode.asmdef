@@ -3,6 +3,8 @@
     "rootNamespace": "Urbe.Game.Tests",
     "references": [
         "Game.Unity",
+        "Unity.InputSystem",
+        "Unity.InputSystem.TestFramework",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

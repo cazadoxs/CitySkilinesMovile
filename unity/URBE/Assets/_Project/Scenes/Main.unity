@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1150428307
+--- !u!1 &217232335
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,9 +127,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1150428310}
-  - component: {fileID: 1150428309}
-  - component: {fileID: 1150428308}
+  - component: {fileID: 217232339}
+  - component: {fileID: 217232338}
+  - component: {fileID: 217232337}
+  - component: {fileID: 217232336}
   m_Layer: 0
   m_Name: Camara
   m_TagString: MainCamera
@@ -137,21 +138,56 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1150428308
+--- !u!114 &217232336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 217232335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01de92ca8dcc5184da59b96b84b5d7a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings:
+    minHeight: 15
+    maxHeight: 3000
+    minPitch: 25
+    maxPitch: 85
+    boundsMin: {x: -300, y: -300}
+    boundsMax: {x: 1100, y: 1100}
+    panDamping: 5
+    zoomDamping: 9
+    rotateDamping: 7
+    tiltDamping: 9
+    focusSpeed: 7
+    verticalFov: 40
+  startFocus: {x: 400, y: 400}
+  startHeight: 700
+  startYaw: 0
+  startPitch: 55
+  keyboardPanSpeed: 1.1
+  keyboardRotateDegPerSec: 70
+  keyboardTiltDegPerSec: 40
+  mouseRotateDegPerPx: 0.25
+  mouseTiltDegPerPx: 0.2
+  wheelZoomPerNotch: 1.2
+--- !u!81 &217232337
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150428307}
+  m_GameObject: {fileID: 217232335}
   m_Enabled: 1
---- !u!20 &1150428309
+--- !u!20 &217232338
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150428307}
+  m_GameObject: {fileID: 217232335}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -196,22 +232,22 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &1150428310
+--- !u!4 &217232339
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1150428307}
+  m_GameObject: {fileID: 217232335}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 400, y: 650, z: -150}
+  m_LocalRotation: {x: 0.46174863, y: 0, z: 0, w: 0.8870109}
+  m_LocalPosition: {x: 400, y: 700, z: -120}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1450068073
+--- !u!1 &1123447144
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -219,90 +255,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1450068077}
-  - component: {fileID: 1450068076}
-  - component: {fileID: 1450068075}
-  - component: {fileID: 1450068074}
-  m_Layer: 0
-  m_Name: Simulacion
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1450068074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1450068073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8369e3ece42bab142ada556a544231b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  host: {fileID: 1450068076}
-  roadMaterial: {fileID: 2100000, guid: cfae86d2cbc68da4f9f11b2440076ddd, type: 2}
-  vehicleMaterial: {fileID: 2100000, guid: a4c1b61067ea0e24f8b4389e61f3ea85, type: 2}
-  groundMaterial: {fileID: 2100000, guid: 19c65c942bdd02e45afa34355878563e, type: 2}
-  vehicleSize: {x: 2, y: 1.6, z: 4.5}
---- !u!114 &1450068075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1450068073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edb0704079dae7d44a4bf5c70a5df9c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  host: {fileID: 1450068076}
-  seed: 12345
-  maxVehicles: 300
-  tripsPerSecond: 4
-  cells: 8
-  spacing: 100
---- !u!114 &1450068076
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1450068073}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adbd55bc05812b540a5ef74196154281, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxTicksPerFrame: 8
---- !u!4 &1450068077
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1450068073}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1481794189
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1481794191}
-  - component: {fileID: 1481794190}
+  - component: {fileID: 1123447146}
+  - component: {fileID: 1123447145}
   m_Layer: 0
   m_Name: Sol
   m_TagString: Untagged
@@ -310,13 +264,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!108 &1481794190
+--- !u!108 &1123447145
 Light:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1481794189}
+  m_GameObject: {fileID: 1123447144}
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
@@ -375,15 +329,97 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!4 &1481794191
+--- !u!4 &1123447146
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1481794189}
+  m_GameObject: {fileID: 1123447144}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821794, y: -0.23456973, z: 0.10938166, w: 0.8754261}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1920978277
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1920978281}
+  - component: {fileID: 1920978280}
+  - component: {fileID: 1920978279}
+  - component: {fileID: 1920978278}
+  m_Layer: 0
+  m_Name: Simulacion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1920978278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920978277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8369e3ece42bab142ada556a544231b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  host: {fileID: 1920978280}
+  roadMaterial: {fileID: 2100000, guid: cfae86d2cbc68da4f9f11b2440076ddd, type: 2}
+  vehicleMaterial: {fileID: 2100000, guid: a4c1b61067ea0e24f8b4389e61f3ea85, type: 2}
+  groundMaterial: {fileID: 2100000, guid: 19c65c942bdd02e45afa34355878563e, type: 2}
+  vehicleSize: {x: 2, y: 1.6, z: 4.5}
+--- !u!114 &1920978279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920978277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edb0704079dae7d44a4bf5c70a5df9c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  host: {fileID: 1920978280}
+  seed: 12345
+  maxVehicles: 300
+  tripsPerSecond: 4
+  cells: 8
+  spacing: 100
+--- !u!114 &1920978280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920978277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adbd55bc05812b540a5ef74196154281, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxTicksPerFrame: 8
+--- !u!4 &1920978281
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1920978277}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -394,6 +430,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1481794191}
-  - {fileID: 1450068077}
-  - {fileID: 1150428310}
+  - {fileID: 1123447146}
+  - {fileID: 1920978281}
+  - {fileID: 217232339}
