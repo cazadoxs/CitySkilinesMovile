@@ -1,0 +1,4 @@
+*.dll binary
+*.png binary
+*.asset text eol=lf
+*.meta text eol=lf

@@ -1,0 +1,33 @@
+# Unity (M2-01)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+*.csproj
+*.sln
+*.suo
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.vs/
+.idea/
+.vscode/
+*.apk
+*.aab
+*.unitypackage
+sysinfo.txt
+crashlytics-build.properties
+# Registros y capturas de trabajo
+/*.log
+# Las DLL de Plugins/SimCore se commitean a proposito (tools/scripts/sync-simcore.*)
+!/Assets/Plugins/SimCore/*.dll
