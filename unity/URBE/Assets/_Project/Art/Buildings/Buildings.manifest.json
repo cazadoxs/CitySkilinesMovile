@@ -1,0 +1,2537 @@
+{
+ "grid_cell_m": 8.0,
+ "atlas": "BuildingAtlas.png",
+ "front": "+Z (Unity)",
+ "models": [
+  {
+   "id": "Bld_R_low_L1_A",
+   "fbx": "Bld_R_low_L1_A.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 1,
+   "variant": "A",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 6.0,
+    "depth": 6.0,
+    "height": 5.85
+   },
+   "height_m": 5.85,
+   "tris_lod0": 306,
+   "tris_lod1": 90,
+   "source": "pack:B7",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L1_B",
+   "fbx": "Bld_R_low_L1_B.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 1,
+   "variant": "B",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 6.0,
+    "depth": 6.0,
+    "height": 6.5
+   },
+   "height_m": 6.5,
+   "tris_lod0": 240,
+   "tris_lod1": 72,
+   "source": "pack:B18",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L1_C",
+   "fbx": "Bld_R_low_L1_C.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 1,
+   "variant": "C",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 6.0,
+    "depth": 6.0,
+    "height": 5.44
+   },
+   "height_m": 5.44,
+   "tris_lod0": 858,
+   "tris_lod1": 192,
+   "source": "pack:B5",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L2_A",
+   "fbx": "Bld_R_low_L2_A.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 2,
+   "variant": "A",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 6.0,
+    "depth": 6.98,
+    "height": 6.7
+   },
+   "height_m": 6.7,
+   "tris_lod0": 856,
+   "tris_lod1": 256,
+   "source": "pack:B68",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L2_B",
+   "fbx": "Bld_R_low_L2_B.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 2,
+   "variant": "B",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 6.44,
+    "depth": 6.77,
+    "height": 6.72
+   },
+   "height_m": 6.72,
+   "tris_lod0": 516,
+   "tris_lod1": 154,
+   "source": "pack:B47",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L2_C",
+   "fbx": "Bld_R_low_L2_C.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 2,
+   "variant": "C",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 6.0,
+    "depth": 6.0,
+    "height": 6.48
+   },
+   "height_m": 6.48,
+   "tris_lod0": 628,
+   "tris_lod1": 188,
+   "source": "pack:B39",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L3_A",
+   "fbx": "Bld_R_low_L3_A.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 3,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 6.98,
+    "height": 4.73
+   },
+   "height_m": 4.73,
+   "tris_lod0": 652,
+   "tris_lod1": 194,
+   "source": "pack:B8",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L3_B",
+   "fbx": "Bld_R_low_L3_B.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 3,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 6.97,
+    "height": 5.61
+   },
+   "height_m": 5.61,
+   "tris_lod0": 1138,
+   "tris_lod1": 340,
+   "source": "pack:B34",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L3_C",
+   "fbx": "Bld_R_low_L3_C.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 3,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 7.07,
+    "height": 8.96
+   },
+   "height_m": 8.96,
+   "tris_lod0": 816,
+   "tris_lod1": 244,
+   "source": "pack:B40",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L4_A",
+   "fbx": "Bld_R_low_L4_A.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 4,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.07,
+    "depth": 7.03,
+    "height": 11.2
+   },
+   "height_m": 11.2,
+   "tris_lod0": 1246,
+   "tris_lod1": 372,
+   "source": "pack:B64",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L4_B",
+   "fbx": "Bld_R_low_L4_B.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 4,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 6.89,
+    "height": 8.55
+   },
+   "height_m": 8.55,
+   "tris_lod0": 490,
+   "tris_lod1": 146,
+   "source": "pack:B50",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L4_C",
+   "fbx": "Bld_R_low_L4_C.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 4,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 7.17,
+    "height": 8.06
+   },
+   "height_m": 8.06,
+   "tris_lod0": 596,
+   "tris_lod1": 178,
+   "source": "pack:B58",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L5_A",
+   "fbx": "Bld_R_low_L5_A.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 5,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.98,
+    "height": 5.62
+   },
+   "height_m": 5.62,
+   "tris_lod0": 780,
+   "tris_lod1": 234,
+   "source": "pack:B53",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L5_B",
+   "fbx": "Bld_R_low_L5_B.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 5,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.98,
+    "height": 11.86
+   },
+   "height_m": 11.86,
+   "tris_lod0": 868,
+   "tris_lod1": 259,
+   "source": "pack:B60",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_low_L5_C",
+   "fbx": "Bld_R_low_L5_C.fbx",
+   "zone": "R",
+   "density": "low",
+   "level": 5,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.07,
+    "height": 12.6
+   },
+   "height_m": 12.6,
+   "tris_lod0": 866,
+   "tris_lod1": 258,
+   "source": "pack:B67",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L1_A",
+   "fbx": "Bld_R_med_L1_A.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 1,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.14,
+    "depth": 6.07,
+    "height": 12.23
+   },
+   "height_m": 12.23,
+   "tris_lod0": 1046,
+   "tris_lod1": 312,
+   "source": "pack:B36",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L1_B",
+   "fbx": "Bld_R_med_L1_B.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 1,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 6.06,
+    "height": 8.56
+   },
+   "height_m": 8.56,
+   "tris_lod0": 610,
+   "tris_lod1": 142,
+   "source": "pack:B85",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L1_C",
+   "fbx": "Bld_R_med_L1_C.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 1,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 6.0,
+    "height": 12.48
+   },
+   "height_m": 12.48,
+   "tris_lod0": 594,
+   "tris_lod1": 178,
+   "source": "pack:B44",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L2_A",
+   "fbx": "Bld_R_med_L2_A.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 2,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 14.98
+   },
+   "height_m": 14.98,
+   "tris_lod0": 1202,
+   "tris_lod1": 318,
+   "source": "pack:B32",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L2_B",
+   "fbx": "Bld_R_med_L2_B.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 2,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 15.0
+   },
+   "height_m": 15.0,
+   "tris_lod0": 1010,
+   "tris_lod1": 302,
+   "source": "pack:B33",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L2_C",
+   "fbx": "Bld_R_med_L2_C.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 2,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.07,
+    "depth": 14.07,
+    "height": 12.7
+   },
+   "height_m": 12.7,
+   "tris_lod0": 682,
+   "tris_lod1": 174,
+   "source": "pack:B74",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L3_A",
+   "fbx": "Bld_R_med_L3_A.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 3,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 18.37
+   },
+   "height_m": 18.37,
+   "tris_lod0": 1306,
+   "tris_lod1": 391,
+   "source": "pack:B56",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L3_B",
+   "fbx": "Bld_R_med_L3_B.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 3,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.14,
+    "depth": 14.07,
+    "height": 9.82
+   },
+   "height_m": 9.82,
+   "tris_lod0": 862,
+   "tris_lod1": 258,
+   "source": "pack:B25",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L3_C",
+   "fbx": "Bld_R_med_L3_C.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 3,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 8.42
+   },
+   "height_m": 8.42,
+   "tris_lod0": 1090,
+   "tris_lod1": 222,
+   "source": "pack:B27",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L4_A",
+   "fbx": "Bld_R_med_L4_A.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 4,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 14.0,
+    "height": 7.46
+   },
+   "height_m": 7.46,
+   "tris_lod0": 786,
+   "tris_lod1": 234,
+   "source": "pack:B81",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L4_B",
+   "fbx": "Bld_R_med_L4_B.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 4,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 22.08,
+    "depth": 14.07,
+    "height": 25.98
+   },
+   "height_m": 25.98,
+   "tris_lod0": 2386,
+   "tris_lod1": 714,
+   "source": "pack:B94_001",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L4_C",
+   "fbx": "Bld_R_med_L4_C.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 4,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 14.0,
+    "height": 14.93
+   },
+   "height_m": 14.93,
+   "tris_lod0": 674,
+   "tris_lod1": 186,
+   "source": "pack:B50",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L5_A",
+   "fbx": "Bld_R_med_L5_A.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 5,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 25.13
+   },
+   "height_m": 25.13,
+   "tris_lod0": 1018,
+   "tris_lod1": 304,
+   "source": "pack:B65",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L5_B",
+   "fbx": "Bld_R_med_L5_B.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 5,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 20.78
+   },
+   "height_m": 20.78,
+   "tris_lod0": 1564,
+   "tris_lod1": 468,
+   "source": "pack:B51",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_med_L5_C",
+   "fbx": "Bld_R_med_L5_C.fbx",
+   "zone": "R",
+   "density": "med",
+   "level": 5,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.14,
+    "depth": 22.07,
+    "height": 38.7
+   },
+   "height_m": 38.7,
+   "tris_lod0": 2090,
+   "tris_lod1": 626,
+   "source": "pack:B95",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L1_A",
+   "fbx": "Bld_R_high_L1_A.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 1,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 22.49
+   },
+   "height_m": 22.49,
+   "tris_lod0": 643,
+   "tris_lod1": 191,
+   "source": "pack:B52",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L1_B",
+   "fbx": "Bld_R_high_L1_B.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 1,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 31.98
+   },
+   "height_m": 31.98,
+   "tris_lod0": 1114,
+   "tris_lod1": 334,
+   "source": "pack:B94",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L1_C",
+   "fbx": "Bld_R_high_L1_C.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 1,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 10.7
+   },
+   "height_m": 10.7,
+   "tris_lod0": 1002,
+   "tris_lod1": 300,
+   "source": "pack:B28",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L2_A",
+   "fbx": "Bld_R_high_L2_A.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 2,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.07,
+    "height": 15.97
+   },
+   "height_m": 15.97,
+   "tris_lod0": 843,
+   "tris_lod1": 252,
+   "source": "pack:B61",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L2_B",
+   "fbx": "Bld_R_high_L2_B.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 2,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 11.19
+   },
+   "height_m": 11.19,
+   "tris_lod0": 538,
+   "tris_lod1": 122,
+   "source": "pack:B19",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L2_C",
+   "fbx": "Bld_R_high_L2_C.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 2,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.0,
+    "depth": 14.0,
+    "height": 9.62
+   },
+   "height_m": 9.62,
+   "tris_lod0": 848,
+   "tris_lod1": 254,
+   "source": "pack:B53",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L3_A",
+   "fbx": "Bld_R_high_L3_A.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 3,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 14.0,
+    "height": 9.96
+   },
+   "height_m": 9.96,
+   "tris_lod0": 790,
+   "tris_lod1": 236,
+   "source": "pack:B81",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L3_B",
+   "fbx": "Bld_R_high_L3_B.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 3,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 14.0,
+    "height": 45.64
+   },
+   "height_m": 45.64,
+   "tris_lod0": 1914,
+   "tris_lod1": 574,
+   "source": "pack:B87",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L3_C",
+   "fbx": "Bld_R_high_L3_C.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 3,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 14.0,
+    "height": 11.98
+   },
+   "height_m": 11.98,
+   "tris_lod0": 1226,
+   "tris_lod1": 366,
+   "source": "pack:B34",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L4_A",
+   "fbx": "Bld_R_high_L4_A.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 4,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 44.16
+   },
+   "height_m": 44.16,
+   "tris_lod0": 1696,
+   "tris_lod1": 508,
+   "source": "pack:B88",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L4_B",
+   "fbx": "Bld_R_high_L4_B.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 4,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 71.4
+   },
+   "height_m": 71.4,
+   "tris_lod0": 839,
+   "tris_lod1": 250,
+   "source": "pack:B86",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L4_C",
+   "fbx": "Bld_R_high_L4_C.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 4,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 34.29
+   },
+   "height_m": 34.29,
+   "tris_lod0": 636,
+   "tris_lod1": 190,
+   "source": "pack:B83",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L5_A",
+   "fbx": "Bld_R_high_L5_A.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 5,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 27.63
+   },
+   "height_m": 27.63,
+   "tris_lod0": 1042,
+   "tris_lod1": 312,
+   "source": "pack:B65",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L5_B",
+   "fbx": "Bld_R_high_L5_B.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 5,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 71.4
+   },
+   "height_m": 71.4,
+   "tris_lod0": 839,
+   "tris_lod1": 250,
+   "source": "pack:B86",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_R_high_L5_C",
+   "fbx": "Bld_R_high_L5_C.fbx",
+   "zone": "R",
+   "density": "high",
+   "level": 5,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 22.0,
+    "depth": 22.0,
+    "height": 49.66
+   },
+   "height_m": 49.66,
+   "tris_lod0": 1934,
+   "tris_lod1": 580,
+   "source": "pack:B87",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L1_A",
+   "fbx": "Bld_C_low_L1_A.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 1,
+   "variant": "A",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 5.0,
+    "depth": 6.29,
+    "height": 6.7
+   },
+   "height_m": 6.7,
+   "tris_lod0": 934,
+   "tris_lod1": 279,
+   "source": "pack:B72",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L1_B",
+   "fbx": "Bld_C_low_L1_B.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 1,
+   "variant": "B",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 5.0,
+    "depth": 6.09,
+    "height": 6.7
+   },
+   "height_m": 6.7,
+   "tris_lod0": 934,
+   "tris_lod1": 280,
+   "source": "pack:B73",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L1_C",
+   "fbx": "Bld_C_low_L1_C.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 1,
+   "variant": "C",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 5.14,
+    "depth": 6.44,
+    "height": 5.61
+   },
+   "height_m": 5.61,
+   "tris_lod0": 592,
+   "tris_lod1": 176,
+   "source": "pack:B38",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L2_A",
+   "fbx": "Bld_C_low_L2_A.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 2,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 5.0,
+    "height": 4.86
+   },
+   "height_m": 4.86,
+   "tris_lod0": 978,
+   "tris_lod1": 292,
+   "source": "pack:B62",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L2_B",
+   "fbx": "Bld_C_low_L2_B.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 2,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 6.33,
+    "height": 5.64
+   },
+   "height_m": 5.64,
+   "tris_lod0": 478,
+   "tris_lod1": 136,
+   "source": "pack:B10",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L2_C",
+   "fbx": "Bld_C_low_L2_C.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 2,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 5.5,
+    "height": 4.36
+   },
+   "height_m": 4.36,
+   "tris_lod0": 542,
+   "tris_lod1": 162,
+   "source": "pack:B30",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L3_A",
+   "fbx": "Bld_C_low_L3_A.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 3,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 6.4,
+    "height": 8.64
+   },
+   "height_m": 8.64,
+   "tris_lod0": 770,
+   "tris_lod1": 230,
+   "source": "pack:B80",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L3_B",
+   "fbx": "Bld_C_low_L3_B.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 3,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 6.27,
+    "height": 6.51
+   },
+   "height_m": 6.51,
+   "tris_lod0": 914,
+   "tris_lod1": 166,
+   "source": "pack:B20",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L3_C",
+   "fbx": "Bld_C_low_L3_C.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 3,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 6.29,
+    "height": 4.95
+   },
+   "height_m": 4.95,
+   "tris_lod0": 962,
+   "tris_lod1": 288,
+   "source": "pack:B21",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L4_A",
+   "fbx": "Bld_C_low_L4_A.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 4,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 14.35,
+    "height": 10.02
+   },
+   "height_m": 10.02,
+   "tris_lod0": 1798,
+   "tris_lod1": 348,
+   "source": "pack:B79",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L4_B",
+   "fbx": "Bld_C_low_L4_B.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 4,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 14.2,
+    "height": 7.16
+   },
+   "height_m": 7.16,
+   "tris_lod0": 636,
+   "tris_lod1": 190,
+   "source": "pack:B48",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L4_C",
+   "fbx": "Bld_C_low_L4_C.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 4,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 13.0,
+    "height": 6.38
+   },
+   "height_m": 6.38,
+   "tris_lod0": 870,
+   "tris_lod1": 260,
+   "source": "pack:B26",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L5_A",
+   "fbx": "Bld_C_low_L5_A.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 5,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.07,
+    "depth": 13.91,
+    "height": 15.42
+   },
+   "height_m": 15.42,
+   "tris_lod0": 702,
+   "tris_lod1": 146,
+   "source": "pack:B43",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L5_B",
+   "fbx": "Bld_C_low_L5_B.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 5,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.14,
+    "depth": 14.35,
+    "height": 12.59
+   },
+   "height_m": 12.59,
+   "tris_lod0": 1046,
+   "tris_lod1": 312,
+   "source": "pack:B36",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_low_L5_C",
+   "fbx": "Bld_C_low_L5_C.fbx",
+   "zone": "C",
+   "density": "low",
+   "level": 5,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.07,
+    "depth": 14.47,
+    "height": 7.5
+   },
+   "height_m": 7.5,
+   "tris_lod0": 1048,
+   "tris_lod1": 274,
+   "source": "pack:B25",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L1_A",
+   "fbx": "Bld_C_high_L1_A.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 1,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 13.25,
+    "height": 20.18
+   },
+   "height_m": 20.18,
+   "tris_lod0": 916,
+   "tris_lod1": 274,
+   "source": "pack:B70",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L1_B",
+   "fbx": "Bld_C_high_L1_B.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 1,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 14.34,
+    "height": 19.48
+   },
+   "height_m": 19.48,
+   "tris_lod0": 1578,
+   "tris_lod1": 472,
+   "source": "pack:B51",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L1_C",
+   "fbx": "Bld_C_high_L1_C.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 1,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 14.48,
+    "height": 17.73
+   },
+   "height_m": 17.73,
+   "tris_lod0": 456,
+   "tris_lod1": 136,
+   "source": "pack:B69",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L2_A",
+   "fbx": "Bld_C_high_L2_A.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 2,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 14.23,
+    "height": 28.62
+   },
+   "height_m": 28.62,
+   "tris_lod0": 738,
+   "tris_lod1": 221,
+   "source": "pack:B46",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L2_B",
+   "fbx": "Bld_C_high_L2_B.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 2,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 14.27,
+    "height": 30.0
+   },
+   "height_m": 30.0,
+   "tris_lod0": 1104,
+   "tris_lod1": 330,
+   "source": "pack:B94",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L2_C",
+   "fbx": "Bld_C_high_L2_C.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 2,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.0,
+    "depth": 14.32,
+    "height": 33.85
+   },
+   "height_m": 33.85,
+   "tris_lod0": 1686,
+   "tris_lod1": 504,
+   "source": "pack:B88",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L3_A",
+   "fbx": "Bld_C_high_L3_A.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 3,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 13.76,
+    "height": 32.98
+   },
+   "height_m": 32.98,
+   "tris_lod0": 1216,
+   "tris_lod1": 363,
+   "source": "pack:B98",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L3_B",
+   "fbx": "Bld_C_high_L3_B.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 3,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 14.48,
+    "height": 27.79
+   },
+   "height_m": 27.79,
+   "tris_lod0": 450,
+   "tris_lod1": 134,
+   "source": "pack:B55",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L3_C",
+   "fbx": "Bld_C_high_L3_C.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 3,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.14,
+    "depth": 13.83,
+    "height": 38.77
+   },
+   "height_m": 38.77,
+   "tris_lod0": 1800,
+   "tris_lod1": 540,
+   "source": "pack:B99",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L4_A",
+   "fbx": "Bld_C_high_L4_A.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 4,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 21.0,
+    "height": 34.29
+   },
+   "height_m": 34.29,
+   "tris_lod0": 572,
+   "tris_lod1": 170,
+   "source": "pack:B83",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L4_B",
+   "fbx": "Bld_C_high_L4_B.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 4,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 22.22,
+    "height": 49.56
+   },
+   "height_m": 49.56,
+   "tris_lod0": 1924,
+   "tris_lod1": 576,
+   "source": "pack:B87",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L4_C",
+   "fbx": "Bld_C_high_L4_C.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 4,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 22.32,
+    "height": 71.3
+   },
+   "height_m": 71.3,
+   "tris_lod0": 809,
+   "tris_lod1": 242,
+   "source": "pack:B86",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L5_A",
+   "fbx": "Bld_C_high_L5_A.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 5,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 22.22,
+    "height": 27.53
+   },
+   "height_m": 27.53,
+   "tris_lod0": 1036,
+   "tris_lod1": 310,
+   "source": "pack:B65",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L5_B",
+   "fbx": "Bld_C_high_L5_B.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 5,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 22.22,
+    "height": 44.06
+   },
+   "height_m": 44.06,
+   "tris_lod0": 1690,
+   "tris_lod1": 506,
+   "source": "pack:B88",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_C_high_L5_C",
+   "fbx": "Bld_C_high_L5_C.fbx",
+   "zone": "C",
+   "density": "high",
+   "level": 5,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.0,
+    "depth": 22.14,
+    "height": 41.79
+   },
+   "height_m": 41.79,
+   "tris_lod0": 1104,
+   "tris_lod1": 330,
+   "source": "pack:B94",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L1_A",
+   "fbx": "Bld_O_high_L1_A.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 1,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 7.33,
+    "height": 14.31
+   },
+   "height_m": 14.31,
+   "tris_lod0": 720,
+   "tris_lod1": 216,
+   "source": "pack:B82",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L1_B",
+   "fbx": "Bld_O_high_L1_B.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 1,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 7.4,
+    "height": 15.29
+   },
+   "height_m": 15.29,
+   "tris_lod0": 406,
+   "tris_lod1": 120,
+   "source": "pack:B55",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L1_C",
+   "fbx": "Bld_O_high_L1_C.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 1,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 7.33,
+    "height": 14.31
+   },
+   "height_m": 14.31,
+   "tris_lod0": 720,
+   "tris_lod1": 216,
+   "source": "pack:B82",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L2_A",
+   "fbx": "Bld_O_high_L2_A.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 2,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 15.13,
+    "height": 24.47
+   },
+   "height_m": 24.47,
+   "tris_lod0": 694,
+   "tris_lod1": 207,
+   "source": "pack:B46",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L2_B",
+   "fbx": "Bld_O_high_L2_B.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 2,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 14.1,
+    "height": 16.93
+   },
+   "height_m": 16.93,
+   "tris_lod0": 872,
+   "tris_lod1": 261,
+   "source": "pack:B70",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L2_C",
+   "fbx": "Bld_O_high_L2_C.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 2,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 15.13,
+    "height": 24.47
+   },
+   "height_m": 24.47,
+   "tris_lod0": 694,
+   "tris_lod1": 207,
+   "source": "pack:B46",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L3_A",
+   "fbx": "Bld_O_high_L3_A.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 3,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 14.95,
+    "height": 22.39
+   },
+   "height_m": 22.39,
+   "tris_lod0": 613,
+   "tris_lod1": 182,
+   "source": "pack:B52",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L3_B",
+   "fbx": "Bld_O_high_L3_B.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 3,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 15.12,
+    "height": 16.5
+   },
+   "height_m": 16.5,
+   "tris_lod0": 1020,
+   "tris_lod1": 306,
+   "source": "pack:B68",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L3_C",
+   "fbx": "Bld_O_high_L3_C.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 3,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 13.8,
+    "depth": 14.64,
+    "height": 15.87
+   },
+   "height_m": 15.87,
+   "tris_lod0": 656,
+   "tris_lod1": 196,
+   "source": "pack:B47",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L4_A",
+   "fbx": "Bld_O_high_L4_A.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 4,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.8,
+    "depth": 23.13,
+    "height": 49.56
+   },
+   "height_m": 49.56,
+   "tris_lod0": 1884,
+   "tris_lod1": 564,
+   "source": "pack:B87",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L4_B",
+   "fbx": "Bld_O_high_L4_B.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 4,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.8,
+    "depth": 23.13,
+    "height": 44.06
+   },
+   "height_m": 44.06,
+   "tris_lod0": 1666,
+   "tris_lod1": 498,
+   "source": "pack:B88",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L4_C",
+   "fbx": "Bld_O_high_L4_C.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 4,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.8,
+    "depth": 21.8,
+    "height": 34.29
+   },
+   "height_m": 34.29,
+   "tris_lod0": 596,
+   "tris_lod1": 178,
+   "source": "pack:B83",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L5_A",
+   "fbx": "Bld_O_high_L5_A.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 5,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.8,
+    "depth": 23.23,
+    "height": 71.3
+   },
+   "height_m": 71.3,
+   "tris_lod0": 789,
+   "tris_lod1": 236,
+   "source": "pack:B86",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L5_B",
+   "fbx": "Bld_O_high_L5_B.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 5,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.8,
+    "depth": 23.23,
+    "height": 71.3
+   },
+   "height_m": 71.3,
+   "tris_lod0": 789,
+   "tris_lod1": 236,
+   "source": "pack:B86",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_O_high_L5_C",
+   "fbx": "Bld_O_high_L5_C.fbx",
+   "zone": "O",
+   "density": "high",
+   "level": 5,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 21.8,
+    "depth": 23.04,
+    "height": 41.79
+   },
+   "height_m": 41.79,
+   "tris_lod0": 1084,
+   "tris_lod1": 324,
+   "source": "pack:B94",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L1_A",
+   "fbx": "Bld_I_med_L1_A.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 1,
+   "variant": "A",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 5.6,
+    "depth": 6.8,
+    "height": 6.5
+   },
+   "height_m": 6.5,
+   "tris_lod0": 54,
+   "tris_lod1": 16,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L1_B",
+   "fbx": "Bld_I_med_L1_B.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 1,
+   "variant": "B",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 5.6,
+    "depth": 6.8,
+    "height": 6.5
+   },
+   "height_m": 6.5,
+   "tris_lod0": 54,
+   "tris_lod1": 16,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L1_C",
+   "fbx": "Bld_I_med_L1_C.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 1,
+   "variant": "C",
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 5.6,
+    "depth": 6.8,
+    "height": 6.5
+   },
+   "height_m": 6.5,
+   "tris_lod0": 54,
+   "tris_lod1": 16,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L2_A",
+   "fbx": "Bld_I_med_L2_A.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 2,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.37,
+    "depth": 6.5,
+    "height": 12.25
+   },
+   "height_m": 12.25,
+   "tris_lod0": 242,
+   "tris_lod1": 72,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L2_B",
+   "fbx": "Bld_I_med_L2_B.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 2,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.37,
+    "depth": 6.5,
+    "height": 12.25
+   },
+   "height_m": 12.25,
+   "tris_lod0": 242,
+   "tris_lod1": 72,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L2_C",
+   "fbx": "Bld_I_med_L2_C.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 2,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 13.37,
+    "depth": 6.5,
+    "height": 12.25
+   },
+   "height_m": 12.25,
+   "tris_lod0": 306,
+   "tris_lod1": 91,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L3_A",
+   "fbx": "Bld_I_med_L3_A.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 3,
+   "variant": "A",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.97,
+    "depth": 13.14,
+    "height": 18.25
+   },
+   "height_m": 18.25,
+   "tris_lod0": 304,
+   "tris_lod1": 91,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L3_B",
+   "fbx": "Bld_I_med_L3_B.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 3,
+   "variant": "B",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.97,
+    "depth": 13.14,
+    "height": 18.25
+   },
+   "height_m": 18.25,
+   "tris_lod0": 304,
+   "tris_lod1": 91,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L3_C",
+   "fbx": "Bld_I_med_L3_C.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 3,
+   "variant": "C",
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.97,
+    "depth": 13.14,
+    "height": 18.25
+   },
+   "height_m": 18.25,
+   "tris_lod0": 368,
+   "tris_lod1": 110,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L4_A",
+   "fbx": "Bld_I_med_L4_A.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 4,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.6,
+    "depth": 14.87,
+    "height": 24.25
+   },
+   "height_m": 24.25,
+   "tris_lod0": 496,
+   "tris_lod1": 148,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L4_B",
+   "fbx": "Bld_I_med_L4_B.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 4,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.6,
+    "depth": 14.87,
+    "height": 24.25
+   },
+   "height_m": 24.25,
+   "tris_lod0": 496,
+   "tris_lod1": 148,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L4_C",
+   "fbx": "Bld_I_med_L4_C.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 4,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 21.6,
+    "depth": 14.87,
+    "height": 24.25
+   },
+   "height_m": 24.25,
+   "tris_lod0": 587,
+   "tris_lod1": 176,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L5_A",
+   "fbx": "Bld_I_med_L5_A.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 5,
+   "variant": "A",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 26.3,
+    "depth": 23.99,
+    "height": 30.25
+   },
+   "height_m": 30.25,
+   "tris_lod0": 700,
+   "tris_lod1": 210,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L5_B",
+   "fbx": "Bld_I_med_L5_B.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 5,
+   "variant": "B",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 26.3,
+    "depth": 23.99,
+    "height": 30.25
+   },
+   "height_m": 30.25,
+   "tris_lod0": 700,
+   "tris_lod1": 210,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Bld_I_med_L5_C",
+   "fbx": "Bld_I_med_L5_C.fbx",
+   "zone": "I",
+   "density": "med",
+   "level": 5,
+   "variant": "C",
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 26.3,
+    "depth": 23.99,
+    "height": 30.25
+   },
+   "height_m": 30.25,
+   "tris_lod0": 791,
+   "tris_lod1": 237,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_water_pump",
+   "fbx": "Svc_water_pump.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 8.7,
+    "depth": 6.68,
+    "height": 12.2
+   },
+   "height_m": 12.2,
+   "tris_lod0": 154,
+   "tris_lod1": 136,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_drain",
+   "fbx": "Svc_drain.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 7.6,
+    "depth": 7.6,
+    "height": 4.4
+   },
+   "height_m": 4.4,
+   "tris_lod0": 202,
+   "tris_lod1": 180,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_wind",
+   "fbx": "Svc_wind.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "size_m": {
+    "width": 24.67,
+    "depth": 4.78,
+    "height": 44.8
+   },
+   "height_m": 44.8,
+   "tris_lod0": 148,
+   "tris_lod1": 108,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_coal",
+   "fbx": "Svc_coal.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 23.9,
+    "depth": 23.8,
+    "height": 40.3
+   },
+   "height_m": 40.3,
+   "tris_lod0": 517,
+   "tris_lod1": 465,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_landfill",
+   "fbx": "Svc_landfill.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    3,
+    3
+   ],
+   "size_m": {
+    "width": 24.4,
+    "depth": 24.9,
+    "height": 8.4
+   },
+   "height_m": 8.4,
+   "tris_lod0": 217,
+   "tris_lod1": 157,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_health",
+   "fbx": "Svc_health.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 14.9,
+    "depth": 14.3,
+    "height": 12.18
+   },
+   "height_m": 12.18,
+   "tris_lod0": 312,
+   "tris_lod1": 120,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_fire",
+   "fbx": "Svc_fire.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 15.1,
+    "depth": 7.0,
+    "height": 16.4
+   },
+   "height_m": 16.4,
+   "tris_lod0": 122,
+   "tris_lod1": 92,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_police",
+   "fbx": "Svc_police.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "size_m": {
+    "width": 15.0,
+    "depth": 9.15,
+    "height": 13.4
+   },
+   "height_m": 13.4,
+   "tris_lod0": 114,
+   "tris_lod1": 82,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_school",
+   "fbx": "Svc_school.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "size_m": {
+    "width": 23.2,
+    "depth": 15.96,
+    "height": 18.0
+   },
+   "height_m": 18.0,
+   "tris_lod0": 301,
+   "tris_lod1": 193,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  },
+  {
+   "id": "Svc_park",
+   "fbx": "Svc_park.fbx",
+   "zone": "SVC",
+   "density": null,
+   "level": null,
+   "variant": null,
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "size_m": {
+    "width": 15.6,
+    "depth": 15.6,
+    "height": 6.24
+   },
+   "height_m": 6.24,
+   "tris_lod0": 554,
+   "tris_lod1": 514,
+   "source": "procedural",
+   "tint": "alpha-atlas (Urbe/Vehicle)"
+  }
+ ]
+}
