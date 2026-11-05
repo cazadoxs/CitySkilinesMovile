@@ -7,6 +7,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
+using Urbe.Game.Rendering.Roads;
 using Urbe.Game.Sim;
 using Urbe.Game.UI;
 
@@ -29,8 +30,8 @@ namespace Urbe.Game.Editor
             Directory.CreateDirectory(MaterialsFolder);
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            Material road = EnsureUnlit("DebugRoad", new Color(0.23f, 0.25f, 0.29f), false);
-            Material ground = EnsureUnlit("DebugGround", new Color(0.62f, 0.72f, 0.58f), false);
+            Material roadSurface = RoadAtlasBuilder.EnsureAll();
+            Material ground = EnsureUnlit("DebugGround", new Color(0.56f, 0.72f, 0.47f), false);
             Material vehicle = EnsureUnlit("DebugVehicle", new Color(0.95f, 0.55f, 0.15f), true);
 
             var sun = new GameObject("Sol");
@@ -45,9 +46,13 @@ namespace Urbe.Game.Editor
             SetRef(boot, "host", host);
             var view = simGo.AddComponent<DebugSimView>();
             SetRef(view, "host", host);
-            SetRef(view, "roadMaterial", road);
             SetRef(view, "groundMaterial", ground);
             SetRef(view, "vehicleMaterial", vehicle);
+
+            var roadsGo = new GameObject("Carreteras");
+            var roads = roadsGo.AddComponent<RoadChunkRenderer>();
+            SetRef(roads, "host", host);
+            SetRef(roads, "material", roadSurface);
 
             var camGo = new GameObject("Camara") { tag = "MainCamera" };
             var cam = camGo.AddComponent<Camera>();

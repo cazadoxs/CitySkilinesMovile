@@ -64,3 +64,14 @@ Según `Node.Kind`:
 - El colisionado no existe: se selecciona con el índice espacial de la red y un plano, no con física.
 - Sin LOD en M2. Con 8 vértices por fila, una red grande se acerca al millón de vértices antes de culling. M6 reducirá filas a distancia si la medición en móvil lo pide.
 - Los ángulos muy agudos pueden dar esquinas feas: la validación de M2-05 debe rechazarlos con mensaje antes que parchearlos en la malla.
+
+## Cambios durante la implementación (M2-04b)
+
+- **Ruta:** el código vive en `unity/URBE/Assets/_Project/Scripts/Rendering/Roads/` (GDD 19.3), no en `Assets/Scripts/`.
+- **`RoadPiece` lleva además** `Flags` (cierre de mediana y línea de detención por extremo) y `MitreStart/MitreEnd`. La sección es un `Span<Vector3>` de 10 puntos (`CrossSectionAt`) en vez de un buffer genérico.
+- **Continuaciones con quiebro: inglete, no malla de nodo.** Entre dos segmentos del mismo tipo con giro de hasta 100° el corte de cada extremo se desplaza `lateral × tan(φ/2)` a lo largo de la tangente y los dos coinciden en la bisectriz: sin hueco ni solape y sin malla. Con otro tipo, giro mayor o segmentos demasiado cortos se usa el nodo genérico (puede solapar en el interior del codo). Motivo: un giro de 90° en dos segmentos es lo más habitual al dibujar y el nodo genérico solapaba.
+- **Vértices por fila:** unos 18 a 22 (tira con vértices propios por cara para normales duras del bordillo), no 8. Una red de 20.200 segmentos da 1,75 M de vértices (46 MB, 1,2 M de triángulos) antes de culling: M10/M6 deberán reducir (LOD o fusionar vértices).
+- **Línea de detención** a +0,02 m (no 0,005): con 700 m de altura de cámara 5 mm provoca z-fighting.
+- **`normal.w`** lleva la máscara de calzada (127) que usa la capa de tráfico para teñir solo el asfalto.
+- **Ángulos agudos:** el retranqueo del núcleo (`semiancho + 1`) no depende del ángulo, así que dos brazos a menos de unos 55° (calles) o 67° (avenidas) se solapan más allá del retranqueo. La validación de M2-05 lo rechaza (ver tarjeta M2-05).
+- **Atlas:** 2048×512 (columnas de 224 px por tipo y de 128 px lisas), sin compresión por ahora (4 MB con mips); pendiente comprimir en móvil.
