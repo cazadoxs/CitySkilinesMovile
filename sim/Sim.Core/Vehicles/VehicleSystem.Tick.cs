@@ -410,6 +410,7 @@ namespace Urbe.Sim.Vehicles
                 if ((v.Flags & VehicleFlags.Arrived) != 0)
                 {
                     ArrivedCount++;
+                    VehicleArrived?.Invoke(i);
                     RemoveVehicle(i);
                     continue;
                 }

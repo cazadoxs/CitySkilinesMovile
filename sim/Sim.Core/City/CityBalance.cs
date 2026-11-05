@@ -63,7 +63,7 @@ namespace Urbe.Sim.City
         public float IndustrialJobsPerResident = 0.14f;
         public float DefaultTaxRate = 9f;
         /// <summary>Si true los edificios se llenan solos (sin ciudadanos): para pruebas de edificios, redes y economia (M3-02 a M3-05).</summary>
-        public bool VirtualPopulation = true;
+        public bool VirtualPopulation = false;
         public float WorkforceFraction = 0.55f;
 
 
@@ -79,6 +79,40 @@ namespace Urbe.Sim.City
         public int CoverageInterval = 20;
         /// <summary>Distancia maxima del eje de una calle a la que se engancha un servicio.</summary>
         public float ServiceReach = 60f;
+
+        // ---------------------------------------------------------------- poblacion y rutinas (M3-04)
+        public int MaxPopulation = 60000;
+        public int ImmigrationInterval = 60;
+        /// <summary>Hogares que llegan como mucho por lote de inmigracion (con empleo de sobra y felicidad media).</summary>
+        public float ImmigrationMaxPerBatch = 2.5f;
+        public int ImmigrantHouseholdMax = 4;
+        public float ChildChance = 0.4f;
+        /// <summary>Dias de juego por ano de edad: una semana = un ano, para que se vea el ciclo vital en una partida normal.</summary>
+        public int DaysPerAgeYear = 7;
+        public float BirthChancePerDay = 0.004f;
+        public float CarOwnership = 0.7f;
+        public int EmploymentInterval = 40;
+        public int RoutineSlices = 30;
+        public float WorkHours = 8f;
+        public float SchoolHours = 6f;
+        public float ShopChance = 0.35f;
+        public float LeisureChance = 0.3f;
+        public int ShopStayTicks = 100;
+        /// <summary>Por debajo de esta distancia (m) o sin coche la gente no conduce. Velocidades de pie y en transporte en m/s: mas altas que reales porque un dia dura 6 minutos.</summary>
+        public float WalkDistance = 120f;
+        public float WalkSpeed = 6f;
+        public float TransitSpeed = 14f;
+        public float AbstractDetour = 1.3f;
+        /// <summary>Si un viaje no termina en este tiempo (ticks) se da por llegado: red de seguridad ante vehiculos perdidos.</summary>
+        public int MaxTripTicks = 4000;
+        /// <summary>Si ya hay tantos viajes fisicos esperando hueco para salir, los nuevos se simulan de forma abstracta (la red no absorbe mas).</summary>
+        public int MaxPendingPhysical = 40;
+        public int AbstractCapacity = 3000;
+        public int AbstractRouteLength = 64;
+        public int UnhappyThreshold = 28;
+        public int UnhappyLeaveDays = 3;
+        public float TruckChancePerJob = 0.0004f;
+        public float TruckVehiclePerExport = 0.7f;
 
         public int RoadCost(ushort roadType, float length)
         {

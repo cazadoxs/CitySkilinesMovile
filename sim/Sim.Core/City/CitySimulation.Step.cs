@@ -11,6 +11,8 @@ namespace Urbe.Sim.City
         private readonly float[] _taxRates = new float[5];
 
         public BuildingSystem Buildings { get; private set; } = null!;
+        public PopulationSystem Population { get; private set; } = null!;
+        public TripPlanner Trips { get; private set; } = null!;
         public CityStats Stats { get; } = new CityStats();
         /// <summary>Demanda actual de cada zona, de -100 a +100.</summary>
         public DemandState Demand => _demand;
@@ -28,6 +30,8 @@ namespace Urbe.Sim.City
             for (int i = 0; i < _taxRates.Length; i++) _taxRates[i] = Balance.DefaultTaxRate;
             Buildings = new BuildingSystem(this, seed ^ 0x4255494CUL);
             InitServices();
+            Population = new PopulationSystem(this, seed ^ 0x504F5055UL);
+            Trips = new TripPlanner(this, Population, seed ^ 0x54524950UL);
             _demand.R = Balance.DemandBaseR;
             _demand.I = Balance.DemandBaseI;
         }
@@ -55,6 +59,11 @@ namespace Urbe.Sim.City
             if (tick % (ulong)Balance.DemandInterval == 0) UpdateDemand();
             if (tick % (ulong)Balance.GrowthInterval == 0) Buildings.Grow(_demand);
             Buildings.UpdateSlice(tick);
+            if (!Balance.VirtualPopulation)
+            {
+                Population.Step(tick);
+                Trips.Step(tick);
+            }
             Traffic.Step();
         }
 
@@ -73,6 +82,7 @@ namespace Urbe.Sim.City
         public void RecomputeStats()
         {
             CityStats s = Stats;
+            if (!Balance.VirtualPopulation) Population.SyncBuildings();
             s.Buildings = Buildings.Count;
             s.AbandonedBuildings = 0;
             s.HousingCapacity = 0;
@@ -112,6 +122,7 @@ namespace Urbe.Sim.City
                 s.UnemployedLow = unemployed - s.UnemployedHigh;
                 s.AverageHappiness = 60f;
             }
+            if (!Balance.VirtualPopulation) Population.FillStats(s);
             s.HousingVacant = Math.Max(0, s.HousingCapacity - s.Population);
             RecomputeStatsExtra();
         }
@@ -137,7 +148,11 @@ namespace Urbe.Sim.City
         /// <summary>Llena un edificio sin ciudadanos reales (poblacion virtual): sube un poco por actualizacion hasta su capacidad.</summary>
         internal void UpdateOccupancy(int index)
         {
-            if (!Balance.VirtualPopulation) return;
+            if (!Balance.VirtualPopulation)
+            {
+                if (Buildings.Get(index).Kind == BuildingKind.Zoned && Buildings.Get(index).Zone != ZoneType.Residential) Trips.MaybeTruck(index);
+                return;
+            }
             ref Building b = ref Buildings.GetMutable(index);
             if (b.Zone == ZoneType.Residential)
             {
@@ -199,5 +214,21 @@ namespace Urbe.Sim.City
         internal void UpdateService(int index) { UpdateServiceExtra(index); }
 
         partial void UpdateServiceExtra(int index);
+    }
+}
+
+namespace Urbe.Sim.City
+{
+    public sealed partial class CitySimulation
+    {
+        /// <summary>Puntos de felicidad que resta la contaminacion en un punto (0 hasta M3-05).</summary>
+        public float PollutionPenaltyAt(Geometry.Vec2 p)
+        {
+            float v = 0f;
+            PollutionExtra(p, ref v);
+            return v;
+        }
+
+        partial void PollutionExtra(Geometry.Vec2 p, ref float penalty);
     }
 }

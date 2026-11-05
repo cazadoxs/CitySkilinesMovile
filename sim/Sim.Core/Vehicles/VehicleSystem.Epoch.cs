@@ -23,6 +23,8 @@ namespace Urbe.Sim.Vehicles
         /// dividido: el destino pasa a ser la mitad que contiene su punto de llegada (el generador de viajes actualiza el suyo).
         /// </summary>
         public event Action<int, EntityId>? DestinationSegmentChanged;
+        /// <summary>Un vehiculo (indice) llego a su destino; se avisa justo antes de darlo de baja (M3-04: viajes de ciudadanos).</summary>
+        public event Action<int>? VehicleArrived;
 
         /// <summary>Vehiculos cuyo segmento se dividio y que se recolocaron en la mitad que les corresponde (M1-15).</summary>
         public int RemappedBySplit { get; private set; }

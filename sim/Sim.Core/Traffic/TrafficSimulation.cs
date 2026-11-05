@@ -62,6 +62,12 @@ namespace Urbe.Sim.Traffic
         public CommandQueue Commands { get; } = new CommandQueue();
         public CommandHistory History { get; } = new CommandHistory();
 
+        /// <summary>
+        /// Carga estadistica por segmento de los viajes abstractos (tráfico hibrido, GDD 8.3): cada valor es la fraccion de la capacidad
+        /// del segmento que ocupan. Se suma al flujo medido como factor de congestion para el pathfinding. Null = sin carga extra.
+        /// </summary>
+        public float[]? ExtraLoad { get; set; }
+
         public ulong Tick => Vehicles.CurrentTick;
         public float Seconds => Vehicles.CurrentTick * Vehicles.Config.Dt;
 
@@ -173,7 +179,13 @@ namespace Urbe.Sim.Traffic
             bool fresh = _factors.Length != flow.Length;
             if (fresh) _factors = new float[flow.Length];
             float min = _opt.Metrics.MinCongestionFactor;
-            for (int i = 0; i < flow.Length; i++) _factors[i] = flow[i] < min ? min : flow[i];
+            float[]? extra = ExtraLoad;
+            for (int i = 0; i < flow.Length; i++)
+            {
+                float f = flow[i];
+                if (extra != null && i < extra.Length && extra[i] > 0f) f /= 1f + extra[i];
+                _factors[i] = f < min ? min : f;
+            }
             if (fresh) Paths.Congestion = _factors;
             else Paths.NotifyCongestionChanged();
         }

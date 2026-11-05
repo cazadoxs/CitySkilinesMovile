@@ -9,7 +9,16 @@ namespace Urbe.Sim.Tests.City
 {
     internal static class CityKit
     {
-        public static CitySimulation New(ulong seed = 1, CityBalance? bal = null) => new CitySimulation(seed, bal);
+        /// <summary>Ciudad con poblacion virtual (los edificios se llenan solos): para probar zonas, edificios y redes sin ciudadanos.</summary>
+        public static CitySimulation New(ulong seed = 1, CityBalance? bal = null)
+        {
+            bal ??= new CityBalance();
+            bal.VirtualPopulation = true;
+            return new CitySimulation(seed, bal);
+        }
+
+        /// <summary>Ciudad con ciudadanos reales.</summary>
+        public static CitySimulation NewReal(ulong seed = 1, CityBalance? bal = null) => new CitySimulation(seed, bal ?? new CityBalance());
 
         public static Vec2 V(float x, float z) => new Vec2(x, z);
 

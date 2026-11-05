@@ -80,7 +80,7 @@ namespace Urbe.Sim.Tests.City
             // Sin dinero.
             var poor = new CityBalance { StartMoney = 100 };
             foreach (ServiceInfo s in poor.Services) s.UnlockPopulation = 0;
-            CitySimulation p = new CitySimulation(1, poor);
+            CitySimulation p = CityKit.New(1, poor);
             float px = p.OutsidePosition.X + 150f;
             p.Execute(new BuildRoadCityCommand(SegmentRequest.Straight(CityKit.V(px, 0), CityKit.V(px + 20, 0), RoadTypeIds.Street2)));
             Assert.Equal(CityResult.InsufficientFunds, p.Execute(new PlaceServiceCommand(ServiceType.WaterPump, CityKit.V(px + 10, 20))));

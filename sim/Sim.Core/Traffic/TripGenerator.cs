@@ -72,6 +72,8 @@ namespace Urbe.Sim.Traffic
             public int RouteLength;
             /// <summary>Semilla del conductor para repartir los viajes entre carriles equivalentes (eleccion de carril, M1-08).</summary>
             public uint LaneSeed;
+            /// <summary>Etiqueta del que pidio el viaje (ciudadano + 1); 0 = viaje anonimo. Se devuelve en <see cref="TripEnded"/>.</summary>
+            public int Tag;
         }
 
         private readonly RoadNetwork _net;
@@ -94,6 +96,8 @@ namespace Urbe.Sim.Traffic
 
         // Por indice de vehiculo.
         private readonly bool[] _tracked;
+        private readonly int[] _tag;
+        private readonly bool[] _arrived;
         private readonly ulong[] _spawnTick;
         private readonly EntityId[] _destSeg;
         private readonly int[] _rerouteId;
@@ -127,6 +131,14 @@ namespace Urbe.Sim.Traffic
         public TripGeneratorConfig Config => _cfg;
         public int DemandPointCount => _points.Count;
 
+        /// <summary>Un viaje con etiqueta termino: llego (true) o se perdio (false). Se invoca desde <see cref="CollectFinished"/> o al fallar el alta.</summary>
+        public Action<int, bool>? TripEnded;
+
+        private void OnVehicleArrived(int vehicle)
+        {
+            if (vehicle >= 0 && vehicle < _arrived.Length) _arrived[vehicle] = true;
+        }
+
         public TripGenerator(RoadNetwork network, VehicleSystem vehicles, PathRequestQueue queue, ulong seed,
             TripGeneratorConfig? config = null)
         {
@@ -141,6 +153,9 @@ namespace Urbe.Sim.Traffic
             _scratch = new PathStep[_cfg.MaxRouteLength];
             _segScratch = new RouteSegment[_cfg.MaxRouteLength];
             _tracked = new bool[cap];
+            _tag = new int[cap];
+            _arrived = new bool[cap];
+            _veh.VehicleArrived += OnVehicleArrived;
             _spawnTick = new ulong[cap];
             _destSeg = new EntityId[cap];
             _rerouteId = new int[cap];
@@ -202,6 +217,11 @@ namespace Urbe.Sim.Traffic
                 if (!v.IsAlive)
                 {
                     _tracked[i] = false;
+                    int endedTag = _tag[i];
+                    bool arrivedHere = _arrived[i];
+                    _tag[i] = 0;
+                    _arrived[i] = false;
+                    if (endedTag != 0) TripEnded?.Invoke(endedTag, arrivedHere);
                     removed++;
                     seconds += (now - _spawnTick[i]) * dt;
                     continue;
@@ -277,6 +297,22 @@ namespace Urbe.Sim.Traffic
 
             byte type = _rng.NextFloat() < _cfg.TruckFraction ? VehicleTypeId.Truck : VehicleTypeId.Car;
             uint driverSeed = _rng.NextUInt();
+            QueueTrip(os, ds, type, driverSeed, 0, now);
+        }
+
+        /// <summary>
+        /// Pide un viaje concreto de un segmento a otro con un tipo de vehiculo (ciudadanos y camiones, M3-04). <paramref name="tag"/> != 0 se
+        /// devuelve en <see cref="TripEnded"/>. False si la cola o los tope de vehiculos lo rechazan (no cuenta como generado).
+        /// </summary>
+        public bool RequestTrip(EntityId origin, EntityId destination, byte vehicleType, int tag)
+        {
+            if (!_net.IsSegmentAlive(origin) || !_net.IsSegmentAlive(destination)) return false;
+            if (_pending >= _cfg.MaxPending || _veh.AliveCount + _pending >= _cfg.MaxActiveVehicles) { Dropped++; return false; }
+            return QueueTrip(origin, destination, vehicleType, _rng.NextUInt(), tag, _veh.CurrentTick);
+        }
+
+        private bool QueueTrip(EntityId os, EntityId ds, byte type, uint driverSeed, int tag, ulong now)
+        {
             var req = new PathRequest
             {
                 OriginSegment = os,
@@ -289,17 +325,18 @@ namespace Urbe.Sim.Traffic
             if (!_queue.TryEnqueue(in req, out int id))
             {
                 Dropped++;
-                return;
+                return false;
             }
             for (int s = 0; s < _trips.Length; s++)
             {
                 if (_trips[s].State != State.Free) continue;
-                _trips[s] = new Trip { State = State.Awaiting, Type = type, RequestId = id, Created = now, NextAttempt = now, Origin = os, Destination = ds, Plans = 1, LaneSeed = driverSeed };
+                _trips[s] = new Trip { State = State.Awaiting, Type = type, RequestId = id, Created = now, NextAttempt = now, Origin = os, Destination = ds, Plans = 1, LaneSeed = driverSeed, Tag = tag };
                 _pending++;
                 Generated++;
-                return;
+                return true;
             }
             Dropped++; // inalcanzable: _pending < MaxPending garantiza un hueco
+            return false;
         }
 
         private void ProcessTrips(ulong now)
@@ -341,6 +378,7 @@ namespace Urbe.Sim.Traffic
             _pending--;
             Lost++;
             if (unroutable) Unroutable++;
+            if (t.Tag != 0) TripEnded?.Invoke(t.Tag, false);
         }
 
         /// <summary>
@@ -392,7 +430,13 @@ namespace Urbe.Sim.Traffic
             }
             int i = id.Index;
             // Si el alta provoco el cambio de epoca, el vehiculo anterior de este hueco ya se dio de baja sin pasar por CollectFinished.
-            if (_tracked[i]) Lost++;
+            if (_tracked[i])
+            {
+                Lost++;
+                if (_tag[i] != 0) TripEnded?.Invoke(_tag[i], false);
+            }
+            _tag[i] = t.Tag;
+            _arrived[i] = false;
             _tracked[i] = true;
             _spawnTick[i] = now;
             _destSeg[i] = t.Destination;
