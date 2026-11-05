@@ -46,7 +46,7 @@
 | [M2-10](M2-10.md) | Build Android y medición de fps | Sonnet · medium | M2-05, M2-06 | ⬜ aplazada: la build la hará Álvaro tras probar el proyecto |
 | [M2-11](M2-11.md) | Prueba en la mano | **Álvaro** + Haiku · low (convertir notas en tarjetas) | M2-10 | ⬜ pendiente |
 | [M2-12](M2-12.md) | Revisión de cierre de M2 y demo | Sonnet · medium | M2-11 | ⬜ pendiente |
-| [M3-01](M3-01.md) | Celdas de zona y comandos | Sonnet · high | M1-18 | ⬜ pendiente |
+| [M3-01](M3-01.md) | Celdas de zona y comandos | Sonnet · high | M1-18 | ✅ hecho |
 | [M3-02](M3-02.md) | Edificios que crecen y demanda RCI | Sonnet · high | M3-01 | ⬜ pendiente |
 | [M3-03](M3-03.md) | Redes y edificios de servicio | Sonnet · high | M3-02 | ⬜ pendiente |
 | [M3-04](M3-04.md) | Población, empleo y rutinas | Sonnet · high | M3-03 | ⬜ pendiente |
