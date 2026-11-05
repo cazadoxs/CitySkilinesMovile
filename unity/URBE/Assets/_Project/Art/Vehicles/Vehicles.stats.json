@@ -1,0 +1,162 @@
+{
+  "ambulance": {
+    "lod0": {
+      "tris": 312,
+      "verts": 192
+    },
+    "lod1": {
+      "tris": 116,
+      "verts": 72
+    },
+    "size_m": {
+      "height": 2.76,
+      "length": 5.74,
+      "width": 2.12,
+      "z_min": -0.0
+    }
+  },
+  "bus": {
+    "lod0": {
+      "tris": 368,
+      "verts": 224
+    },
+    "lod1": {
+      "tris": 116,
+      "verts": 72
+    },
+    "size_m": {
+      "height": 3.438,
+      "length": 11.43,
+      "width": 2.61,
+      "z_min": -0.018
+    }
+  },
+  "car_sedan": {
+    "lod0": {
+      "tris": 276,
+      "verts": 168
+    },
+    "lod1": {
+      "tris": 104,
+      "verts": 64
+    },
+    "size_m": {
+      "height": 1.46,
+      "length": 4.34,
+      "width": 1.86,
+      "z_min": 0.0
+    }
+  },
+  "car_small": {
+    "lod0": {
+      "tris": 276,
+      "verts": 168
+    },
+    "lod1": {
+      "tris": 104,
+      "verts": 64
+    },
+    "size_m": {
+      "height": 1.5,
+      "length": 3.74,
+      "width": 1.72,
+      "z_min": 0.0
+    }
+  },
+  "car_suv": {
+    "lod0": {
+      "tris": 276,
+      "verts": 168
+    },
+    "lod1": {
+      "tris": 104,
+      "verts": 64
+    },
+    "size_m": {
+      "height": 1.8,
+      "length": 4.74,
+      "width": 2.0,
+      "z_min": -0.0
+    }
+  },
+  "garbage": {
+    "lod0": {
+      "tris": 384,
+      "verts": 224
+    },
+    "lod1": {
+      "tris": 168,
+      "verts": 104
+    },
+    "size_m": {
+      "height": 3.398,
+      "length": 8.91,
+      "width": 2.56,
+      "z_min": -0.018
+    }
+  },
+  "sport": {
+    "lod0": {
+      "tris": 312,
+      "verts": 192
+    },
+    "lod1": {
+      "tris": 104,
+      "verts": 64
+    },
+    "size_m": {
+      "height": 1.22,
+      "length": 4.47,
+      "width": 1.96,
+      "z_min": -0.0
+    }
+  },
+  "taxi": {
+    "lod0": {
+      "tris": 288,
+      "verts": 176
+    },
+    "lod1": {
+      "tris": 116,
+      "verts": 72
+    },
+    "size_m": {
+      "height": 1.63,
+      "length": 4.34,
+      "width": 1.86,
+      "z_min": 0.0
+    }
+  },
+  "truck": {
+    "lod0": {
+      "tris": 372,
+      "verts": 216
+    },
+    "lod1": {
+      "tris": 168,
+      "verts": 104
+    },
+    "size_m": {
+      "height": 3.568,
+      "length": 9.49,
+      "width": 2.56,
+      "z_min": -0.018
+    }
+  },
+  "van": {
+    "lod0": {
+      "tris": 252,
+      "verts": 152
+    },
+    "lod1": {
+      "tris": 116,
+      "verts": 72
+    },
+    "size_m": {
+      "height": 2.25,
+      "length": 5.34,
+      "width": 2.02,
+      "z_min": 0.0
+    }
+  }
+}
