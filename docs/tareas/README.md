@@ -34,7 +34,7 @@
 | [M1-17](M1-17.md) | Deuda de la revisión M1 | Sonnet · medium | M1-15 | ✅ hecho |
 | [M1-18](M1-18.md) | Capacidad de red: demo con 2.000 coches | Opus · medium → Sonnet · high | M1-14 | ⬜ pendiente |
 | [M2-01](M2-01.md) | Proyecto Unity 6 e integración de Sim.Core | Sonnet · medium | M0-05, M1-12 | ✅ hecho |
-| [M2-02](M2-02.md) | SimHost: bucle de ticks | Sonnet · medium | M2-01 | ⬜ pendiente |
+| [M2-02](M2-02.md) | SimHost: bucle de ticks | Sonnet · medium | M2-01 | ✅ hecho |
 | [M2-03](M2-03.md) | Cámara con gestos | Sonnet · medium | M2-01 | ⬜ pendiente |
 | [M2-04a](M2-04a.md) | ADR de mallas de carreteras | Opus · medium | M1-03b | ⬜ pendiente |
 | [M2-04b](M2-04b.md) | Mallas de segmentos e intersecciones | Sonnet · high | M2-04a | ⬜ pendiente |
