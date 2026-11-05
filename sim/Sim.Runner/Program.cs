@@ -17,6 +17,8 @@ namespace Urbe.Sim.Runner
             ulong seed = 1;
             bool bench = false, quick = false;
             string? benchJson = null;
+            string? diagnose = null;
+            var diagOpts = new System.Collections.Generic.List<string>();
             int vehicles = 1000, size = 800, frameTicks = 10;
             bool seedSet = false, vehiclesSet = false, secondsSet = false, tripsSet = false, frameSet = false;
             float? openAt = null;
@@ -29,6 +31,8 @@ namespace Urbe.Sim.Runner
                 {
                     switch (args[i])
                     {
+                        case "--diagnose": diagnose = Next(args, ref i); break;
+                        case "--opt": diagOpts.Add(Next(args, ref i)); break;
                         case "--bench": bench = true; break;
                         case "--quick": quick = true; break;
                         case "--bench-json": benchJson = Next(args, ref i); break;
@@ -56,6 +60,7 @@ namespace Urbe.Sim.Runner
                 return 2;
             }
 
+            if (diagnose != null) return Diagnose.Run(diagnose, diagOpts.ToArray());
             if (bench) return Bench.Run(quick, benchJson, seed);
             if (png == null && gif == null && csv == null) return 0;
             if (layerName != "vehicles" && layerName != "flow") { Console.Error.WriteLine("--layer: vehicles | flow"); return 2; }

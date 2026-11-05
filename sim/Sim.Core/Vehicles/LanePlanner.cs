@@ -26,6 +26,13 @@ namespace Urbe.Sim.Vehicles
         public const float InfeasiblePenalty = 100f;
         /// <summary>Ruido por salto, determinista por semilla, que reparte los viajes entre carriles equivalentes (nunca compensa un cambio).</summary>
         public const float NoiseAmplitude = 0.02f;
+        /// <summary>
+        /// M1-18: coste de salir de un segmento por un carril que se funde con otro en el carril de llegada del siguiente (reduccion de
+        /// carriles). Cada fusion cede el paso por turnos (ADR 004, zona de fusion hasta el final de la conexion) y deja el cuello a
+        /// ~0,28 veh/s; con un solo carril usado el seguimiento IDM da ~0,4. Mayor que un cambio de carril en un tramo normal, para que
+        /// el vehiculo prefiera ponerse en el carril que continua desde el principio (el alta y los tramos previos).
+        /// </summary>
+        public const float MergeCost = 6f;
 
         private const float Inf = float.PositiveInfinity;
         private const int Lanes = RoadNetwork.MaxLanesPerSegment;
@@ -116,6 +123,7 @@ namespace Urbe.Sim.Vehicles
                         if (best == 99) continue;
                         if (first && firstNoChange && best != 0) continue;
                         float c = c0 + ChangeCost(best, avail) + Noise(seed, k + 1, e2);
+                        if (best == 0 && IsMergingLane(e, e2, lo, nlo, hi)) c += MergeCost;
                         if (c < _cost[nb + e2])
                         {
                             _cost[nb + e2] = c;
@@ -144,6 +152,24 @@ namespace Urbe.Sim.Vehicles
                 slot = _prev[k * Lanes + slot];
             }
             return true;
+        }
+
+        /// <summary>
+        /// True si el carril de salida <paramref name="d"/> (que conecta con la ranura <paramref name="e2"/> del siguiente) comparte esa
+        /// ranura con otro carril del segmento y no es el principal (el de indice relativo mas cercano; en empate, el menor).
+        /// </summary>
+        private bool IsMergingLane(int d, int e2, int lo, int nlo, int hi)
+        {
+            int primary = -1, bestDist = 99, users = 0;
+            for (int q = lo; q < hi; q++)
+            {
+                if (((_reach[q] >> e2) & 1u) == 0) continue;
+                users++;
+                int dist = (q - lo) - (e2 - nlo);
+                if (dist < 0) dist = -dist;
+                if (dist < bestDist) { bestDist = dist; primary = q; }
+            }
+            return users > 1 && primary != d;
         }
 
         /// <summary>Coste de hacer <paramref name="changes"/> cambios de carril teniendo <paramref name="avail"/> metros.</summary>

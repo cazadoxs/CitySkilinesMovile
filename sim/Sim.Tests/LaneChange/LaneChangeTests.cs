@@ -78,6 +78,28 @@ namespace Urbe.Sim.Tests.LaneChange
             Assert.NotEqual(s2.Index, lanes[1].SegmentIndex);
         }
 
+        // M1-18: en una reduccion de carriles (avenida 2+2 -> calle 1+1) los dos carriles se funden en el nodo y cada fusion cede el
+        // paso por turnos (~0,28 veh/s); el planificador debe mandar todo el trafico por el carril que continua, sea cual sea la semilla.
+        [Fact]
+        public void Planner_LaneDrop_PrefersTheContinuingLane()
+        {
+            RoadNetwork n = Kit.New();
+            EntityId a = Kit.Node(n, -200, 0), c = Kit.Node(n, 0, 0), e = Kit.Node(n, 200, 0);
+            EntityId avenue = Kit.Seg(n, a, c, RoadTypeIds.Avenue4), street = Kit.Seg(n, c, e, RoadTypeIds.Street2);
+            var planner = new LanePlanner(n);
+            var route = new[] { new RouteSegment(avenue, true), new RouteSegment(street, true) };
+            var lanes = new LaneId[2];
+            for (uint seed = 1; seed <= 40; seed++)
+            {
+                Assert.True(planner.Plan(route, seed, lanes));
+                Assert.Equal(0, lanes[0].Slot);
+            }
+            // Forzado en el carril que se acaba (re-ruta): el plan respeta el carril forzado y la ruta sigue siendo valida.
+            Assert.True(planner.Plan(route, new LaneId(avenue.Index, 1), 0f, false, LaneId.None, 3, lanes));
+            Assert.Equal(1, lanes[0].Slot);
+            Assert.Equal(street.Index, lanes[1].SegmentIndex);
+        }
+
         [Fact]
         public void Planner_UnconnectedSegments_Fail()
         {

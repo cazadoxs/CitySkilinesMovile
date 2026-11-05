@@ -25,7 +25,8 @@ namespace Urbe.Sim.Tests.Vehicles
             float limit = n.GetLane(lanes[0]).SpeedLimit;
             Assert.Equal(50f / 3.6f, limit, 3);
             float maxV = 0f;
-            for (int t = 0; t < 600; t++)
+            // 45 s: con AMax 2,0 (M1-18) a los 60 s el coche ya frena hacia el destino de la ultima via.
+            for (int t = 0; t < 450; t++)
             {
                 s.Update();
                 maxV = Math.Max(maxV, s.GetVehicle(id).V);

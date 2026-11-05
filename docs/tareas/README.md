@@ -32,7 +32,7 @@
 | [M1-15](M1-15.md) | Arreglos revisión: cambios de red y época | Sonnet · high | M1-13 | ✅ hecho |
 | [M1-16](M1-16.md) | Arreglos revisión: landmarks y validación | Sonnet · medium | M1-13 | ✅ hecho |
 | [M1-17](M1-17.md) | Deuda de la revisión M1 | Sonnet · medium | M1-15 | ✅ hecho |
-| [M1-18](M1-18.md) | Capacidad de red: demo con 2.000 coches | Opus · medium → Sonnet · high | M1-14 | ⬜ pendiente |
+| [M1-18](M1-18.md) | Capacidad de red: demo con 2.000 coches | Opus · medium → Sonnet · high | M1-14 | ◐ parcial (capacidad +18-54 %; 2.000 activos no alcanzable) |
 | [M2-01](M2-01.md) | Proyecto Unity 6 e integración de Sim.Core | Sonnet · medium | M0-05, M1-12 | ✅ hecho |
 | [M2-02](M2-02.md) | SimHost: bucle de ticks | Sonnet · medium | M2-01 | ✅ hecho |
 | [M2-03](M2-03.md) | Cámara con gestos | Sonnet · medium | M2-01 | ✅ hecho |

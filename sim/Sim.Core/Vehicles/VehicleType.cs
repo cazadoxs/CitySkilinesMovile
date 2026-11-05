@@ -45,7 +45,9 @@ namespace Urbe.Sim.Vehicles
         {
             return new[]
             {
-                new VehicleType(1.0f, 36f, 1.5f, 2.0f, 1.2f, 2.0f, 4.5f),
+                // M1-18: coche con AMax 2,0 (antes 1,5) y T 1,0 s (antes 1,2): el arranque en cola y el caudal de saturacion pasan de
+                // ~0,45 a ~0,56 veh/s por carril en verde (ver ADR 004, "Capacidad (M1-18)").
+                new VehicleType(1.0f, 36f, 2.0f, 2.0f, 1.0f, 2.0f, 4.5f),
                 new VehicleType(0.9f, 25f, 0.8f, 1.5f, 1.8f, 3.0f, 10.0f),
             };
         }
