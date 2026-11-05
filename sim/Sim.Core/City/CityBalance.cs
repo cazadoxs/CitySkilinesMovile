@@ -67,6 +67,19 @@ namespace Urbe.Sim.City
         public float WorkforceFraction = 0.55f;
 
 
+        // ---------------------------------------------------------------- redes y servicios (M3-03)
+        public ServiceInfo[] Services = ServiceCatalog.CreateDefault();
+        public ServiceInfo Service(ServiceType type) => Services[(int)type];
+        /// <summary>Consumo de agua y luz por residente y por empleo; la industria gasta mas luz.</summary>
+        public float WaterPerResident = 0.5f, WaterPerJob = 0.25f, PowerPerResident = 0.4f, PowerPerJob = 0.6f, IndustrialPowerMult = 2f;
+        /// <summary>Ticks entre recalculos de las redes (tambien al cambiar la red o los servicios).</summary>
+        public int NetworkInterval = 50;
+        /// <summary>Segundos a flujo libre desde el servicio hasta donde llega su cobertura (indice = CoverageType). La ciudad mide 2 km.</summary>
+        public float[] CoverageSeconds = { 150f, 100f, 100f, 90f, 120f, 180f, 60f, 300f, 120f };
+        public int CoverageInterval = 20;
+        /// <summary>Distancia maxima del eje de una calle a la que se engancha un servicio.</summary>
+        public float ServiceReach = 60f;
+
         public int RoadCost(ushort roadType, float length)
         {
             int idx = roadType < RoadCostPerMeter.Length ? roadType : 0;

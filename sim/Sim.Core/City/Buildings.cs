@@ -206,7 +206,7 @@ namespace Urbe.Sim.City
     /// </summary>
     public sealed class BuildingSystem
     {
-        public const int MaxCellsPerBuilding = 16;
+        public const int MaxCellsPerBuilding = 32;
 
         private readonly CitySimulation _city;
         private readonly ZoneGrid _zones;

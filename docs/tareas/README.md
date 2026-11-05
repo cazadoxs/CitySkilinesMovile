@@ -48,7 +48,7 @@
 | [M2-12](M2-12.md) | Revisión de cierre de M2 y demo | Sonnet · medium | M2-11 | ⬜ pendiente |
 | [M3-01](M3-01.md) | Celdas de zona y comandos | Sonnet · high | M1-18 | ✅ hecho |
 | [M3-02](M3-02.md) | Edificios que crecen y demanda RCI | Sonnet · high | M3-01 | ✅ hecho |
-| [M3-03](M3-03.md) | Redes y edificios de servicio | Sonnet · high | M3-02 | ⬜ pendiente |
+| [M3-03](M3-03.md) | Redes y edificios de servicio | Sonnet · high | M3-02 | ✅ hecho |
 | [M3-04](M3-04.md) | Población, empleo y rutinas | Sonnet · high | M3-03 | ⬜ pendiente |
 | [M3-05](M3-05.md) | Economía, valor del suelo e hitos | Sonnet · medium | M3-04 | ⬜ pendiente |
 | [M3-06](M3-06.md) | Bot de ciudad y equilibrio | Sonnet · medium | M3-05 | ⬜ pendiente |

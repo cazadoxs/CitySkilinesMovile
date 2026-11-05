@@ -27,6 +27,7 @@ namespace Urbe.Sim.City
         {
             for (int i = 0; i < _taxRates.Length; i++) _taxRates[i] = Balance.DefaultTaxRate;
             Buildings = new BuildingSystem(this, seed ^ 0x4255494CUL);
+            InitServices();
             _demand.R = Balance.DemandBaseR;
             _demand.I = Balance.DemandBaseI;
         }
@@ -34,7 +35,12 @@ namespace Urbe.Sim.City
         /// <summary>Regenera lo que depende de la red viaria (celdas de zona, edificios sobre ellas y, mas adelante, redes).</summary>
         private void AfterNetworkChange()
         {
-            if (Zones.Refresh()) Buildings.OnCellsRemapped();
+            if (Zones.Refresh())
+            {
+                Buildings.OnCellsRemapped();
+                ValidateServices();
+            }
+            Supply.Dirty = true;
         }
 
         /// <summary>Un tick de ciudad, en el orden de GDD 8.1.</summary>
@@ -43,6 +49,8 @@ namespace Urbe.Sim.City
             ulong tick = Traffic.Tick;
             ProcessCommands();
             AfterNetworkChange();
+            Supply.Update(tick);
+            Coverage.Step(tick);
             if (tick % (ulong)Balance.StatsInterval == 0) RecomputeStats();
             if (tick % (ulong)Balance.DemandInterval == 0) UpdateDemand();
             if (tick % (ulong)Balance.GrowthInterval == 0) Buildings.Grow(_demand);
@@ -134,7 +142,7 @@ namespace Urbe.Sim.City
             if (b.Zone == ZoneType.Residential)
             {
                 int step = Math.Max(1, b.Capacity / 8);
-                if (b.Occupants < b.Capacity && _demand.R > 0f) b.Occupants = (ushort)Math.Min(b.Capacity, b.Occupants + step);
+                if (b.Occupants < b.Capacity) b.Occupants = (ushort)Math.Min(b.Capacity, b.Occupants + step);
                 else if (b.Occupants > b.Capacity) b.Occupants = b.Capacity;
                 return;
             }
@@ -148,8 +156,8 @@ namespace Urbe.Sim.City
 
         // ------------------------------------------------------------------ servicios del entorno (se sustituyen por los sistemas reales)
 
-        /// <summary>True si en esa calle pueden crecer edificios: acceso, agua y luz.</summary>
-        internal bool CanGrowAt(EntityId segment)
+        /// <summary>True si en esa calle pueden crecer edificios: acceso por carretera, agua y luz.</summary>
+        public bool CanGrowAt(EntityId segment)
         {
             SupplyAt(segment, ZoneType.None, out float water, out float power, out _, out bool connected);
             return connected && water >= 0.5f && power >= 0.5f;

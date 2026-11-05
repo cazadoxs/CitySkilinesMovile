@@ -146,6 +146,9 @@ namespace Urbe.Sim.City
             h = HashUtil.Mix(h, Traffic.ComputeHash());
             h = HashUtil.Mix(h, Zones.ComputeHash());
             h = HashUtil.Mix(h, Buildings.ComputeHash());
+            h = HashUtil.Mix(h, Supply.ComputeHash());
+            h = HashUtil.Mix(h, Coverage.ComputeHash());
+            h = HashUtil.Mix(h, (ulong)PeakPopulation);
             h = HashUtil.MixF(h, _demand.R); h = HashUtil.MixF(h, _demand.C); h = HashUtil.MixF(h, _demand.I); h = HashUtil.MixF(h, _demand.O);
             h = HashUtil.Mix(h, (ulong)_money);
             h = HashUtil.Mix(h, _rng.State);
