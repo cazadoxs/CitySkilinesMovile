@@ -39,10 +39,10 @@
 | [M2-04a](M2-04a.md) | ADR de mallas de carreteras | Opus · medium | M1-03b | ✅ hecho |
 | [M2-04b](M2-04b.md) | Mallas de segmentos e intersecciones | Sonnet · high | M2-04a | ✅ hecho |
 | [M2-05](M2-05.md) | Herramienta de carreteras táctil | Sonnet · high | M2-04b, M2-02 | ✅ hecho |
-| [M2-06](M2-06.md) | Render instanciado de vehículos | Sonnet · high | M2-02 | ⬜ pendiente |
-| [M2-07](M2-07.md) | Vehículos CC0 con script de Blender | Sonnet · medium (script) → Haiku · medium (lote) | M0-07 | ⬜ pendiente |
+| [M2-06](M2-06.md) | Render instanciado de vehículos | Sonnet · high | M2-02 | ✅ hecho (provisional hasta medir en el móvil) |
+| [M2-07](M2-07.md) | Vehículos originales con script de Blender | Sonnet · medium (script) → Haiku · medium (lote) | M0-07 | ✅ hecho |
 | [M2-08](M2-08.md) | HUD mínimo en UI Toolkit | Sonnet · medium | M2-02 | ✅ hecho |
 | [M2-09](M2-09.md) | Capa de tráfico por flujo | Sonnet · medium | M2-04b | ✅ hecho |
-| [M2-10](M2-10.md) | Build Android y medición de fps | Sonnet · medium | M2-05, M2-06 | ⬜ pendiente |
+| [M2-10](M2-10.md) | Build Android y medición de fps | Sonnet · medium | M2-05, M2-06 | ⬜ aplazada: la build la hará Álvaro tras probar el proyecto |
 | [M2-11](M2-11.md) | Prueba en la mano | **Álvaro** + Haiku · low (convertir notas en tarjetas) | M2-10 | ⬜ pendiente |
 | [M2-12](M2-12.md) | Revisión de cierre de M2 y demo | Sonnet · medium | M2-11 | ⬜ pendiente |
