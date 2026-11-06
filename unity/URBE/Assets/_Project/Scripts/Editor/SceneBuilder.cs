@@ -7,6 +7,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
+using Urbe.Game.Rendering.Buildings;
 using Urbe.Game.Rendering.Ground;
 using Urbe.Game.Rendering.Roads;
 using Urbe.Game.Rendering.Traffic;
@@ -38,6 +39,8 @@ namespace Urbe.Game.Editor
             Material ground = EnsureUnlit("DebugGround", Color.white, false);
             Material vehicleMat = VehicleAssetBuilder.EnsureMaterial();
             VehicleModelSet vehicleSet = VehicleAssetBuilder.EnsureModelSet();
+            Material buildingMat = BuildingAssetBuilder.EnsureMaterial();
+            BuildingCatalog buildingCatalog = BuildingAssetBuilder.EnsureCatalog();
 
             var sun = new GameObject("Sol");
             var light = sun.AddComponent<Light>();
@@ -56,6 +59,12 @@ namespace Urbe.Game.Editor
             SetRef(vehicles, "host", host);
             SetRef(vehicles, "models", vehicleSet);
             SetRef(vehicles, "material", vehicleMat);
+
+            var buildingsGo = new GameObject("Edificios");
+            var buildings = buildingsGo.AddComponent<BuildingChunkRenderer>();
+            SetRef(buildings, "host", host);
+            SetRef(buildings, "catalog", buildingCatalog);
+            SetRef(buildings, "material", buildingMat);
 
             var roadsGo = new GameObject("Carreteras");
             var roads = roadsGo.AddComponent<RoadChunkRenderer>();

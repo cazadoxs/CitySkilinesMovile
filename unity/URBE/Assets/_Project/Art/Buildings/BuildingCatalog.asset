@@ -1,0 +1,1165 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af1b49afc63d2374f95350836e4434c7, type: 3}
+  m_Name: BuildingCatalog
+  m_EditorClassIdentifier: 
+  entries:
+  - id: Bld_R_low_L1_A
+    zone: R
+    density: 1
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 6, y: 5.85, z: 6}
+    lod0: {fileID: -8279761694046593247, guid: 6d9cb1a3c0d99804dbf96d5952809320, type: 3}
+    lod1: {fileID: -8940482799575032104, guid: 6d9cb1a3c0d99804dbf96d5952809320, type: 3}
+    variant: A
+  - id: Bld_R_low_L1_B
+    zone: R
+    density: 1
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 6, y: 6.5, z: 6}
+    lod0: {fileID: 319253929576973875, guid: 05f94a06c4529d34a87e8cdc7ec91d05, type: 3}
+    lod1: {fileID: 806621819646124924, guid: 05f94a06c4529d34a87e8cdc7ec91d05, type: 3}
+    variant: B
+  - id: Bld_R_low_L1_C
+    zone: R
+    density: 1
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 6, y: 5.44, z: 6}
+    lod0: {fileID: 5284957115323809861, guid: 605dd1db132a1ee488810fbc63061d6c, type: 3}
+    lod1: {fileID: 338950280856026318, guid: 605dd1db132a1ee488810fbc63061d6c, type: 3}
+    variant: C
+  - id: Bld_R_low_L2_A
+    zone: R
+    density: 1
+    level: 2
+    footprintW: 1
+    footprintD: 1
+    size: {x: 6, y: 6.7, z: 6.98}
+    lod0: {fileID: 8602516903285403912, guid: 30edaed9e2e0ca04b80f1d59befc1a87, type: 3}
+    lod1: {fileID: 5372563251247805991, guid: 30edaed9e2e0ca04b80f1d59befc1a87, type: 3}
+    variant: A
+  - id: Bld_R_low_L2_B
+    zone: R
+    density: 1
+    level: 2
+    footprintW: 1
+    footprintD: 1
+    size: {x: 6.44, y: 6.72, z: 6.77}
+    lod0: {fileID: -7639779885121511301, guid: 54e3404b2dbd38d4483d22ecf35334dd, type: 3}
+    lod1: {fileID: -4342392304544082748, guid: 54e3404b2dbd38d4483d22ecf35334dd, type: 3}
+    variant: B
+  - id: Bld_R_low_L2_C
+    zone: R
+    density: 1
+    level: 2
+    footprintW: 1
+    footprintD: 1
+    size: {x: 6, y: 6.48, z: 6}
+    lod0: {fileID: -8353040839019290218, guid: b615fb494dae0e8429d71e50f337637e, type: 3}
+    lod1: {fileID: 4814883573403190949, guid: b615fb494dae0e8429d71e50f337637e, type: 3}
+    variant: C
+  - id: Bld_R_low_L3_A
+    zone: R
+    density: 1
+    level: 3
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14, y: 4.73, z: 6.98}
+    lod0: {fileID: 8628526282133908484, guid: 89cc92c64fcec0640a706ac5f5b7b3cc, type: 3}
+    lod1: {fileID: 5463654253320647369, guid: 89cc92c64fcec0640a706ac5f5b7b3cc, type: 3}
+    variant: A
+  - id: Bld_R_low_L3_B
+    zone: R
+    density: 1
+    level: 3
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14, y: 5.61, z: 6.97}
+    lod0: {fileID: 5363846654310170037, guid: 5c5ad28be2ade0741b8485485234aca2, type: 3}
+    lod1: {fileID: -1162452959159054935, guid: 5c5ad28be2ade0741b8485485234aca2, type: 3}
+    variant: B
+  - id: Bld_R_low_L3_C
+    zone: R
+    density: 1
+    level: 3
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14, y: 8.96, z: 7.07}
+    lod0: {fileID: -7913458245390455454, guid: 3eae6f98c095e874ea7cd4ddf097310b, type: 3}
+    lod1: {fileID: 1468632492516485653, guid: 3eae6f98c095e874ea7cd4ddf097310b, type: 3}
+    variant: C
+  - id: Bld_R_low_L4_A
+    zone: R
+    density: 1
+    level: 4
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14.07, y: 11.2, z: 7.03}
+    lod0: {fileID: 2369125562149395286, guid: 358072bbeec5eea4f98558b319d335b7, type: 3}
+    lod1: {fileID: -5072824392919854312, guid: 358072bbeec5eea4f98558b319d335b7, type: 3}
+    variant: A
+  - id: Bld_R_low_L4_B
+    zone: R
+    density: 1
+    level: 4
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14, y: 8.55, z: 6.89}
+    lod0: {fileID: -6121071057223387608, guid: 8b2e521a17cfc7c469a7342515deeceb, type: 3}
+    lod1: {fileID: -579175831767113666, guid: 8b2e521a17cfc7c469a7342515deeceb, type: 3}
+    variant: B
+  - id: Bld_R_low_L4_C
+    zone: R
+    density: 1
+    level: 4
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14, y: 8.06, z: 7.17}
+    lod0: {fileID: -9063525165318744765, guid: 58e6a1cb39ccfea40b8900a7a54dec42, type: 3}
+    lod1: {fileID: -8133642045238821366, guid: 58e6a1cb39ccfea40b8900a7a54dec42, type: 3}
+    variant: C
+  - id: Bld_R_low_L5_A
+    zone: R
+    density: 1
+    level: 5
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 5.62, z: 14.98}
+    lod0: {fileID: 5202026411576036059, guid: b1340c39f55db87409998c21b68624b4, type: 3}
+    lod1: {fileID: -3812847744360774729, guid: b1340c39f55db87409998c21b68624b4, type: 3}
+    variant: A
+  - id: Bld_R_low_L5_B
+    zone: R
+    density: 1
+    level: 5
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 11.86, z: 14.98}
+    lod0: {fileID: -1222990719557909100, guid: 05678b37fb90cf64f8249009dc9eba81, type: 3}
+    lod1: {fileID: -889050693318963736, guid: 05678b37fb90cf64f8249009dc9eba81, type: 3}
+    variant: B
+  - id: Bld_R_low_L5_C
+    zone: R
+    density: 1
+    level: 5
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 12.6, z: 14.07}
+    lod0: {fileID: 3634694397953893804, guid: 42fd64a7def031b40a3011583e3531e7, type: 3}
+    lod1: {fileID: 5190622032684284673, guid: 42fd64a7def031b40a3011583e3531e7, type: 3}
+    variant: C
+  - id: Bld_R_med_L1_A
+    zone: R
+    density: 2
+    level: 1
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14.14, y: 12.23, z: 6.07}
+    lod0: {fileID: -1557714683659945239, guid: 7d8bff0e76f894140a43b719c81b60e0, type: 3}
+    lod1: {fileID: 3224368664459516763, guid: 7d8bff0e76f894140a43b719c81b60e0, type: 3}
+    variant: A
+  - id: Bld_R_med_L1_B
+    zone: R
+    density: 2
+    level: 1
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14, y: 8.56, z: 6.06}
+    lod0: {fileID: -6409373768675243447, guid: 103089f83715e23479881157dd2e804b, type: 3}
+    lod1: {fileID: -508809271609604871, guid: 103089f83715e23479881157dd2e804b, type: 3}
+    variant: B
+  - id: Bld_R_med_L1_C
+    zone: R
+    density: 2
+    level: 1
+    footprintW: 2
+    footprintD: 1
+    size: {x: 14, y: 12.48, z: 6}
+    lod0: {fileID: 1628017036736346382, guid: e94123be1d300de469d07136d30d6fb4, type: 3}
+    lod1: {fileID: 5089164734674978856, guid: e94123be1d300de469d07136d30d6fb4, type: 3}
+    variant: C
+  - id: Bld_R_med_L2_A
+    zone: R
+    density: 2
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 14.98, z: 14}
+    lod0: {fileID: -2015350617641074658, guid: 9748e2fea2cd29f408a0e2f579b31d43, type: 3}
+    lod1: {fileID: 1428902009688343881, guid: 9748e2fea2cd29f408a0e2f579b31d43, type: 3}
+    variant: A
+  - id: Bld_R_med_L2_B
+    zone: R
+    density: 2
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 15, z: 14}
+    lod0: {fileID: 5009996641857726063, guid: 5d02c5f204e90994d98355af7a0eac20, type: 3}
+    lod1: {fileID: 7064557051402704896, guid: 5d02c5f204e90994d98355af7a0eac20, type: 3}
+    variant: B
+  - id: Bld_R_med_L2_C
+    zone: R
+    density: 2
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14.07, y: 12.7, z: 14.07}
+    lod0: {fileID: 6265268130295820374, guid: f2c2975288aa21f4c8fd9c6a7ef7304f, type: 3}
+    lod1: {fileID: -5441314573723044531, guid: f2c2975288aa21f4c8fd9c6a7ef7304f, type: 3}
+    variant: C
+  - id: Bld_R_med_L3_A
+    zone: R
+    density: 2
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 18.37, z: 14}
+    lod0: {fileID: 2407468742566688311, guid: c4d788678504a8a4e97aa05e3992c49a, type: 3}
+    lod1: {fileID: 245291946416463692, guid: c4d788678504a8a4e97aa05e3992c49a, type: 3}
+    variant: A
+  - id: Bld_R_med_L3_B
+    zone: R
+    density: 2
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14.14, y: 9.82, z: 14.07}
+    lod0: {fileID: 6373885682536713342, guid: 36e359fcf5c91064db51606580f7baf5, type: 3}
+    lod1: {fileID: 756422646244602503, guid: 36e359fcf5c91064db51606580f7baf5, type: 3}
+    variant: B
+  - id: Bld_R_med_L3_C
+    zone: R
+    density: 2
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 8.42, z: 14}
+    lod0: {fileID: -7985566367339752919, guid: 56ccf306047f3f549a4524850abd45aa, type: 3}
+    lod1: {fileID: -7278826634329710443, guid: 56ccf306047f3f549a4524850abd45aa, type: 3}
+    variant: C
+  - id: Bld_R_med_L4_A
+    zone: R
+    density: 2
+    level: 4
+    footprintW: 3
+    footprintD: 2
+    size: {x: 22, y: 7.46, z: 14}
+    lod0: {fileID: -5463859785450496456, guid: 3aac36402471f6b47b8c76614b002792, type: 3}
+    lod1: {fileID: 1226158334943210072, guid: 3aac36402471f6b47b8c76614b002792, type: 3}
+    variant: A
+  - id: Bld_R_med_L4_B
+    zone: R
+    density: 2
+    level: 4
+    footprintW: 3
+    footprintD: 2
+    size: {x: 22.08, y: 25.98, z: 14.07}
+    lod0: {fileID: -3755216602770270669, guid: f1118fd09680d9f4cab8905dd3195145, type: 3}
+    lod1: {fileID: 5115550050595568121, guid: f1118fd09680d9f4cab8905dd3195145, type: 3}
+    variant: B
+  - id: Bld_R_med_L4_C
+    zone: R
+    density: 2
+    level: 4
+    footprintW: 3
+    footprintD: 2
+    size: {x: 22, y: 14.93, z: 14}
+    lod0: {fileID: -1903684749468125529, guid: 83e2b56e315647543a986fd7b054a9f7, type: 3}
+    lod1: {fileID: -9156873728752705985, guid: 83e2b56e315647543a986fd7b054a9f7, type: 3}
+    variant: C
+  - id: Bld_R_med_L5_A
+    zone: R
+    density: 2
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 25.13, z: 22}
+    lod0: {fileID: -8384441099398901986, guid: b1f9b5edb8584984a8440f5e4286bc82, type: 3}
+    lod1: {fileID: -6258816179657722753, guid: b1f9b5edb8584984a8440f5e4286bc82, type: 3}
+    variant: A
+  - id: Bld_R_med_L5_B
+    zone: R
+    density: 2
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 20.78, z: 22}
+    lod0: {fileID: -623184992034043260, guid: aad2ae3c056591a4dae9dc28a19609ac, type: 3}
+    lod1: {fileID: 1694026747261716367, guid: aad2ae3c056591a4dae9dc28a19609ac, type: 3}
+    variant: B
+  - id: Bld_R_med_L5_C
+    zone: R
+    density: 2
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22.14, y: 38.7, z: 22.07}
+    lod0: {fileID: 1969852657044371480, guid: 3d76762b430f67a4891ec0ee632a1b17, type: 3}
+    lod1: {fileID: -3931754174833220671, guid: 3d76762b430f67a4891ec0ee632a1b17, type: 3}
+    variant: C
+  - id: Bld_R_high_L1_A
+    zone: R
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 22.49, z: 14}
+    lod0: {fileID: -482168479689362671, guid: f626e9bfbd390834595466aa2dbcdc13, type: 3}
+    lod1: {fileID: 1078665915905838910, guid: f626e9bfbd390834595466aa2dbcdc13, type: 3}
+    variant: A
+  - id: Bld_R_high_L1_B
+    zone: R
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 31.98, z: 14}
+    lod0: {fileID: -2428387915211408358, guid: e48dc1b3e9241394a86c599e79346eea, type: 3}
+    lod1: {fileID: -1712796326227541588, guid: e48dc1b3e9241394a86c599e79346eea, type: 3}
+    variant: B
+  - id: Bld_R_high_L1_C
+    zone: R
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 10.7, z: 14}
+    lod0: {fileID: 7868518065502043305, guid: 8471aa58a27d5434397445f7727f7087, type: 3}
+    lod1: {fileID: -1137328422099169565, guid: 8471aa58a27d5434397445f7727f7087, type: 3}
+    variant: C
+  - id: Bld_R_high_L2_A
+    zone: R
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 15.97, z: 14.07}
+    lod0: {fileID: 3439844421788662598, guid: 859f9f3c6dd6bbf4caa96a82841d1e7c, type: 3}
+    lod1: {fileID: -5446798244687075752, guid: 859f9f3c6dd6bbf4caa96a82841d1e7c, type: 3}
+    variant: A
+  - id: Bld_R_high_L2_B
+    zone: R
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 11.19, z: 14}
+    lod0: {fileID: 2350546922484789282, guid: a581a5552f14a534c96e4a0bb464f1eb, type: 3}
+    lod1: {fileID: 1489377349318009536, guid: a581a5552f14a534c96e4a0bb464f1eb, type: 3}
+    variant: B
+  - id: Bld_R_high_L2_C
+    zone: R
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14, y: 9.62, z: 14}
+    lod0: {fileID: 43007938196903791, guid: 610ba73851118ab469c5bb1ec8aa7037, type: 3}
+    lod1: {fileID: -7311486128015578178, guid: 610ba73851118ab469c5bb1ec8aa7037, type: 3}
+    variant: C
+  - id: Bld_R_high_L3_A
+    zone: R
+    density: 3
+    level: 3
+    footprintW: 3
+    footprintD: 2
+    size: {x: 22, y: 9.96, z: 14}
+    lod0: {fileID: -1577662249185150766, guid: da44bd6dc4fcb4d44ae7eccdbecc50e4, type: 3}
+    lod1: {fileID: -409153179792469449, guid: da44bd6dc4fcb4d44ae7eccdbecc50e4, type: 3}
+    variant: A
+  - id: Bld_R_high_L3_B
+    zone: R
+    density: 3
+    level: 3
+    footprintW: 3
+    footprintD: 2
+    size: {x: 22, y: 45.64, z: 14}
+    lod0: {fileID: -4586675910012349109, guid: 472809182bcfabc4d8ab77b6c97bd77b, type: 3}
+    lod1: {fileID: 7034354724597252652, guid: 472809182bcfabc4d8ab77b6c97bd77b, type: 3}
+    variant: B
+  - id: Bld_R_high_L3_C
+    zone: R
+    density: 3
+    level: 3
+    footprintW: 3
+    footprintD: 2
+    size: {x: 22, y: 11.98, z: 14}
+    lod0: {fileID: -6881986992980035573, guid: 886779639870e8141ad6714de98be8e0, type: 3}
+    lod1: {fileID: 6811072372783873549, guid: 886779639870e8141ad6714de98be8e0, type: 3}
+    variant: C
+  - id: Bld_R_high_L4_A
+    zone: R
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 44.16, z: 22}
+    lod0: {fileID: 3430210493784517487, guid: 273f21df9d06e804c88744873e98629a, type: 3}
+    lod1: {fileID: 5611779732237490880, guid: 273f21df9d06e804c88744873e98629a, type: 3}
+    variant: A
+  - id: Bld_R_high_L4_B
+    zone: R
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 71.4, z: 22}
+    lod0: {fileID: 4516542592380290175, guid: 669ae0162b4ce1f4f9f100601df0e1c1, type: 3}
+    lod1: {fileID: 7125197164831197627, guid: 669ae0162b4ce1f4f9f100601df0e1c1, type: 3}
+    variant: B
+  - id: Bld_R_high_L4_C
+    zone: R
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 34.29, z: 22}
+    lod0: {fileID: -3007325866343775906, guid: 02d7e38e3135c6b46bf8236e05478982, type: 3}
+    lod1: {fileID: -4997954620569787831, guid: 02d7e38e3135c6b46bf8236e05478982, type: 3}
+    variant: C
+  - id: Bld_R_high_L5_A
+    zone: R
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 27.63, z: 22}
+    lod0: {fileID: -6667495115921000117, guid: 498710253f8c15647bace1a9e4759d0b, type: 3}
+    lod1: {fileID: 207419596358226669, guid: 498710253f8c15647bace1a9e4759d0b, type: 3}
+    variant: A
+  - id: Bld_R_high_L5_B
+    zone: R
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 71.4, z: 22}
+    lod0: {fileID: -7828344113432787439, guid: c5194216239455745a27377fc3eabac4, type: 3}
+    lod1: {fileID: -459352584689332463, guid: c5194216239455745a27377fc3eabac4, type: 3}
+    variant: B
+  - id: Bld_R_high_L5_C
+    zone: R
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 22, y: 49.66, z: 22}
+    lod0: {fileID: 3626886554060204275, guid: c2760814e4bbb07488577f7707f5ff99, type: 3}
+    lod1: {fileID: -8297841073763780376, guid: c2760814e4bbb07488577f7707f5ff99, type: 3}
+    variant: C
+  - id: Bld_C_low_L1_A
+    zone: C
+    density: 1
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 5, y: 6.7, z: 6.29}
+    lod0: {fileID: 1863529515779537618, guid: cd43f7876cabfe841bab66d0dad25bba, type: 3}
+    lod1: {fileID: 326207766182061662, guid: cd43f7876cabfe841bab66d0dad25bba, type: 3}
+    variant: A
+  - id: Bld_C_low_L1_B
+    zone: C
+    density: 1
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 5, y: 6.7, z: 6.09}
+    lod0: {fileID: 4665004537870658077, guid: a5d13904c383d9d46be674c06cd8d947, type: 3}
+    lod1: {fileID: 2385555583500165767, guid: a5d13904c383d9d46be674c06cd8d947, type: 3}
+    variant: B
+  - id: Bld_C_low_L1_C
+    zone: C
+    density: 1
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 5.14, y: 5.61, z: 6.44}
+    lod0: {fileID: 6802826620547421429, guid: 8524c283832e1ea41a5ca3d0ad2ce03c, type: 3}
+    lod1: {fileID: -7527403733445111266, guid: 8524c283832e1ea41a5ca3d0ad2ce03c, type: 3}
+    variant: C
+  - id: Bld_C_low_L2_A
+    zone: C
+    density: 1
+    level: 2
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13, y: 4.86, z: 5}
+    lod0: {fileID: -4462649163694431830, guid: 161b2dc87c8a73043b50471d0b942e33, type: 3}
+    lod1: {fileID: -5037099120434708065, guid: 161b2dc87c8a73043b50471d0b942e33, type: 3}
+    variant: A
+  - id: Bld_C_low_L2_B
+    zone: C
+    density: 1
+    level: 2
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13, y: 5.64, z: 6.33}
+    lod0: {fileID: -7637640379302446186, guid: 3e06f9ba7b50ac249b2d0c6c674cc143, type: 3}
+    lod1: {fileID: 1272179961375634503, guid: 3e06f9ba7b50ac249b2d0c6c674cc143, type: 3}
+    variant: B
+  - id: Bld_C_low_L2_C
+    zone: C
+    density: 1
+    level: 2
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13, y: 4.36, z: 5.5}
+    lod0: {fileID: 4991469741696110079, guid: 4a4ddda474986fc49827d3c6e045bfe9, type: 3}
+    lod1: {fileID: -71882998660733996, guid: 4a4ddda474986fc49827d3c6e045bfe9, type: 3}
+    variant: C
+  - id: Bld_C_low_L3_A
+    zone: C
+    density: 1
+    level: 3
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13, y: 8.64, z: 6.4}
+    lod0: {fileID: -2779544062866230999, guid: cb4b4ab055ab69445ae1ceae955b12e2, type: 3}
+    lod1: {fileID: -915174984614531453, guid: cb4b4ab055ab69445ae1ceae955b12e2, type: 3}
+    variant: A
+  - id: Bld_C_low_L3_B
+    zone: C
+    density: 1
+    level: 3
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13, y: 6.51, z: 6.27}
+    lod0: {fileID: -7437591977375386242, guid: cb9ecf419ce6f2142b5612e7cacd7e38, type: 3}
+    lod1: {fileID: -5563337021334884532, guid: cb9ecf419ce6f2142b5612e7cacd7e38, type: 3}
+    variant: B
+  - id: Bld_C_low_L3_C
+    zone: C
+    density: 1
+    level: 3
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13, y: 4.95, z: 6.29}
+    lod0: {fileID: -8299085384199695936, guid: d003119a28f63ba46b6ecf0842e1ba61, type: 3}
+    lod1: {fileID: -4760877713768335970, guid: d003119a28f63ba46b6ecf0842e1ba61, type: 3}
+    variant: C
+  - id: Bld_C_low_L4_A
+    zone: C
+    density: 1
+    level: 4
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 10.02, z: 14.35}
+    lod0: {fileID: 7332793613445566473, guid: dc15a8eadd2a2314d8fccc40674e58e9, type: 3}
+    lod1: {fileID: -4090881037103955711, guid: dc15a8eadd2a2314d8fccc40674e58e9, type: 3}
+    variant: A
+  - id: Bld_C_low_L4_B
+    zone: C
+    density: 1
+    level: 4
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 7.16, z: 14.2}
+    lod0: {fileID: 5478901779115482811, guid: ecb27d806fd78524a985bb54f18ea8dd, type: 3}
+    lod1: {fileID: 2679962576097302699, guid: ecb27d806fd78524a985bb54f18ea8dd, type: 3}
+    variant: B
+  - id: Bld_C_low_L4_C
+    zone: C
+    density: 1
+    level: 4
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 6.38, z: 13}
+    lod0: {fileID: -8564651667557756632, guid: edde5911dba90b94a8384bb4d2af8cbf, type: 3}
+    lod1: {fileID: 5259002640569283164, guid: edde5911dba90b94a8384bb4d2af8cbf, type: 3}
+    variant: C
+  - id: Bld_C_low_L5_A
+    zone: C
+    density: 1
+    level: 5
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21.07, y: 15.42, z: 13.91}
+    lod0: {fileID: 3059892851249235024, guid: 350e0390ee7c0ff488e61bd963ca98f1, type: 3}
+    lod1: {fileID: 446063642455560731, guid: 350e0390ee7c0ff488e61bd963ca98f1, type: 3}
+    variant: A
+  - id: Bld_C_low_L5_B
+    zone: C
+    density: 1
+    level: 5
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21.14, y: 12.59, z: 14.35}
+    lod0: {fileID: 4541669106466644145, guid: 8c1aa35827c422648a0540ae394966c8, type: 3}
+    lod1: {fileID: -4711276080308461801, guid: 8c1aa35827c422648a0540ae394966c8, type: 3}
+    variant: B
+  - id: Bld_C_low_L5_C
+    zone: C
+    density: 1
+    level: 5
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21.07, y: 7.5, z: 14.47}
+    lod0: {fileID: -2723488036833466234, guid: 6931fea686232d447b2594e44cd53e68, type: 3}
+    lod1: {fileID: 6075195630665796481, guid: 6931fea686232d447b2594e44cd53e68, type: 3}
+    variant: C
+  - id: Bld_C_high_L1_A
+    zone: C
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 20.18, z: 13.25}
+    lod0: {fileID: -6473928637386852105, guid: fd71c53b57e8d7348ab58aa207ea11a2, type: 3}
+    lod1: {fileID: 8120468955252940787, guid: fd71c53b57e8d7348ab58aa207ea11a2, type: 3}
+    variant: A
+  - id: Bld_C_high_L1_B
+    zone: C
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 19.48, z: 14.34}
+    lod0: {fileID: -6217169959108131151, guid: 3ebca2ae98555d540a8c99250884589c, type: 3}
+    lod1: {fileID: 2870043451699177327, guid: 3ebca2ae98555d540a8c99250884589c, type: 3}
+    variant: B
+  - id: Bld_C_high_L1_C
+    zone: C
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 17.73, z: 14.48}
+    lod0: {fileID: 4639126310851468641, guid: a6d24054d42a36040958d1ad6ae06765, type: 3}
+    lod1: {fileID: -747882689146914818, guid: a6d24054d42a36040958d1ad6ae06765, type: 3}
+    variant: C
+  - id: Bld_C_high_L2_A
+    zone: C
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 28.62, z: 14.23}
+    lod0: {fileID: -80350707976840269, guid: c1c9461f72d983144b45a26aff3b06a4, type: 3}
+    lod1: {fileID: -7832295909126074838, guid: c1c9461f72d983144b45a26aff3b06a4, type: 3}
+    variant: A
+  - id: Bld_C_high_L2_B
+    zone: C
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 30, z: 14.27}
+    lod0: {fileID: 2809122743213020203, guid: 619bcee754e8a44449bddef19d4f6ba0, type: 3}
+    lod1: {fileID: -224498561028566742, guid: 619bcee754e8a44449bddef19d4f6ba0, type: 3}
+    variant: B
+  - id: Bld_C_high_L2_C
+    zone: C
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13, y: 33.85, z: 14.32}
+    lod0: {fileID: -2301451940070026329, guid: da62b546ffa78794aa554882b056eabc, type: 3}
+    lod1: {fileID: -1685142958705131933, guid: da62b546ffa78794aa554882b056eabc, type: 3}
+    variant: C
+  - id: Bld_C_high_L3_A
+    zone: C
+    density: 3
+    level: 3
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21, y: 32.98, z: 13.76}
+    lod0: {fileID: -2691193061152411906, guid: f4fbcc84d577a9346bca150e78d49bea, type: 3}
+    lod1: {fileID: -6727816739205695495, guid: f4fbcc84d577a9346bca150e78d49bea, type: 3}
+    variant: A
+  - id: Bld_C_high_L3_B
+    zone: C
+    density: 3
+    level: 3
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21, y: 27.79, z: 14.48}
+    lod0: {fileID: -3168729915882401560, guid: 1f58f0bc1fcdd524db2c7a0571bf9534, type: 3}
+    lod1: {fileID: -2530307204468321694, guid: 1f58f0bc1fcdd524db2c7a0571bf9534, type: 3}
+    variant: B
+  - id: Bld_C_high_L3_C
+    zone: C
+    density: 3
+    level: 3
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21.14, y: 38.77, z: 13.83}
+    lod0: {fileID: 6984154184555344564, guid: 1abbc518219715f46a8bd41aa3de41e4, type: 3}
+    lod1: {fileID: 2961849030235618693, guid: 1abbc518219715f46a8bd41aa3de41e4, type: 3}
+    variant: C
+  - id: Bld_C_high_L4_A
+    zone: C
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21, y: 34.29, z: 21}
+    lod0: {fileID: -5425348747357482274, guid: 3cd1ff27bcb0cb247b57ef43beeac48b, type: 3}
+    lod1: {fileID: -7419923001342297509, guid: 3cd1ff27bcb0cb247b57ef43beeac48b, type: 3}
+    variant: A
+  - id: Bld_C_high_L4_B
+    zone: C
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21, y: 49.56, z: 22.22}
+    lod0: {fileID: -3137470424798499972, guid: 093b05f32c7783e43ad613dfe5344e29, type: 3}
+    lod1: {fileID: -6413879931441292275, guid: 093b05f32c7783e43ad613dfe5344e29, type: 3}
+    variant: B
+  - id: Bld_C_high_L4_C
+    zone: C
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21, y: 71.3, z: 22.32}
+    lod0: {fileID: 4696573077596690046, guid: 059e773b028a27b4cadf6209bbd059f3, type: 3}
+    lod1: {fileID: 7584681518854948383, guid: 059e773b028a27b4cadf6209bbd059f3, type: 3}
+    variant: C
+  - id: Bld_C_high_L5_A
+    zone: C
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21, y: 27.53, z: 22.22}
+    lod0: {fileID: 4426121110936602609, guid: cc84e399b90708c4294b9683b01e77eb, type: 3}
+    lod1: {fileID: -395819009998311835, guid: cc84e399b90708c4294b9683b01e77eb, type: 3}
+    variant: A
+  - id: Bld_C_high_L5_B
+    zone: C
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21, y: 44.06, z: 22.22}
+    lod0: {fileID: 3263866987466556446, guid: b7239bc4759ead74f916e67fdc8a0f38, type: 3}
+    lod1: {fileID: -8724180121268811745, guid: b7239bc4759ead74f916e67fdc8a0f38, type: 3}
+    variant: B
+  - id: Bld_C_high_L5_C
+    zone: C
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21, y: 41.79, z: 22.14}
+    lod0: {fileID: -2677389937882787444, guid: c5caf636d1c9ce842980938d351f6a2a, type: 3}
+    lod1: {fileID: -8002426868433695028, guid: c5caf636d1c9ce842980938d351f6a2a, type: 3}
+    variant: C
+  - id: Bld_O_high_L1_A
+    zone: O
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13.8, y: 14.31, z: 7.33}
+    lod0: {fileID: 6944156806007615165, guid: 6f0631c933b52e44faafdd546efc9858, type: 3}
+    lod1: {fileID: -8742154645202854111, guid: 6f0631c933b52e44faafdd546efc9858, type: 3}
+    variant: A
+  - id: Bld_O_high_L1_B
+    zone: O
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13.8, y: 15.29, z: 7.4}
+    lod0: {fileID: 287926402485972962, guid: 66336ad6d4962ee4c85c1a04095deacb, type: 3}
+    lod1: {fileID: 5831262726388436943, guid: 66336ad6d4962ee4c85c1a04095deacb, type: 3}
+    variant: B
+  - id: Bld_O_high_L1_C
+    zone: O
+    density: 3
+    level: 1
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13.8, y: 14.31, z: 7.33}
+    lod0: {fileID: -4019827437189808022, guid: c8e13e041c16d0e498f4740ada24ea93, type: 3}
+    lod1: {fileID: -8239694972127582591, guid: c8e13e041c16d0e498f4740ada24ea93, type: 3}
+    variant: C
+  - id: Bld_O_high_L2_A
+    zone: O
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13.8, y: 24.47, z: 15.13}
+    lod0: {fileID: 8958653217992487561, guid: a0644417020cf74429e23460eec5fb39, type: 3}
+    lod1: {fileID: 3493198301103621090, guid: a0644417020cf74429e23460eec5fb39, type: 3}
+    variant: A
+  - id: Bld_O_high_L2_B
+    zone: O
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13.8, y: 16.93, z: 14.1}
+    lod0: {fileID: 8411182315979160109, guid: c88cfd1eb1e7d344f9f02e0aee22e717, type: 3}
+    lod1: {fileID: -906001341865324533, guid: c88cfd1eb1e7d344f9f02e0aee22e717, type: 3}
+    variant: B
+  - id: Bld_O_high_L2_C
+    zone: O
+    density: 3
+    level: 2
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13.8, y: 24.47, z: 15.13}
+    lod0: {fileID: -7626400817806709046, guid: dbe95dcc1fd62bd47a69c3944dbea05e, type: 3}
+    lod1: {fileID: 1158367645536284543, guid: dbe95dcc1fd62bd47a69c3944dbea05e, type: 3}
+    variant: C
+  - id: Bld_O_high_L3_A
+    zone: O
+    density: 3
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13.8, y: 22.39, z: 14.95}
+    lod0: {fileID: 1700936690590514972, guid: 11e474b5b9451a848bd57a0400b269e5, type: 3}
+    lod1: {fileID: 2223086561375300020, guid: 11e474b5b9451a848bd57a0400b269e5, type: 3}
+    variant: A
+  - id: Bld_O_high_L3_B
+    zone: O
+    density: 3
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13.8, y: 16.5, z: 15.12}
+    lod0: {fileID: -8226529753033295419, guid: 0b5aa46df1e71ef48923de9066dc2eeb, type: 3}
+    lod1: {fileID: -1994134185405498621, guid: 0b5aa46df1e71ef48923de9066dc2eeb, type: 3}
+    variant: B
+  - id: Bld_O_high_L3_C
+    zone: O
+    density: 3
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 13.8, y: 15.87, z: 14.64}
+    lod0: {fileID: 3407860595563036534, guid: c6d16d9056cd765408a1a220ee9bf321, type: 3}
+    lod1: {fileID: -5197472359486960467, guid: c6d16d9056cd765408a1a220ee9bf321, type: 3}
+    variant: C
+  - id: Bld_O_high_L4_A
+    zone: O
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21.8, y: 49.56, z: 23.13}
+    lod0: {fileID: -7186974027720866408, guid: a65b12a0774ae6e4ca806ab7e7b9df52, type: 3}
+    lod1: {fileID: -3900591324084127432, guid: a65b12a0774ae6e4ca806ab7e7b9df52, type: 3}
+    variant: A
+  - id: Bld_O_high_L4_B
+    zone: O
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21.8, y: 44.06, z: 23.13}
+    lod0: {fileID: 5794660395272681580, guid: 666b39cde69cb9f4f8484124123e6ee8, type: 3}
+    lod1: {fileID: 2568180462566740617, guid: 666b39cde69cb9f4f8484124123e6ee8, type: 3}
+    variant: B
+  - id: Bld_O_high_L4_C
+    zone: O
+    density: 3
+    level: 4
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21.8, y: 34.29, z: 21.8}
+    lod0: {fileID: 811114693204048295, guid: fe1687ffc37449144a96ec907764503e, type: 3}
+    lod1: {fileID: 3446394619783782807, guid: fe1687ffc37449144a96ec907764503e, type: 3}
+    variant: C
+  - id: Bld_O_high_L5_A
+    zone: O
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21.8, y: 71.3, z: 23.23}
+    lod0: {fileID: -3651021922892077481, guid: 437466a44b084344aa384aa0684a9424, type: 3}
+    lod1: {fileID: 8754365444987364371, guid: 437466a44b084344aa384aa0684a9424, type: 3}
+    variant: A
+  - id: Bld_O_high_L5_B
+    zone: O
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21.8, y: 71.3, z: 23.23}
+    lod0: {fileID: 3913127500605044161, guid: f14d34f9a84d7ed48887f2ae3c77b9f2, type: 3}
+    lod1: {fileID: -7910827640503377869, guid: f14d34f9a84d7ed48887f2ae3c77b9f2, type: 3}
+    variant: B
+  - id: Bld_O_high_L5_C
+    zone: O
+    density: 3
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 21.8, y: 41.79, z: 23.04}
+    lod0: {fileID: -4671258684506993669, guid: d8f65f62014ab7145b472a11e5c116b2, type: 3}
+    lod1: {fileID: 8490828156135267774, guid: d8f65f62014ab7145b472a11e5c116b2, type: 3}
+    variant: C
+  - id: Bld_I_med_L1_A
+    zone: I
+    density: 2
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 5.6, y: 6.5, z: 6.8}
+    lod0: {fileID: -2675206030802617933, guid: 879779c050c1b824c992c0957ac47858, type: 3}
+    lod1: {fileID: -1301102895913665106, guid: 879779c050c1b824c992c0957ac47858, type: 3}
+    variant: A
+  - id: Bld_I_med_L1_B
+    zone: I
+    density: 2
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 5.6, y: 6.5, z: 6.8}
+    lod0: {fileID: -1533885735233457313, guid: c121339b309e67b4ca36536fb8e9bb27, type: 3}
+    lod1: {fileID: -2163989597367770167, guid: c121339b309e67b4ca36536fb8e9bb27, type: 3}
+    variant: B
+  - id: Bld_I_med_L1_C
+    zone: I
+    density: 2
+    level: 1
+    footprintW: 1
+    footprintD: 1
+    size: {x: 5.6, y: 6.5, z: 6.8}
+    lod0: {fileID: 1696567363827387220, guid: 85a3bb2e550fcae4eb36b49498c1c29b, type: 3}
+    lod1: {fileID: 5944952003568794596, guid: 85a3bb2e550fcae4eb36b49498c1c29b, type: 3}
+    variant: C
+  - id: Bld_I_med_L2_A
+    zone: I
+    density: 2
+    level: 2
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13.37, y: 12.25, z: 6.5}
+    lod0: {fileID: -2832276715671614571, guid: cd5151ce37b3494498469c5c1a02737b, type: 3}
+    lod1: {fileID: 4886051362669739372, guid: cd5151ce37b3494498469c5c1a02737b, type: 3}
+    variant: A
+  - id: Bld_I_med_L2_B
+    zone: I
+    density: 2
+    level: 2
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13.37, y: 12.25, z: 6.5}
+    lod0: {fileID: 2789907383091137977, guid: 4d03613bdd260d4488128204d5a156d6, type: 3}
+    lod1: {fileID: 7515398352864689724, guid: 4d03613bdd260d4488128204d5a156d6, type: 3}
+    variant: B
+  - id: Bld_I_med_L2_C
+    zone: I
+    density: 2
+    level: 2
+    footprintW: 2
+    footprintD: 1
+    size: {x: 13.37, y: 12.25, z: 6.5}
+    lod0: {fileID: -2112865311992825236, guid: 1427104d69ebc734e965580827544745, type: 3}
+    lod1: {fileID: 7850850885658586751, guid: 1427104d69ebc734e965580827544745, type: 3}
+    variant: C
+  - id: Bld_I_med_L3_A
+    zone: I
+    density: 2
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14.97, y: 18.25, z: 13.14}
+    lod0: {fileID: 1104736266226455105, guid: ef37db5df534c884ea8506f02f95b8d8, type: 3}
+    lod1: {fileID: -4138992975913148354, guid: ef37db5df534c884ea8506f02f95b8d8, type: 3}
+    variant: A
+  - id: Bld_I_med_L3_B
+    zone: I
+    density: 2
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14.97, y: 18.25, z: 13.14}
+    lod0: {fileID: 4467975706126536631, guid: edc5a4e493d15bc48af704e434aa041b, type: 3}
+    lod1: {fileID: -9047671909205452362, guid: edc5a4e493d15bc48af704e434aa041b, type: 3}
+    variant: B
+  - id: Bld_I_med_L3_C
+    zone: I
+    density: 2
+    level: 3
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14.97, y: 18.25, z: 13.14}
+    lod0: {fileID: -1986447909715459906, guid: 52de79269cdb02240834ebcc8e4f356e, type: 3}
+    lod1: {fileID: 3917699155723216309, guid: 52de79269cdb02240834ebcc8e4f356e, type: 3}
+    variant: C
+  - id: Bld_I_med_L4_A
+    zone: I
+    density: 2
+    level: 4
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21.6, y: 24.25, z: 14.87}
+    lod0: {fileID: 2099204071801135172, guid: c7e7314a541e62e4189358739279b18f, type: 3}
+    lod1: {fileID: 1111445514045265969, guid: c7e7314a541e62e4189358739279b18f, type: 3}
+    variant: A
+  - id: Bld_I_med_L4_B
+    zone: I
+    density: 2
+    level: 4
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21.6, y: 24.25, z: 14.87}
+    lod0: {fileID: 1406615855118514131, guid: c1aaf61a2274ed64583aa751a43cdf1d, type: 3}
+    lod1: {fileID: 2986067560800624720, guid: c1aaf61a2274ed64583aa751a43cdf1d, type: 3}
+    variant: B
+  - id: Bld_I_med_L4_C
+    zone: I
+    density: 2
+    level: 4
+    footprintW: 3
+    footprintD: 2
+    size: {x: 21.6, y: 24.25, z: 14.87}
+    lod0: {fileID: -1378288216532877001, guid: a2822012c41319c43b823ba1484ab3d8, type: 3}
+    lod1: {fileID: 5142890453687726210, guid: a2822012c41319c43b823ba1484ab3d8, type: 3}
+    variant: C
+  - id: Bld_I_med_L5_A
+    zone: I
+    density: 2
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 26.3, y: 30.25, z: 23.99}
+    lod0: {fileID: -2144083377933583228, guid: c402aab8339be5a41b3bd2dc80de954c, type: 3}
+    lod1: {fileID: 8783339162876330989, guid: c402aab8339be5a41b3bd2dc80de954c, type: 3}
+    variant: A
+  - id: Bld_I_med_L5_B
+    zone: I
+    density: 2
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 26.3, y: 30.25, z: 23.99}
+    lod0: {fileID: 5339797875561590919, guid: fee040fab50f4d94dba557f877af64d5, type: 3}
+    lod1: {fileID: 6688727088389382419, guid: fee040fab50f4d94dba557f877af64d5, type: 3}
+    variant: B
+  - id: Bld_I_med_L5_C
+    zone: I
+    density: 2
+    level: 5
+    footprintW: 3
+    footprintD: 3
+    size: {x: 26.3, y: 30.25, z: 23.99}
+    lod0: {fileID: 4796092540457040578, guid: f78c2087f51d33448a91ff64017e37ab, type: 3}
+    lod1: {fileID: -4702363537620052357, guid: f78c2087f51d33448a91ff64017e37ab, type: 3}
+    variant: C
+  - id: Svc_water_pump
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 1
+    footprintD: 1
+    size: {x: 8.7, y: 12.2, z: 6.68}
+    lod0: {fileID: 6530195259789649348, guid: 9ebc3e836d444d7448d527fc3c202bf0, type: 3}
+    lod1: {fileID: -3739258112432342547, guid: 9ebc3e836d444d7448d527fc3c202bf0, type: 3}
+    variant: 
+  - id: Svc_drain
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 1
+    footprintD: 1
+    size: {x: 7.6, y: 4.4, z: 7.6}
+    lod0: {fileID: 7402952685844295576, guid: 28c454d54332ac14697806433a0dc184, type: 3}
+    lod1: {fileID: 1675566455227245041, guid: 28c454d54332ac14697806433a0dc184, type: 3}
+    variant: 
+  - id: Svc_wind
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 1
+    footprintD: 1
+    size: {x: 24.67, y: 44.8, z: 4.78}
+    lod0: {fileID: 5995783968847028293, guid: 9c2e2dcbb8a63fe42b81f53616a21acd, type: 3}
+    lod1: {fileID: -4090060943289956609, guid: 9c2e2dcbb8a63fe42b81f53616a21acd, type: 3}
+    variant: 
+  - id: Svc_coal
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 3
+    footprintD: 3
+    size: {x: 23.9, y: 40.3, z: 23.8}
+    lod0: {fileID: -2665463556627881832, guid: 97c90c1171dbc3847ae368c84b6ee738, type: 3}
+    lod1: {fileID: -2677119404152973307, guid: 97c90c1171dbc3847ae368c84b6ee738, type: 3}
+    variant: 
+  - id: Svc_landfill
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 3
+    footprintD: 3
+    size: {x: 24.4, y: 8.4, z: 24.9}
+    lod0: {fileID: -2047743994367027001, guid: d0b20e9cbe4478b498f5dfe3f85370ea, type: 3}
+    lod1: {fileID: -1944338467345932815, guid: d0b20e9cbe4478b498f5dfe3f85370ea, type: 3}
+    variant: 
+  - id: Svc_health
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 2
+    footprintD: 2
+    size: {x: 14.9, y: 12.18, z: 14.3}
+    lod0: {fileID: -3315788102362160902, guid: 9530c2d34847b784a99f8ea545b28f32, type: 3}
+    lod1: {fileID: 8671613704556335672, guid: 9530c2d34847b784a99f8ea545b28f32, type: 3}
+    variant: 
+  - id: Svc_fire
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 2
+    footprintD: 1
+    size: {x: 15.1, y: 16.4, z: 7}
+    lod0: {fileID: 4635950357841676851, guid: 11060b5f7f4861c4ab910877ac1dc5b5, type: 3}
+    lod1: {fileID: -1472918739187541719, guid: 11060b5f7f4861c4ab910877ac1dc5b5, type: 3}
+    variant: 
+  - id: Svc_police
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 2
+    footprintD: 1
+    size: {x: 15, y: 13.4, z: 9.15}
+    lod0: {fileID: 8796648505803839139, guid: 389585c2ed4cff24b870142950691bc5, type: 3}
+    lod1: {fileID: 1784982862703138501, guid: 389585c2ed4cff24b870142950691bc5, type: 3}
+    variant: 
+  - id: Svc_school
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 3
+    footprintD: 2
+    size: {x: 23.2, y: 18, z: 15.96}
+    lod0: {fileID: 6982658965962557814, guid: 1e9108bbfe0d9254cb3adb77a7f400fd, type: 3}
+    lod1: {fileID: -5309529448634380868, guid: 1e9108bbfe0d9254cb3adb77a7f400fd, type: 3}
+    variant: 
+  - id: Svc_park
+    zone: SVC
+    density: 0
+    level: 0
+    footprintW: 2
+    footprintD: 2
+    size: {x: 15.6, y: 6.24, z: 15.6}
+    lod0: {fileID: 1174678010817475817, guid: 9e60c1b2f5234f34a9f8553effbe6e86, type: 3}
+    lod1: {fileID: -5149976941151274005, guid: 9e60c1b2f5234f34a9f8553effbe6e86, type: 3}
+    variant: 

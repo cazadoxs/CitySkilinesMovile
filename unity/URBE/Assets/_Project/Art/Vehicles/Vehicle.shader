@@ -1,4 +1,4 @@
-// URBE M2-06/M2-07: shader de vehiculos. Un atlas de 64x64; el alfa del atlas marca la pintura que se tine por instancia (_Tint).
+// URBE M2-06/M2-07 (y edificios, M3-09): shader de vehiculos y edificios. Un atlas de 64x64; el alfa del atlas marca la pintura que se tine por instancia (_Tint).
 // Sirve para los dos caminos de dibujo: RenderMeshInstanced (instancing clasico, _Tint por MaterialPropertyBlock) y
 // BatchRendererGroup (DOTS instancing: _Tint, unity_ObjectToWorld y unity_WorldToObject salen del buffer del grupo).
 Shader "Urbe/Vehicle"
@@ -80,6 +80,8 @@ Shader "Urbe/Vehicle"
             {
                 half4 t = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv);
                 half3 albedo = lerp(t.rgb, t.rgb * i.tint.rgb, t.a);
+                // El alfa del tinte oscurece todo el modelo (edificios abandonados, M3-09). Los vehiculos pasan 1: sin efecto.
+                albedo *= lerp(0.28h, 1.0h, saturate(i.tint.a));
                 half3 n = normalize(i.normalWS);
                 Light l = GetMainLight();
                 half ndl = saturate(dot(n, l.direction));

@@ -51,6 +51,7 @@ URBE es un city builder; el tráfico es solo su base. Hasta M2 no hay ciudad: na
 ### Unity
 - Unity lee estado y envía comandos; no simula. `SimHost` pasa a alojar `CitySimulation`.
 - Edificios: gramática determinista en C# (`semilla`, parcela, zona, nivel) que produce una lista de instancias de piezas. Kit modular propio generado con script de Blender, dos estilos: Mediterráneo y Ensanche. Instancing por pieza y por chunk, sin regenerar lo que no cambia. A distancia, un impostor de caja con tinte.
+- **Cambio en M3-09 (catálogo en vez de gramática):** en lugar de componer piezas, hay un catálogo de 115 modelos completos (`Bld_<R|C|I|O>_<low|med|high>_L<1-5>_<A|B|C>` y `Svc_<tipo>`, con LOD0 y LOD1, atlas común con tinte en el alfa). Unity elige por edificio el modelo más próximo a zona, densidad, nivel y huella de la parcela (puntuación 100 x densidad + 10 x nivel + huella) y la semilla del edificio decide entre los empates: misma semilla, mismo modelo. Se escala a la parcela con límites y se tiñe por zona y semilla (paletas por zona). Render instanciado por chunks de 128 m reaccionando a los eventos de `BuildingSystem`; LOD1 a 260 m y caja con tinte a 700 m; los abandonados son oscuros. Esto sustituye a la gramática y a los dos estilos de arriba.
 - Interfaz según §11.2, §12.7 y `docs/figma.md`: barra de construcción por categorías, dinero, población, fecha, barras RCI, panel de edificio con problemas y motivos.
 
 ## Alternativas descartadas
