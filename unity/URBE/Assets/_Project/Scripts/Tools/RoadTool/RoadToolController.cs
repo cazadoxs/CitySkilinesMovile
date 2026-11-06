@@ -82,7 +82,6 @@ namespace Urbe.Game.Tools.RoadTool
             _cancel = _root.Q<Button>("btn-cancel");
             _confirm = _root.Q<Button>("btn-confirm");
 
-            _build.clicked += ToggleActive;
             _street.clicked += OnStreet;
             _avenue.clicked += OnAvenue;
             _straight.clicked += OnStraight;
@@ -117,7 +116,6 @@ namespace Urbe.Game.Tools.RoadTool
             if (_build != null)
             {
                 _street.clicked -= OnStreet; _avenue.clicked -= OnAvenue; _straight.clicked -= OnStraight;
-                _build.clicked -= ToggleActive;
                 _curve.clicked -= OnCurve; _free.clicked -= OnFree; _demolish.clicked -= OnDemolish; _undo.clicked -= Undo;
                 _cancel.clicked -= Cancel; _confirm.clicked -= OnConfirm;
             }
@@ -365,8 +363,6 @@ namespace Urbe.Game.Tools.RoadTool
         {
             if (_panel == null) return;
             _panel.EnableInClassList("open", _active);
-            _build.EnableInClassList("toggled", _active);
-            _build.text = _active ? "Cerrar" : "Construir";
             bool cityLocked = host.City != null && !host.City.IsRoadUnlocked(RoadTypeIds.Avenue4);
             _avenue.EnableInClassList("locked", cityLocked);
             _avenue.text = cityLocked ? "Avenida\n" + CityText.ShortRequirement(host.City!.Balance.MilestoneRoadAvenue4, host.City.Balance) : "Avenida";

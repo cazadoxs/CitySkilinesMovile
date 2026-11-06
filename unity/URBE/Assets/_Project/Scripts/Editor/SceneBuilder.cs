@@ -10,8 +10,10 @@ using Urbe.Game.CameraRig;
 using Urbe.Game.Rendering.Buildings;
 using Urbe.Game.Rendering.Ground;
 using Urbe.Game.Rendering.Roads;
+using Urbe.Game.Rendering.Zones;
 using Urbe.Game.Rendering.Traffic;
 using Urbe.Game.Rendering.Vehicles;
+using Urbe.Game.Tools.CityTools;
 using Urbe.Game.Tools.RoadTool;
 using Urbe.Game.Sim;
 using Urbe.Game.UI;
@@ -92,12 +94,22 @@ namespace Urbe.Game.Editor
             SetRef(ghost, "roadMaterial", roadSurface);
             SetRef(ghost, "overlayMaterial", EnsureOverlayMaterial());
 
+            var toolGhostGo = new GameObject("FantasmaHerramientasCiudad");
+            var toolGhost = toolGhostGo.AddComponent<RoadGhostRenderer>();
+            SetRef(toolGhost, "roadMaterial", roadSurface);
+            SetRef(toolGhost, "overlayMaterial", EnsureOverlayMaterial());
+
+            var zonesGo = new GameObject("CapaZonas");
+            var zoneLayer = zonesGo.AddComponent<ZoneOverlayRenderer>();
+            SetRef(zoneLayer, "host", host);
+            SetRef(zoneLayer, "material", EnsureOverlayMaterial());
+
             var trafficGo = new GameObject("CapaTrafico");
             var traffic = trafficGo.AddComponent<TrafficLayer>();
             SetRef(traffic, "host", host);
             SetRef(traffic, "roads", roads);
 
-            BuildHud(host, rig, roads, ghost, traffic);
+            BuildHud(host, rig, roads, ghost, traffic, toolGhost, zoneLayer);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
@@ -105,7 +117,7 @@ namespace Urbe.Game.Editor
             Debug.Log("[URBE] Escena generada: " + ScenePath);
         }
 
-        private static void BuildHud(SimHost host, CityCameraController rig, RoadChunkRenderer roads, RoadGhostRenderer ghost, TrafficLayer traffic)
+        private static void BuildHud(SimHost host, CityCameraController rig, RoadChunkRenderer roads, RoadGhostRenderer ghost, TrafficLayer traffic, RoadGhostRenderer toolGhost, ZoneOverlayRenderer zoneLayer)
         {
             const string uiFolder = "Assets/_Project/UI/HUD";
             var panel = EnsurePanelSettings();
@@ -130,6 +142,18 @@ namespace Urbe.Game.Editor
             SetRef(tool, "roads", roads);
             SetRef(tool, "ghost", ghost);
             SetRef(tool, "pricesJson", AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/_Project/Data/road-prices.json"));
+            var menu = hudGo.AddComponent<BuildMenuController>();
+            SetRef(menu, "host", host);
+            SetRef(menu, "cameraController", rig);
+            SetRef(menu, "roadTool", tool);
+            SetRef(menu, "overlay", toolGhost);
+            SetRef(menu, "zoneOverlay", zoneLayer);
+            SetRef(menu, "hud", cityHud);
+            var inspector = hudGo.AddComponent<BuildingInspector>();
+            SetRef(inspector, "host", host);
+            SetRef(inspector, "cameraController", rig);
+            SetRef(inspector, "menu", menu);
+            SetRef(inspector, "hud", cityHud);
         }
 
         /// <summary>

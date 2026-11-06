@@ -18,7 +18,7 @@ namespace Urbe.Game.Tests
             return Path.GetFullPath(Path.Combine(dir, fileName));
         }
 
-        public static IEnumerator Shot(Camera cam, UIDocument uiDoc, int w, int h, string fileName)
+        public static IEnumerator Shot(Camera cam, UIDocument uiDoc, int w, int h, string fileName, System.Action? whileRendered = null)
         {
             // Se clona el PanelSettings: cambiar targetTexture en el asset compartido deja la UI sin recibir clics en las pruebas posteriores.
             PanelSettings original = uiDoc.panelSettings;
@@ -27,6 +27,11 @@ namespace Urbe.Game.Tests
             var rt = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32);
             rt.Create();
             bool camWasEnabled = cam.enabled;
+            // Primero el panel se dibuja en una textura auxiliar hasta que su diseño al tamaño de la captura es estable (sin fantasmas de diseños anteriores).
+            var scratch = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32);
+            scratch.Create();
+            panel.targetTexture = scratch;
+            for (int i = 0; i < 4; i++) yield return null;
             cam.targetTexture = rt;
             yield return null;
             yield return null;
@@ -35,6 +40,7 @@ namespace Urbe.Game.Tests
             panel.targetTexture = rt;
             yield return null;
             yield return null;
+            whileRendered?.Invoke(); // el panel ya tiene su diseño al tamaño de la captura: aquí se comprueban solapes
             RenderTexture.active = rt;
             var tex = new Texture2D(w, h, TextureFormat.RGBA32, false);
             tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
@@ -47,6 +53,7 @@ namespace Urbe.Game.Tests
             File.WriteAllBytes(MediaPath(fileName), tex.EncodeToPNG());
             Object.Destroy(tex);
             rt.Release();
+            scratch.Release();
         }
     }
 }

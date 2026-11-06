@@ -147,6 +147,50 @@ namespace Urbe.Game.Tools.RoadTool
             AddQuad(new Vector3(c.X - h, y, c.Z - h), new Vector3(c.X - h, y, c.Z + h), new Vector3(c.X + h, y, c.Z + h), new Vector3(c.X + h, y, c.Z - h), color);
         }
 
+        /// <summary>Rectángulo relleno orientado: <paramref name="forward"/> es la dirección del fondo (el frente del edificio) y <paramref name="width"/> va a lo largo de la calle.</summary>
+        public void AddRect(Vec2 center, Vec2 forward, float width, float depth, Color color, float y = 0.25f)
+        {
+            float fl = forward.Length;
+            Vec2 u = fl > 1e-4f ? forward / fl : new Vec2(0f, 1f);
+            Vec2 v = new Vec2(u.Z, -u.X); // a la derecha del frente
+            Vec2 du = u * (depth * 0.5f), dv = v * (width * 0.5f);
+            Vec2 p0 = center - du - dv, p1 = center + du - dv, p2 = center + du + dv, p3 = center - du + dv;
+            AddQuad(new Vector3(p0.X, y, p0.Z), new Vector3(p1.X, y, p1.Z), new Vector3(p2.X, y, p2.Z), new Vector3(p3.X, y, p3.Z), color);
+        }
+
+        /// <summary>Contorno de un rectángulo orientado (línea de <paramref name="line"/> metros).</summary>
+        public void AddRectOutline(Vec2 center, Vec2 forward, float width, float depth, float line, Color color, float y = 0.3f)
+        {
+            float fl = forward.Length;
+            Vec2 u = fl > 1e-4f ? forward / fl : new Vec2(0f, 1f);
+            Vec2 v = new Vec2(u.Z, -u.X);
+            Vec2 du = u * (depth * 0.5f), dv = v * (width * 0.5f);
+            Vec2 p0 = center - du - dv, p1 = center + du - dv, p2 = center + du + dv, p3 = center - du + dv;
+            AddLine(p0, p1, line, color, y); AddLine(p1, p2, line, color, y); AddLine(p2, p3, line, color, y); AddLine(p3, p0, line, color, y);
+        }
+
+        /// <summary>Círculo relleno (abanico de cuadriláteros degenerados).</summary>
+        public void AddDisc(Vec2 c, float radius, Color color, int segments = 28, float y = 0.2f)
+        {
+            for (int i = 0; i < segments; i++)
+            {
+                float a0 = i * Mathf.PI * 2f / segments, a1 = (i + 1) * Mathf.PI * 2f / segments;
+                var p0 = new Vector3(c.X + Mathf.Cos(a0) * radius, y, c.Z + Mathf.Sin(a0) * radius);
+                var p1 = new Vector3(c.X + Mathf.Cos(a1) * radius, y, c.Z + Mathf.Sin(a1) * radius);
+                AddQuad(new Vector3(c.X, y, c.Z), p0, p1, p1, color);
+            }
+        }
+
+        /// <summary>Anillo (borde de un pincel).</summary>
+        public void AddRing(Vec2 c, float radius, float width, Color color, int segments = 40, float y = 0.3f)
+        {
+            for (int i = 0; i < segments; i++)
+            {
+                float a0 = i * Mathf.PI * 2f / segments, a1 = (i + 1) * Mathf.PI * 2f / segments;
+                AddLine(new Vec2(c.X + Mathf.Cos(a0) * radius, c.Z + Mathf.Sin(a0) * radius), new Vec2(c.X + Mathf.Cos(a1) * radius, c.Z + Mathf.Sin(a1) * radius), width, color, y);
+            }
+        }
+
         private void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color)
         {
             int i = _ov.Count;

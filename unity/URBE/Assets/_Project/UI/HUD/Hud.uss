@@ -232,7 +232,7 @@
 .building-panel.show { display: flex; }
 .tip-head { flex-direction: row; justify-content: space-between; align-items: center; }
 .tip-title { font-size: 15px; -unity-font-style: bold; color: rgb(240, 243, 248); flex-shrink: 1; white-space: normal; }
-.tip-body { font-size: 13px; color: rgb(214, 220, 232); white-space: normal; margin-top: 2px; }
+.tip-body { font-size: 12px; color: rgb(214, 220, 232); white-space: normal; margin-top: 2px; }
 .tip-close { min-width: 48px; min-height: 48px; margin: -8px -10px -8px 0; padding: 0; border-width: 0; background-color: rgba(0, 0, 0, 0); color: rgb(190, 196, 208); font-size: 16px; }
 .bp-demolish { margin: 6px 0 0 0; background-color: rgb(200, 52, 56); border-color: rgb(250, 140, 140); color: white; }
 
@@ -273,8 +273,11 @@
     border-color: rgba(255, 255, 255, 0.14);
 }
 .sub-panel.open { display: flex; }
-.sub-panel .hud-button { margin: 2px 4px 2px 0; }
-.sub-panel .hud-button.item { padding: 0 8px; font-size: 13px; min-width: 76px; white-space: normal; }
+.sub-panel .hud-button { margin: 2px 3px 2px 0; }
+.sub-panel .hud-button.item { padding: 0 4px; font-size: 12px; min-width: 52px; white-space: normal; }
+.sub-panel .hud-button.locked { font-size: 10px; }
+.sub-panel .tool-group { margin: 0 4px 0 0; padding-right: 4px; }
+.menu-message { margin: 4px 0 0 0; }
 .sub-panel .zone-r.toggled { background-color: rgb(46, 150, 70); }
 .sub-panel .zone-c.toggled { background-color: rgb(40, 100, 210); }
 .sub-panel .zone-i.toggled { background-color: rgb(190, 140, 20); }
@@ -283,3 +286,24 @@
 .build-toggle.toggled { background-color: rgb(59, 130, 246); }
 .build-toggle, .traffic-toggle, .cat-button { background-color: rgba(30, 34, 42, 0.90); }
 .build-toggle.toggled, .traffic-toggle.toggled, .cat-button.toggled { background-color: rgb(59, 130, 246); }
+
+.bottom-row { flex-shrink: 0; }
+.sub-panel { flex-shrink: 0; }
+
+.bottom-row { flex-wrap: wrap; }
+.category-bar { flex-wrap: wrap; }
+.cat-button { margin-bottom: 4px; }
+
+.sub-panel.narrow { max-width: 100%; }
+.sub-panel.narrow .tool-group { flex-wrap: wrap; }
+.menu-message { white-space: normal; max-width: 100%; }
+
+/* Pantallas estrechas (móvil vertical, menos de 520 dp): barra superior compacta y avisos a todo el ancho. */
+.narrow .chip-sub { display: none; }
+.narrow .chip { min-height: 34px; padding: 0 6px; margin-bottom: 3px; }
+.narrow .chip-value { font-size: 15px; }
+.narrow .chip-small { font-size: 13px; }
+.narrow .sub-stats { display: none; }
+.narrow .info-row { flex-direction: column; align-items: stretch; }
+.narrow .center-col { flex-grow: 0; }
+.narrow .tip-panel, .narrow .building-panel { width: auto; }

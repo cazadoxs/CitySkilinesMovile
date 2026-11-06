@@ -79,6 +79,7 @@ namespace Urbe.Game.UI
             _cityChips = new[] { _moneyChip, _root.Q<VisualElement>("date-chip"), _root.Q<VisualElement>("pop-chip"), _root.Q<VisualElement>("milestone-chip"), _root.Q<VisualElement>("rci") };
             _tipClose.clicked += OnTipClose;
             host.SimulationChanged += OnSimulationChanged;
+            _root.RegisterCallback<GeometryChangedEvent>(OnGeometry);
             _root.schedule.Execute(Refresh).Every(PollMs);
             Refresh();
         }
@@ -87,6 +88,14 @@ namespace Urbe.Game.UI
         {
             if (_tipClose != null) _tipClose.clicked -= OnTipClose;
             if (host != null) host.SimulationChanged -= OnSimulationChanged;
+            _root?.UnregisterCallback<GeometryChangedEvent>(OnGeometry);
+        }
+
+        /// <summary>Pantalla estrecha (menos de 520 dp, móvil vertical): clase narrow para compactar la barra superior y los avisos.</summary>
+        private void OnGeometry(GeometryChangedEvent e)
+        {
+            float w = _root.resolvedStyle.width;
+            _root.Q<VisualElement>("hud-root")?.EnableInClassList("narrow", !float.IsNaN(w) && w > 0f && w < 520f);
         }
 
         private void OnSimulationChanged(Urbe.Sim.Traffic.TrafficSimulation _) { _nextEstimate = 0f; Refresh(); }
@@ -240,6 +249,9 @@ namespace Urbe.Game.UI
             float now = Time.unscaledTime;
             if (done && _tipDoneAt < 0f) _tipDoneAt = now;
             bool show = !_tipDismissed && (!done || now < _tipDoneAt + 10f);
+            // No cabe junto a los paneles de la barra de construcción (sobre todo en móvil): se oculta mientras está abierta.
+            VisualElement? hudRoot = _root.Q<VisualElement>("hud-root");
+            if (hudRoot != null && hudRoot.ClassListContains("menu-open")) show = false;
             _tip.EnableInClassList("show", show);
             if (!show) return;
             var sb = new StringBuilder();
@@ -250,11 +262,11 @@ namespace Urbe.Game.UI
             Line(sb, StepPower, "Turbina eólica");
             sb.Append('\n');
             if (done) sb.Append("¡Listo! Los edificios crecerán solos. Sube la velocidad.");
-            else if (!StepRoad) sb.Append("Ahora: Construir > Carreteras y traza una calle que salga del final de la autopista (a la izquierda).");
-            else if (!StepZones) sb.Append("Ahora: Construir > Zonas, elige Residencial y pinta junto a la calle.");
-            else if (!StepWater) sb.Append("Ahora: Construir > Agua y luz > Bomba de agua, junto a una calle.");
-            else if (!StepSewage) sb.Append("Ahora: Construir > Agua y luz > Desagüe.");
-            else sb.Append("Ahora: Construir > Agua y luz > Turbina eólica.");
+            else if (!StepRoad) sb.Append("Siguiente: Construir > Carreteras, desde el final de la autopista.");
+            else if (!StepZones) sb.Append("Siguiente: Construir > Zonas.");
+            else if (!StepWater) sb.Append("Siguiente: Construir > Agua y luz > Bomba de agua.");
+            else if (!StepSewage) sb.Append("Siguiente: Construir > Agua y luz > Desagüe.");
+            else sb.Append("Siguiente: Construir > Agua y luz > Turbina eólica.");
             string text = sb.ToString();
             if (_tipBody.text != text) _tipBody.text = text;
         }

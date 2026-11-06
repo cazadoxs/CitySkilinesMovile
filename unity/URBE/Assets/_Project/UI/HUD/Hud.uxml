@@ -60,6 +60,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="center-col" class="center-col" picking-mode="Ignore">
+                <ui:Label name="menu-message" class="tool-message menu-message" picking-mode="Ignore" text="" />
                 <ui:Label name="toast" class="toast" text="" picking-mode="Ignore" />
                 <ui:Label name="banner" class="banner" text="" picking-mode="Ignore" />
             </ui:VisualElement>
