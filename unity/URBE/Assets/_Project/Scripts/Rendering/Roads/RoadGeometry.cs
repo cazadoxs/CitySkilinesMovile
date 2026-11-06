@@ -91,7 +91,7 @@ namespace Urbe.Game.Rendering.Roads
             Vec2 tg = p.Curve.Tangent(t);
             Vec2 r = OffsetCurve.Right(tg);
             float baseY = p.ElevA + (p.ElevB - p.ElevA) * t;
-            const float h = RoadProfile.CurbHeight;
+            float h = pr.Curb;
 
             frame.Tangent = new Vector2(tg.X, tg.Z);
             frame.Right = new Vector2(r.X, r.Z);

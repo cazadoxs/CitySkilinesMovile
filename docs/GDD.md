@@ -185,17 +185,19 @@ No hay un city builder **3D, con carreteras libres y simulación por agentes** a
 
 | # | Nombre | Población | Desbloqueos principales |
 |---|---|---|---|
-| 0 | Asentamiento | 0 | Calles básicas, zonas de baja densidad (R/C/I), agua de río, eólica pequeña, carbón, desagüe |
+| 0 | Asentamiento | 0 | Todas las carreteras (ver abajo), zonas de baja densidad (R/C/I), agua de río, eólica pequeña, carbón, desagüe |
 | 1 | Aldea | 400 | Vertedero, centro de salud, parque de barrio, políticas básicas |
 | 2 | Pueblo | 1.000 | Bomberos, policía de barrio, colegio, distritos, autobús |
 | 3 | Villa | 2.500 | Cementerio, clínica, comisaría, parques medianos, 2.ª casilla de mapa |
-| 4 | Ciudad pequeña | 5.000 | Densidad media, instituto, oficinas, avenidas de 4 carriles, solar |
+| 4 | Ciudad pequeña | 5.000 | Densidad media, instituto, oficinas, solar |
 | 5 | Ciudad | 10.000 | Alta densidad, hospital, tranvía, industria especializada, 3.ª casilla |
 | 6 | Ciudad grande | 20.000 | Metro, universidad, incineradora, gas, centro de control de tráfico |
 | 7 | Gran ciudad | 40.000 | Tren de cercanías y mercancías, puerto, aeródromo, 4.ª–5.ª casillas |
 | 8 | Capital | 70.000 | Monumentos únicos (1.ª tanda), nuclear, desaladora |
 | 9 | Metrópolis | 100.000 | Aeropuerto internacional, monumentos (2.ª tanda), casillas 6–9 |
 | 10 | Megalópolis | 200.000 | Monumentos finales y planta de fusión (en móvil, recomendado solo en gama alta) |
+
+**Carreteras (cambio de M3-11):** los seis tipos del catálogo están abiertos desde el inicio (calle, sentido único, avenida de 4, avenida de 6, rural y autopista); el freno es el precio por metro (12, 10, 28, 45, 8 y 60), no un hito. La partida empieza sin calles: solo una autovía que cruza el mapa de borde a borde con una ligera curva y conexión exterior en los dos extremos; el jugador engancha sus calles a mitad de la autovía (el tramo se parte y se crea el cruce). Los márgenes de la autovía no se zonifican y sus extremos no se pueden demoler. La autopista y la rural no llevan aceras sino arcén.
 
 **Mapa:** casillas de 2×2 km. En el móvil, hasta **9 casillas** (6×6 km); en PC, hasta **25 casillas** (10×10 km). El límite del móvil se puede subir en gama alta.
 

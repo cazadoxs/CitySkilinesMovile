@@ -168,7 +168,7 @@ namespace Urbe.Game.Rendering.Roads
             e2 = e2.normalized;
             Vector2 fwd2 = atA ? -f.Tangent : f.Tangent;
             float margin = pr.Margin;
-            const float h = RoadProfile.CurbHeight;
+            float h = pr.Curb;
 
             int n = DeadEndSectors + 1;
             var bottom = new Vector3[n];

@@ -34,7 +34,11 @@ namespace Urbe.Game.Tools.RoadTool
         private VisualElement _root = null!;
         private VisualElement _panel = null!, _loupeEl = null!;
         private Label _message = null!;
-        private Button _build = null!, _street = null!, _avenue = null!, _straight = null!, _curve = null!, _free = null!, _demolish = null!;
+        private readonly System.Collections.Generic.List<Button> _typeButtons = new System.Collections.Generic.List<Button>();
+        private readonly System.Collections.Generic.List<ushort> _typeIds = new System.Collections.Generic.List<ushort>();
+        private readonly System.Collections.Generic.List<Label> _typePrices = new System.Collections.Generic.List<Label>();
+        private RoadPrices? _prices;
+        private Button _build = null!, _straight = null!, _curve = null!, _free = null!, _demolish = null!;
         private Button _undo = null!, _cancel = null!, _confirm = null!;
         private bool _active;
         private bool _dragging, _dragFirst;
@@ -72,8 +76,7 @@ namespace Urbe.Game.Tools.RoadTool
             _loupeEl = _root.Q<VisualElement>("loupe");
             _message = _root.Q<Label>("tool-message");
             _build = _root.Q<Button>("btn-build");
-            _street = _root.Q<Button>("btn-type-street");
-            _avenue = _root.Q<Button>("btn-type-avenue");
+            BuildTypeButtons();
             _straight = _root.Q<Button>("btn-mode-straight");
             _curve = _root.Q<Button>("btn-mode-curve");
             _free = _root.Q<Button>("btn-mode-free");
@@ -82,8 +85,7 @@ namespace Urbe.Game.Tools.RoadTool
             _cancel = _root.Q<Button>("btn-cancel");
             _confirm = _root.Q<Button>("btn-confirm");
 
-            _street.clicked += OnStreet;
-            _avenue.clicked += OnAvenue;
+
             _straight.clicked += OnStraight;
             _curve.clicked += OnCurve;
             _free.clicked += OnFree;
@@ -115,7 +117,7 @@ namespace Urbe.Game.Tools.RoadTool
             }
             if (_build != null)
             {
-                _street.clicked -= OnStreet; _avenue.clicked -= OnAvenue; _straight.clicked -= OnStraight;
+                _straight.clicked -= OnStraight;
                 _curve.clicked -= OnCurve; _free.clicked -= OnFree; _demolish.clicked -= OnDemolish; _undo.clicked -= Undo;
                 _cancel.clicked -= Cancel; _confirm.clicked -= OnConfirm;
             }
@@ -127,7 +129,10 @@ namespace Urbe.Game.Tools.RoadTool
             ushort type = _model != null ? _model.RoadTypeId : RoadTypeIds.Street2;
             RoadToolMode mode = _model != null ? _model.Mode : RoadToolMode.Straight;
             RoadPrices prices = host.City != null ? CityPrices(host.City.Balance) : RoadPrices.Parse(pricesJson != null ? pricesJson.text : null);
+            _prices = prices;
             _model = new RoadToolModel(sim.Network, prices);
+            if (host.City != null) { Urbe.Sim.City.CitySimulation city = host.City; _model.IsProtected = id => city.IsOutsideConnection(id); }
+            RefreshTypePrices();
             _model.SetRoadType(type);
             _model.SetMode(mode);
             _dirty = true;
@@ -164,15 +169,46 @@ namespace Urbe.Game.Tools.RoadTool
             RefreshUi();
         }
 
-        private void OnStreet() => SetType(RoadTypeIds.Street2);
-        private void OnAvenue()
+        /// <summary>Los 6 tipos del catálogo (todos abiertos desde el inicio, el coste es el freno): id, nombre, botón y ayuda.</summary>
+        public static readonly (ushort id, string name, string button, string tip)[] TypeInfo =
         {
-            if (host.City != null && !host.City.IsRoadUnlocked(RoadTypeIds.Avenue4))
+            (RoadTypeIds.Street2, "Calle", "btn-type-street", "Calle de doble sentido, 2 carriles, 40 km/h. Se puede zonificar."),
+            (RoadTypeIds.OneWay2, "Sentido único", "btn-type-oneway", "Calle de un solo sentido, 2 carriles, 40 km/h. Se puede zonificar."),
+            (RoadTypeIds.Avenue4, "Avenida 4", "btn-type-avenue", "Avenida de 4 carriles con mediana, 50 km/h. Se puede zonificar."),
+            (RoadTypeIds.Avenue6, "Avenida 6", "btn-type-avenue6", "Avenida de 6 carriles con mediana, 60 km/h. Se puede zonificar."),
+            (RoadTypeIds.Rural2, "Rural", "btn-type-rural", "Carretera rural de 2 carriles, 80 km/h, con arcén y sin aceras. No se puede zonificar."),
+            (RoadTypeIds.Highway4, "Autopista", "btn-type-highway", "Autopista de 4 carriles con mediana, 100 km/h, con arcén y sin aceras. No se puede zonificar."),
+        };
+
+        private void BuildTypeButtons()
+        {
+            VisualElement row = _root.Q<VisualElement>("road-types");
+            row.Clear();
+            _typeButtons.Clear(); _typeIds.Clear(); _typePrices.Clear();
+            RoadTypeCatalog catalog = host.Network != null ? host.Network.Types : RoadTypeCatalog.CreateDefault();
+            foreach (var info in TypeInfo)
             {
-                ShowNote("Avenida bloqueada: " + CityText.Requirement(host.City.Balance.MilestoneRoadAvenue4, host.City.Balance));
-                return;
+                var b = new Button { name = info.button, tooltip = info.tip };
+                b.AddToClassList("hud-button");
+                b.AddToClassList("tool-button");
+                b.AddToClassList("road-type");
+                ushort id = info.id;
+                b.clicked += () => SetType(id);
+                b.Add(new RoadIcon(catalog.Get(id)));
+                var name = new Label(info.name); name.AddToClassList("road-type-name"); name.pickingMode = PickingMode.Ignore;
+                var price = new Label("-"); price.AddToClassList("road-type-price"); price.pickingMode = PickingMode.Ignore;
+                b.Add(name); b.Add(price);
+                row.Add(b);
+                _typeButtons.Add(b); _typeIds.Add(id); _typePrices.Add(price);
             }
-            SetType(RoadTypeIds.Avenue4);
+            RefreshTypePrices();
+        }
+
+        private void RefreshTypePrices()
+        {
+            if (_prices == null) return;
+            string[] keys = { "street_2", "oneway_2", "avenue_4", "avenue_6", "rural_2", "highway_4" };
+            for (int i = 0; i < _typePrices.Count && i < keys.Length; i++) _typePrices[i].text = Mathf.RoundToInt(_prices.PerMeter(keys[i])) + "/m";
         }
         private void OnStraight() => SetMode(RoadToolMode.Straight);
         private void OnCurve() => SetMode(RoadToolMode.Curve);
@@ -363,12 +399,8 @@ namespace Urbe.Game.Tools.RoadTool
         {
             if (_panel == null) return;
             _panel.EnableInClassList("open", _active);
-            bool cityLocked = host.City != null && !host.City.IsRoadUnlocked(RoadTypeIds.Avenue4);
-            _avenue.EnableInClassList("locked", cityLocked);
-            _avenue.text = cityLocked ? "Avenida\n" + CityText.ShortRequirement(host.City!.Balance.MilestoneRoadAvenue4, host.City.Balance) : "Avenida";
             if (_model == null) return;
-            _street.EnableInClassList("toggled", _model.RoadTypeId == RoadTypeIds.Street2);
-            _avenue.EnableInClassList("toggled", _model.RoadTypeId == RoadTypeIds.Avenue4);
+            for (int i = 0; i < _typeButtons.Count; i++) _typeButtons[i].EnableInClassList("toggled", _model.RoadTypeId == _typeIds[i]);
             _straight.EnableInClassList("toggled", _model.Mode == RoadToolMode.Straight);
             _curve.EnableInClassList("toggled", _model.Mode == RoadToolMode.Curve);
             _free.EnableInClassList("toggled", _model.Mode == RoadToolMode.Free);

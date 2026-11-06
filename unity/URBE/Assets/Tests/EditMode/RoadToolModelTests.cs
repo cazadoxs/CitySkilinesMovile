@@ -131,9 +131,9 @@ namespace Urbe.Game.Tests
             Assert.That(_tool.Plan.Valid, Is.True, _tool.Plan.Message);
             Assert.That(_tool.Plan.Segments, Is.EqualTo(3), "450 m en tramos de 190 m como máximo");
             Assert.That(_tool.Plan.Length, Is.EqualTo(450f).Within(1f));
-            Assert.That(_tool.Plan.Cost, Is.EqualTo(450f * 8f).Within(10f));
+            Assert.That(_tool.Plan.Cost, Is.EqualTo(450f * 12f).Within(15f));
             _tool.SetRoadType(RoadTypeIds.Avenue4);
-            Assert.That(_tool.Plan.Cost, Is.EqualTo(450f * 22f).Within(25f));
+            Assert.That(_tool.Plan.Cost, Is.EqualTo(450f * 28f).Within(30f));
         }
 
         [Test]

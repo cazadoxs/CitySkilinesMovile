@@ -11,6 +11,8 @@ namespace Urbe.Game.Rendering.Roads
     {
         /// <summary>Altura de la acera sobre la calzada (m).</summary>
         public const float CurbHeight = 0.15f;
+        /// <summary>Altura del borde de las vías sin acera (autopista y rural): un arcén casi a ras de la calzada.</summary>
+        public const float ShoulderHeight = 0.03f;
 
         public readonly float LeftOuter;
         public readonly float LeftCurb;
@@ -19,6 +21,10 @@ namespace Urbe.Game.Rendering.Roads
         public readonly float RightCurb;
         public readonly float RightOuter;
         public readonly bool HasMedian;
+        /// <summary>true si el margen es un arcén (autopista, rural) y no una acera.</summary>
+        public readonly bool HasShoulder;
+        /// <summary>Altura del borde exterior sobre la calzada.</summary>
+        public readonly float Curb;
         /// <summary>Rango lateral de los carriles Forward (A hacia B) y Backward, para las líneas de detención.</summary>
         public readonly float FwdMin, FwdMax, BwdMin, BwdMax;
         public readonly bool HasForward, HasBackward;
@@ -31,6 +37,8 @@ namespace Urbe.Game.Rendering.Roads
             int f = t.LanesForward, b = t.LanesBackward;
             float w = t.LaneWidth;
             float med = t.MedianWidth;
+            HasShoulder = t.Id == RoadTypeIds.Highway4 || t.Id == RoadTypeIds.Rural2;
+            Curb = HasShoulder ? ShoulderHeight : CurbHeight;
             HasForward = f > 0;
             HasBackward = b > 0;
             HasMedian = med > 0.001f && b > 0;

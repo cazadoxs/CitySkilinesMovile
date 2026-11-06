@@ -123,7 +123,8 @@ namespace Urbe.Game.Editor
                     if (lat < pr.LeftCurb || lat > pr.RightCurb)
                     {
                         float edge = lat < pr.LeftCurb ? pr.LeftCurb - lat : lat - pr.RightCurb;
-                        c = SidewalkColor(s0, x0 + x, y, edge);
+                        // Autopista y rural: arcén asfaltado (un poco más claro) en vez de acera.
+                        c = pr.HasShoulder ? Shade(AsphaltColor(lat, x0 + x, y), 1.18f) : SidewalkColor(s0, x0 + x, y, edge);
                     }
                     else if (pr.HasMedian && lat >= pr.MedianL && lat <= pr.MedianR)
                     {

@@ -117,6 +117,12 @@
 .road-panel.open { display: flex; }
 
 .tool-group { flex-direction: row; margin: 0 6px 0 0; padding-right: 6px; border-right-width: 1px; border-right-color: rgba(255, 255, 255, 0.15); }
+.road-types { width: 100%; justify-content: center; flex-wrap: nowrap; border-right-width: 0; margin: 0 0 4px 0; padding: 0 0 4px 0; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.15); }
+.road-type { flex-direction: column; align-items: center; justify-content: center; min-width: 52px; padding: 2px 2px; margin-left: 3px; }
+.road-type.toggled { background-color: rgb(59, 130, 246); border-color: rgb(147, 187, 252); }
+.road-type-name { font-size: 10px; color: rgb(240, 243, 248); -unity-text-align: middle-center; white-space: normal; }
+.road-type-price { font-size: 10px; -unity-font-style: normal; color: rgb(250, 214, 120); }
+.road-icon { width: 40px; height: 22px; margin-bottom: 1px; }
 .tool-group:last-child { border-right-width: 0; margin-right: 0; padding-right: 0; }
 
 .tool-confirm { background-color: rgb(34, 160, 90); border-color: rgb(120, 220, 160); color: white; min-width: 64px; }

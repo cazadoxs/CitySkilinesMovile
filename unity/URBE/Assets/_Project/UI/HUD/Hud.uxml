@@ -77,10 +77,7 @@
             <ui:VisualElement name="loupe" class="loupe" picking-mode="Ignore" />
             <ui:Label name="tool-message" class="tool-message" picking-mode="Ignore" text="" />
             <ui:VisualElement name="road-panel" class="road-panel">
-                <ui:VisualElement class="tool-group">
-                    <ui:Button name="btn-type-street" text="Calle" class="hud-button tool-button" />
-                    <ui:Button name="btn-type-avenue" text="Avenida" class="hud-button tool-button" />
-                </ui:VisualElement>
+                <ui:VisualElement name="road-types" class="tool-group road-types" />
                 <ui:VisualElement class="tool-group">
                     <ui:Button name="btn-mode-straight" text="Recta" class="hud-button tool-button" />
                     <ui:Button name="btn-mode-curve" text="Curva" class="hud-button tool-button" />

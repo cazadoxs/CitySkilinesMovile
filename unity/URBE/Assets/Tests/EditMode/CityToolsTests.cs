@@ -1,3 +1,6 @@
+using UnityEditor;
+using UnityEngine;
+using Urbe.Game.Tools.RoadTool;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Urbe.Game.Tools.CityTools;
@@ -29,7 +32,7 @@ namespace Urbe.Game.Tests
         [Test]
         public void GroupCityCommand_AplicaTodo_Y_DeshaceDeUnaVez()
         {
-            var city = new CitySimulation(2UL, new CityBalance { StartMoney = 100000 });
+            var city = new CitySimulation(2UL, new CityBalance { StartMoney = 100000, LegacyStubHighway = true });
             Assert.That(city.Execute(new BuildRoadCityCommand(SegmentRequest.Straight(new Vec2(-838f, 0f), new Vec2(-678f, 0f), RoadTypeIds.Street2))), Is.EqualTo(CityResult.Ok));
             int zoned(ZoneType z) { int n = 0; for (int i = 0; i < city.Zones.CellIndexBound; i++) if (city.Zones.IsCellAlive(i) && city.Zones.GetCell(i).Zone == z) n++; return n; }
             var cmds = new List<CityCommand>
@@ -44,6 +47,21 @@ namespace Urbe.Game.Tests
             Assert.That(city.History.UndoCount, Is.EqualTo(undo0 + 1), "una sola entrada en el historial");
             Assert.That(city.Undo(), Is.True);
             Assert.That(zoned(ZoneType.Residential), Is.EqualTo(0), "deshacer quita todo el trazo");
+        }
+
+        [Test]
+        public void RoadPricesJson_CoincideConCityBalance_Y_TodosLosTiposEstanAbiertos()
+        {
+            var json = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/_Project/Data/road-prices.json");
+            Assert.That(json, Is.Not.Null);
+            var prices = RoadPrices.Parse(json.text);
+            var bal = new CityBalance();
+            Assert.That(prices.entries.Length, Is.EqualTo(6));
+            for (int i = 0; i < 6; i++)
+            {
+                Assert.That(prices.PerMeter(new[] { "street_2", "oneway_2", "avenue_4", "avenue_6", "rural_2", "highway_4" }[i]), Is.EqualTo(bal.RoadCostPerMeter[i]), "precio del tipo " + i);
+                Assert.That(bal.RoadMilestone((ushort)i), Is.EqualTo(0), "tipo " + i + " abierto desde el inicio");
+            }
         }
 
         [Test]

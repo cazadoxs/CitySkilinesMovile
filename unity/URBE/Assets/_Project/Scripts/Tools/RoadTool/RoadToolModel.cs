@@ -11,7 +11,7 @@ namespace Urbe.Game.Tools.RoadTool
 {
     public enum RoadToolMode { Straight, Curve, Free, Demolish }
 
-    /// <summary>Precios provisionales por metro, leídos de <c>Data/road-prices.json</c> (no hay economía todavía).</summary>
+    /// <summary>Precios por metro de <c>Data/road-prices.json</c> (escenarios sin ciudad); en la ciudad mandan los de <c>CityBalance</c>, que el JSON copia.</summary>
     [Serializable]
     public sealed class RoadPrices
     {
@@ -28,7 +28,11 @@ namespace Urbe.Game.Tools.RoadTool
 
         public static RoadPrices Default() => new RoadPrices
         {
-            entries = new[] { new Entry { key = "street_2", perMeter = 8f }, new Entry { key = "avenue_4", perMeter = 22f } },
+            entries = new[]
+            {
+                new Entry { key = "street_2", perMeter = 12f }, new Entry { key = "oneway_2", perMeter = 10f }, new Entry { key = "avenue_4", perMeter = 28f },
+                new Entry { key = "avenue_6", perMeter = 45f }, new Entry { key = "rural_2", perMeter = 8f }, new Entry { key = "highway_4", perMeter = 60f },
+            },
         };
 
         public float PerMeter(string key)
@@ -82,6 +86,8 @@ namespace Urbe.Game.Tools.RoadTool
 
         /// <summary>Dinero disponible (M3-07). Si el plan cuesta más no es válido y el motivo lo dice. Infinito en escenarios sin economía.</summary>
         public float Budget { get; set; } = float.PositiveInfinity;
+        /// <summary>Tramos que no se pueden demoler (los extremos de la autovía de entrada); lo fija la ciudad.</summary>
+        public Func<EntityId, bool>? IsProtected { get; set; }
 
         public RoadToolMode Mode { get; private set; } = RoadToolMode.Straight;
         public ushort RoadTypeId { get; private set; } = RoadTypeIds.Street2;
@@ -262,10 +268,18 @@ namespace Urbe.Game.Tools.RoadTool
                     piece.T0 = 0f; piece.T1 = 1f;
                     _ghost.Add(piece);
                     plan.HasGeometry = true;
-                    plan.Valid = true;
                     plan.Segments = 1;
                     plan.Length = s.Length;
-                    plan.Message = "Demoler tramo de " + Mathf.RoundToInt(s.Length) + " m. Confirma con el visto bueno.";
+                    if (IsProtected != null && IsProtected(DemolishTarget))
+                    {
+                        plan.Valid = false;
+                        plan.Message = "Los extremos de la autovía (la conexión con el exterior) no se pueden demoler.";
+                    }
+                    else
+                    {
+                        plan.Valid = true;
+                        plan.Message = "Demoler tramo de " + Mathf.RoundToInt(s.Length) + " m. Confirma con el visto bueno.";
+                    }
                 }
                 Plan = plan;
                 return;
