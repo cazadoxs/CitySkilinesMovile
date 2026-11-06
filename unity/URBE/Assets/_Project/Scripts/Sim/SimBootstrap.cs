@@ -24,7 +24,14 @@ namespace Urbe.Game.Sim
         {
             if (host == null) host = FindFirstObjectByType<SimHost>();
             if (demoGrid) host.Initialize(GridScenario.Create(seed, maxVehicles, tripsPerSecond, cells, spacing));
-            else host.Initialize(new CitySimulation(seed));
+            else
+            {
+                var city = new CitySimulation(seed);
+                host.Initialize(city);
+                // La cámara empieza mirando la autovía que cruza el mapa, junto al punto donde se engancha la primera calle.
+                var rig = FindFirstObjectByType<Urbe.Game.CameraRig.CityCameraController>();
+                if (rig != null) rig.Model.SnapTo(new Vector2(city.HighwayAnchor.X + 60f, city.HighwayAnchor.Z + 60f), 380f);
+            }
         }
     }
 }

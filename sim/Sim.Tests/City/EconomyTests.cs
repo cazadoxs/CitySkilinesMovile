@@ -133,9 +133,9 @@ namespace Urbe.Sim.Tests.City
         {
             var bal = new CityBalance { MilestonePopulation = new[] { 0, 20, 40, 60, 80, 100, 200, 400, 800, 1600, 3200 } };
             CitySimulation c = Town(bal);
-            // Al empezar solo baja densidad y calles basicas; avenidas, media densidad, oficinas y servicios de poblacion estan cerrados.
+            // Al empezar solo baja densidad y calles basicas; media densidad, oficinas y servicios de poblacion estan cerrados.
             Assert.Equal(0, c.MilestoneIndex);
-            Assert.Equal(CityResult.NotUnlocked, CityKit.Road(c, 0, 160, 0, 200, RoadTypeIds.Avenue4));
+            Assert.Equal(CityResult.Ok, CityKit.Road(c, 0, 400, 0, 480, RoadTypeIds.Avenue4)); // todas las carreteras estan abiertas desde el inicio (M3-11)
             Assert.Equal(CityResult.NotUnlocked, c.Execute(PaintZoneCommand.Brush(CityKit.V(80, 0), 20f, ZoneType.Residential, 2)));
             Assert.Equal(CityResult.NotUnlocked, c.Execute(PaintZoneCommand.Brush(CityKit.V(80, 0), 20f, ZoneType.Office, 2)));
             Assert.False(c.IsServiceUnlocked(ServiceType.Landfill));

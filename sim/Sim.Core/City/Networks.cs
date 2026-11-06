@@ -124,7 +124,9 @@ namespace Urbe.Sim.City
             }
             ComponentCount = count;
             _outsideRoot = -1;
-            if (_net.IsSegmentAlive(_city.OutsideSegment)) _outsideRoot = _root[_net.GetSegment(_city.OutsideSegment).NodeA.Index];
+            EntityId outSeg = _city.OutsideSegment;
+            if (!_net.IsSegmentAlive(outSeg)) outSeg = _city.OutsideSegmentFor(1);
+            if (_net.IsSegmentAlive(outSeg)) _outsideRoot = _root[_net.GetSegment(outSeg).NodeA.Index];
             Dirty = true;
         }
 

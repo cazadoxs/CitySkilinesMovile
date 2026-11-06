@@ -50,6 +50,6 @@ namespace Urbe.Sim.Tests.City
             Assert.Equal(GoldenHash, c.ComputeHash());
         }
 
-        private const ulong GoldenHash = 4943529300831428214UL;
+        private const ulong GoldenHash = 3437216878634329644UL;
     }
 }

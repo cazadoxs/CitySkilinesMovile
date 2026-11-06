@@ -142,15 +142,19 @@ namespace Urbe.Sim.City
     public sealed class DemolishRoadCityCommand : CityCommand
     {
         private readonly DemolishCommand _inner;
+        private readonly EntityId[] _targets;
 
-        public DemolishRoadCityCommand(EntityId segment) { _inner = new DemolishCommand(segment); }
-        public DemolishRoadCityCommand(EntityId[] segments) { _inner = new DemolishCommand(segments); }
+        public DemolishRoadCityCommand(EntityId segment) { _inner = new DemolishCommand(segment); _targets = new[] { segment }; }
+        public DemolishRoadCityCommand(EntityId[] segments) { _inner = new DemolishCommand(segments); _targets = (EntityId[])segments.Clone(); }
 
         public override CityResult Validate(CitySimulation city)
         {
             ValidationResult v = _inner.Validate(city.Network);
             RoadResult = v;
-            return Result = v == ValidationResult.Ok ? CityResult.Ok : CityResult.InvalidTarget;
+            if (v != ValidationResult.Ok) return Result = CityResult.InvalidTarget;
+            for (int i = 0; i < _targets.Length; i++)
+                if (city.IsOutsideConnection(_targets[i])) return Result = CityResult.Protected;
+            return Result = CityResult.Ok;
         }
 
         public override bool Apply(CitySimulation city)

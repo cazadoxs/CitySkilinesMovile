@@ -5,7 +5,7 @@ using Urbe.Sim.Roads;
 namespace Urbe.Game.Rendering.Ground
 {
     /// <summary>
-    /// Suelo de la ciudad (M3-07): césped en baldosas de dos tonos con el tamaño real del mapa (2 x 2 km), un entorno más oscuro fuera
+    /// Suelo de la ciudad (M3-07): césped natural y suave (una sola textura sin repetición, sin cuadrícula) con el tamaño real del mapa (2 x 2 km), un entorno más oscuro fuera
     /// y un borde naranja que marca los límites donde ya no se puede construir. Sin GameObjects por baldosa: dos mallas y cuatro franjas.
     /// Sin ciudad (escenarios de demostración) se ajusta a la caja de la red + 300 m.
     /// </summary>
@@ -75,7 +75,7 @@ namespace Urbe.Game.Rendering.Ground
                 _border = new Material(groundMaterial) { name = "BordeDelMapa" };
                 _border.SetColor("_BaseColor", new Color(1f, 0.62f, 0.12f));
             }
-            _grass.SetTextureScale("_BaseMap", new Vector2(_halfX * 2f / (TileMeters * 2f), _halfZ * 2f / (TileMeters * 2f)));
+            _grass.SetTextureScale("_BaseMap", Vector2.one);
             _ready = true;
         }
 
@@ -124,27 +124,65 @@ namespace Urbe.Game.Rendering.Ground
             return m;
         }
 
-        /// <summary>Baldosa de 2 x 2 cuadros (verde claro y verde medio) con un ruido suave; se repite cada 200 m.</summary>
+        /// <summary>
+        /// Textura de césped natural que cubre todo el mapa sin repetirse: ruido de valor fractal (cinco octavas, de 500 m a 30 m) que
+        /// mezcla tres verdes suaves, sin ningún dibujo regular que parezca una cuadrícula.
+        /// </summary>
         private static Texture2D BuildTexture()
         {
-            const int n = 128;
-            var t = new Texture2D(n, n, TextureFormat.RGBA32, true) { name = "SueloCesped", wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Bilinear };
-            var light = new Color(0.58f, 0.76f, 0.46f);
-            var dark = new Color(0.52f, 0.70f, 0.42f);
+            const int n = 1024;
+            var t = new Texture2D(n, n, TextureFormat.RGB24, true) { name = "SueloCesped", wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear };
+            var greenA = new Color(0.55f, 0.73f, 0.43f);
+            var greenB = new Color(0.50f, 0.68f, 0.40f);
+            var dry = new Color(0.62f, 0.72f, 0.42f);
             var px = new Color[n * n];
-            uint seed = 12345u;
             for (int y = 0; y < n; y++)
                 for (int x = 0; x < n; x++)
                 {
-                    bool a = (x < n / 2) ^ (y < n / 2);
-                    seed = seed * 1664525u + 1013904223u;
-                    float noise = ((seed >> 16) & 0xFF) / 255f - 0.5f;
-                    Color c = a ? light : dark;
-                    px[y * n + x] = new Color(c.r + noise * 0.025f, c.g + noise * 0.03f, c.b + noise * 0.025f, 1f);
+                    float u = x / (float)n, v = y / (float)n;
+                    float f = Fractal(u * 4f, v * 4f, 5);
+                    float patch = Fractal(u * 9f + 40f, v * 9f + 17f, 3);
+                    Color c = Color.Lerp(greenB, greenA, f);
+                    c = Color.Lerp(c, dry, Mathf.Clamp01((patch - 0.55f) * 2.2f) * 0.5f);
+                    float fine = (Hash(x * 7 + 3, y * 13 + 5) - 0.5f) * 0.03f;
+                    px[y * n + x] = new Color(c.r + fine, c.g + fine, c.b + fine * 0.8f, 1f);
                 }
             t.SetPixels(px);
             t.Apply(true);
             return t;
+        }
+
+        private static float Fractal(float x, float y, int octaves)
+        {
+            float sum = 0f, amp = 0.5f, norm = 0f;
+            for (int o = 0; o < octaves; o++)
+            {
+                sum += Noise(x, y, o * 31) * amp;
+                norm += amp;
+                x *= 2f; y *= 2f; amp *= 0.5f;
+            }
+            return sum / norm;
+        }
+
+        private static float Noise(float x, float y, int salt)
+        {
+            int xi = Mathf.FloorToInt(x), yi = Mathf.FloorToInt(y);
+            float fx = x - xi, fy = y - yi;
+            fx = fx * fx * (3f - 2f * fx);
+            fy = fy * fy * (3f - 2f * fy);
+            float a = Hash(xi + salt, yi), b = Hash(xi + 1 + salt, yi), c = Hash(xi + salt, yi + 1), d = Hash(xi + 1 + salt, yi + 1);
+            return Mathf.Lerp(Mathf.Lerp(a, b, fx), Mathf.Lerp(c, d, fx), fy);
+        }
+
+        private static float Hash(int x, int y)
+        {
+            unchecked
+            {
+                uint h = (uint)(x * 374761393 + y * 668265263);
+                h = (h ^ (h >> 13)) * 1274126177u;
+                h ^= h >> 16;
+                return (h & 0xFFFFFF) / 16777215f;
+            }
         }
     }
 }

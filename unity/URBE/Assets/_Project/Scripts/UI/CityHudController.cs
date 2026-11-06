@@ -226,7 +226,7 @@ namespace Urbe.Game.UI
                 if ((p & BuildingProblems.NoSewage) != 0) noSewage++;
                 if ((p & BuildingProblems.Disconnected) != 0) disconnected++;
             }
-            StepRoad = city.Network.SegmentCount > 1;
+            StepRoad = city.Network.SegmentCount > city.StartSegmentCount;
             StepZones = city.Zones.ZonedCount(ZoneType.Residential) + city.Zones.ZonedCount(ZoneType.Commercial)
                 + city.Zones.ZonedCount(ZoneType.Industrial) + city.Zones.ZonedCount(ZoneType.Office) > 0;
             StepWater = pump;
@@ -255,7 +255,7 @@ namespace Urbe.Game.UI
             _tip.EnableInClassList("show", show);
             if (!show) return;
             var sb = new StringBuilder();
-            Line(sb, StepRoad, "Una calle desde la autopista");
+            Line(sb, StepRoad, "Una calle desde la autovía");
             Line(sb, StepZones, "Zonas junto a la calle");
             Line(sb, StepWater, "Bomba de agua");
             Line(sb, StepSewage, "Desagüe");

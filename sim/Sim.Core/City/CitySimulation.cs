@@ -27,8 +27,16 @@ namespace Urbe.Sim.City
         public CityHistory History { get; } = new CityHistory();
 
         /// <summary>Tramo de autopista por el que entran inmigrantes y mercancias (la conexion exterior).</summary>
-        public EntityId OutsideSegment { get; private set; } = EntityId.None;
+        public EntityId OutsideSegment => SegmentAtNode(OutsideNodeWest);
+        public EntityId OutsideNodeWest { get; private set; } = EntityId.None;
+        public EntityId OutsideNodeEast { get; private set; } = EntityId.None;
+        /// <summary>Extremo oeste de la autovia (en el borde del mapa).</summary>
         public Vec2 OutsidePosition { get; private set; }
+        /// <summary>Un nodo de la autovia cerca del inicio, util para enganchar una primera calle.</summary>
+        public Vec2 HighwayAnchor { get; private set; }
+        /// <summary>Tramos con que empieza la partida (solo la autovia).</summary>
+        public int StartSegmentCount => _startSegments;
+        private int _startSegments;
 
         /// <summary>Saldo de la ciudad.</summary>
         public long Money => _money;
@@ -51,6 +59,7 @@ namespace Urbe.Sim.City
             var cfg = new NetworkConfig { WorldMin = new Vec2(-half, -half), WorldSize = new Vec2(2f * half, 2f * half) };
             Network = new RoadNetwork(RoadTypeCatalog.CreateDefault(), cfg);
             BuildStartHighway();
+            _startSegments = Network.SegmentCount;
             TrafficSimulationOptions opt = trafficOptions ?? CreateTrafficOptions(Balance);
             Traffic = new TrafficSimulation(Network, seed ^ 0x54524146UL, opt);
             Zones = new ZoneGrid(Network, Balance);
@@ -68,16 +77,81 @@ namespace Urbe.Sim.City
             return opt;
         }
 
-        /// <summary>Partida nueva: una autopista entra por el borde oeste y termina en un nodo; esa es la conexion exterior.</summary>
+        /// <summary>
+        /// Partida nueva: una autovia cruza el mapa de borde a borde con una ligera curva en S; sus dos extremos son la conexion exterior.
+        /// Las calles del jugador se enganchan a mitad de la autovia (la red parte el tramo y crea el cruce). Con
+        /// <see cref="CityBalance.LegacyStubHighway"/> solo hay un tramo recto de 150 m (las pruebas de bajo nivel lo usan).
+        /// </summary>
         private void BuildStartHighway()
         {
-            float x0 = -Balance.MapHalfSize + 12f;
-            var a = new Vec2(x0, 0f);
-            var b = new Vec2(x0 + 150f, 0f);
-            EntityId na = Network.AddNodeRaw(a, 0f);
-            EntityId nb = Network.AddNodeRaw(b, 0f);
-            OutsideSegment = Network.AddSegmentRaw(na, nb, Bezier3.FromLine(a, b), RoadTypeIds.Highway4);
-            OutsidePosition = a;
+            float half = Balance.MapHalfSize;
+            if (Balance.LegacyStubHighway)
+            {
+                float xs = -half + 12f;
+                var a = new Vec2(xs, 0f);
+                var b = new Vec2(xs + 150f, 0f);
+                OutsideNodeWest = Network.AddNodeRaw(a, 0f);
+                EntityId nb = Network.AddNodeRaw(b, 0f);
+                Network.AddSegmentRaw(OutsideNodeWest, nb, Bezier3.FromLine(a, b), RoadTypeIds.Highway4);
+                OutsidePosition = a;
+                HighwayAnchor = b;
+                return;
+            }
+            const int count = 12;
+            float x0 = -half + 12f, x1 = half - 12f;
+            var pts = new Vec2[count + 1];
+            var nodes = new EntityId[count + 1];
+            for (int i = 0; i <= count; i++)
+            {
+                float x = x0 + (x1 - x0) * i / count;
+                pts[i] = new Vec2(x, HighwayY(x));
+                nodes[i] = Network.AddNodeRaw(pts[i], 0f);
+            }
+            for (int i = 0; i < count; i++)
+            {
+                Vec2 t0 = (pts[Math.Min(i + 1, count)] - pts[Math.Max(i - 1, 0)]) * 0.5f;
+                Vec2 t1 = (pts[Math.Min(i + 2, count)] - pts[i]) * 0.5f;
+                var curve = new Bezier3(pts[i], pts[i] + t0 * (1f / 3f), pts[i + 1] - t1 * (1f / 3f), pts[i + 1]);
+                Network.AddSegmentRaw(nodes[i], nodes[i + 1], curve, RoadTypeIds.Highway4);
+            }
+            OutsideNodeWest = nodes[0];
+            OutsideNodeEast = nodes[count];
+            OutsidePosition = pts[0];
+            HighwayAnchor = pts[3];
+        }
+
+        /// <summary>Ordenada de la autovia inicial en x: una curva en S de poca amplitud (maximo unos 10 grados de pendiente).</summary>
+        public float HighwayY(float x)
+        {
+            float half = Balance.MapHalfSize;
+            float u = (x - (-half + 12f)) / (2f * (half - 12f));
+            return 55f * (float)Math.Sin(2.0 * Math.PI * u);
+        }
+
+        /// <summary>Segmento vivo unido a un nodo de conexion exterior (None si no queda ninguno).</summary>
+        private EntityId SegmentAtNode(EntityId node)
+        {
+            if (!node.IsValid || !Network.IsNodeAlive(node)) return EntityId.None;
+            ReadOnlySpan<EntityId> segs = Network.GetNodeSegments(node);
+            return segs.Length > 0 ? segs[0] : EntityId.None;
+        }
+
+        /// <summary>Conexion exterior numero <paramref name="salt"/> (alterna oeste y este para repartir la entrada de trafico).</summary>
+        public EntityId OutsideSegmentFor(int salt)
+        {
+            EntityId w = SegmentAtNode(OutsideNodeWest), e = SegmentAtNode(OutsideNodeEast);
+            if (!e.IsValid) return w;
+            if (!w.IsValid) return e;
+            return (salt & 1) == 0 ? w : e;
+        }
+
+        /// <summary>True si el segmento toca un extremo de la autovia (la conexion exterior), que no se puede demoler.</summary>
+        public bool IsOutsideConnection(EntityId segment)
+        {
+            if (!Network.IsSegmentAlive(segment)) return false;
+            ref readonly Segment sg = ref Network.GetSegment(segment);
+            return sg.NodeA == OutsideNodeWest || sg.NodeB == OutsideNodeWest
+                || (OutsideNodeEast.IsValid && (sg.NodeA == OutsideNodeEast || sg.NodeB == OutsideNodeEast));
         }
 
         // ------------------------------------------------------------------ ordenes

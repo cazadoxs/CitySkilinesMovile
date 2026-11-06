@@ -123,6 +123,7 @@ namespace Urbe.Game.UI
                 case CityResult.NoRoadAccess: return "Tiene que estar junto a una calle (a menos de 60 m).";
                 case CityResult.InvalidTarget: return "No hay nada que hacer ahí.";
                 case CityResult.InvalidArgument: return "Orden no válida.";
+                case CityResult.Protected: return "Los extremos de la autovía (la conexión con el exterior) no se pueden demoler.";
                 case CityResult.RoadRejected: return Tools.RoadTool.RoadToolModel.Reason(road);
                 default: return "";
             }

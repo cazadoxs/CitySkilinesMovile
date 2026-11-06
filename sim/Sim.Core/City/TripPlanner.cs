@@ -398,8 +398,10 @@ namespace Urbe.Sim.City
             if (traffic.Vehicles.AliveCount + traffic.Trips.Pending >= _bal.PhysicalVehicleCap) return;
             if (!_city.Network.IsSegmentAlive(b.Segment) || !_city.Supply.IsConnectedToOutside(b.Segment)) return;
             bool export = b.Zone == ZoneType.Industrial && _rng.NextFloat() < _bal.TruckVehiclePerExport;
-            EntityId from = export ? b.Segment : _city.OutsideSegment;
-            EntityId to = export ? _city.OutsideSegment : b.Segment;
+            EntityId outside = _city.OutsideSegmentFor((int)Trucks);
+            if (!outside.IsValid) return;
+            EntityId from = export ? b.Segment : outside;
+            EntityId to = export ? outside : b.Segment;
             if (traffic.Trips.RequestTrip(from, to, VehicleTypeId.Truck, 0)) Trucks++;
         }
 

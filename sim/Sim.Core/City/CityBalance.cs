@@ -13,6 +13,8 @@ namespace Urbe.Sim.City
         /// <summary>Medio lado del mapa en metros (2 x 2 km).</summary>
         public float MapHalfSize = 1000f;
         public long StartMoney = 70000;
+        /// <summary>Si true la autovia inicial es un tramo recto de 150 m en vez de cruzar el mapa (solo para pruebas de bajo nivel).</summary>
+        public bool LegacyStubHighway = false;
         /// <summary>Coste de construir un metro de carretera por tipo (indice = RoadTypeIds).</summary>
         public int[] RoadCostPerMeter = { 12, 10, 28, 45, 8, 60 };
 
@@ -125,8 +127,6 @@ namespace Urbe.Sim.City
         public int DefaultServiceBudget = 100;
         /// <summary>Poblacion de cada hito (GDD 3.3): 0 Asentamiento ... 10 Megalopolis.</summary>
         public int[] MilestonePopulation = { 0, 400, 1000, 2500, 5000, 10000, 20000, 40000, 70000, 100000, 200000 };
-        public int MilestoneRoadAvenue4 = 4;
-        public int MilestoneRoadAvenue6 = 6;
         /// <summary>Resolucion de los campos de valor del suelo y contaminacion del aire (m) y ticks entre pasadas (se reparten en 8).</summary>
         public float FieldCellSize = 32f;
         public int FieldInterval = 40;
@@ -148,12 +148,8 @@ namespace Urbe.Sim.City
             return 0;
         }
 
-        public int RoadMilestone(ushort roadType)
-        {
-            if (roadType == RoadTypeIds.Avenue4) return MilestoneRoadAvenue4;
-            if (roadType == RoadTypeIds.Avenue6) return MilestoneRoadAvenue6;
-            return 0;
-        }
+        /// <summary>Todos los tipos de carretera estan abiertos desde el inicio: el coste por metro es el freno (M3-11, GDD 3.3).</summary>
+        public int RoadMilestone(ushort roadType) => 0;
 
         public int RoadCost(ushort roadType, float length)
         {

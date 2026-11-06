@@ -13,13 +13,19 @@ namespace Urbe.Sim.Tests.City
         public static CitySimulation New(ulong seed = 1, CityBalance? bal = null)
         {
             bal ??= new CityBalance();
+            bal.LegacyStubHighway = true;
             bal.VirtualPopulation = true;
             if (bal.MilestonePopulation[1] == 400) bal.MilestonePopulation = new int[11]; // todo desbloqueado desde el principio (salvo hitos propios)
             return new CitySimulation(seed, bal);
         }
 
         /// <summary>Ciudad con ciudadanos reales.</summary>
-        public static CitySimulation NewReal(ulong seed = 1, CityBalance? bal = null) => new CitySimulation(seed, bal ?? new CityBalance());
+        public static CitySimulation NewReal(ulong seed = 1, CityBalance? bal = null)
+        {
+            bal ??= new CityBalance();
+            bal.LegacyStubHighway = true;
+            return new CitySimulation(seed, bal);
+        }
 
         public static Vec2 V(float x, float z) => new Vec2(x, z);
 

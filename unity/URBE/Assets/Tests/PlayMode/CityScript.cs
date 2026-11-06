@@ -13,7 +13,9 @@ namespace Urbe.Game.Tests
     /// </summary>
     public static class CityScript
     {
-        public static readonly Vec2 HighwayEnd = new Vec2(-838f, 0f);
+        /// <summary>Inicio de la calle principal del barrio: al norte de la autovía, a la que se une por una calle de enganche desde su nodo más al norte.</summary>
+        public static readonly Vec2 HighwayEnd = new Vec2(-494f, 335f);
+        private static Vec2 At(float dx, float dz) => new Vec2(HighwayEnd.X + dx, HighwayEnd.Z + dz);
 
         public struct Layout
         {
@@ -30,6 +32,10 @@ namespace Urbe.Game.Tests
         {
             firstReject = CityResult.Ok;
             int ok = 0;
+            Vec2 anchor = host.City!.HighwayAnchor;
+            Vec2 mid = new Vec2(anchor.X, (anchor.Z + HighwayEnd.Z) * 0.5f);
+            ok += Road(host, anchor, mid, ref firstReject);
+            ok += Road(host, mid, HighwayEnd, ref firstReject);
             Vec2 a = HighwayEnd;
             for (int i = 0; i < l.MainSegments; i++)
             {
@@ -70,9 +76,11 @@ namespace Urbe.Game.Tests
             for (int i = 0; i < net.SegmentIndexBound; i++)
             {
                 EntityId seg = net.SegmentIdAt(i);
-                if (!seg.IsValid || seg == city.OutsideSegment) continue;
+                if (!seg.IsValid || net.GetSegment(seg).RoadTypeId == RoadTypeIds.Highway4) continue;
                 Vec2 mid = net.GetSegment(seg).Curve.Evaluate(0.5f);
-                ZoneType z = System.Math.Abs(mid.Z) < 5f ? ZoneType.Commercial : (mid.Z > 0f ? ZoneType.Residential : ZoneType.Industrial);
+                if (System.Math.Abs(mid.X - HighwayEnd.X) < 1f && mid.Z < HighwayEnd.Z - 1f) continue;   // calle de enganche
+                float dz = mid.Z - HighwayEnd.Z;
+                ZoneType z = System.Math.Abs(dz) < 5f ? ZoneType.Commercial : (dz > 0f ? ZoneType.Residential : ZoneType.Industrial);
                 if (host.Execute(PaintZoneCommand.FillSegment(seg, 4, z, density)) == CityResult.Ok) painted++;
             }
             return painted;
@@ -82,11 +90,11 @@ namespace Urbe.Game.Tests
         public static List<CityResult> PlaceUtilities(SimHost host)
         {
             var results = new List<CityResult>();
-            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.WaterPump, new Vec2(-818f, 38f))));
-            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.SewageOutlet, new Vec2(-818f, -38f))));
-            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.WindTurbine, new Vec2(-780f, 46f))));
-            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.WindTurbine, new Vec2(-780f, -46f))));
-            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.CoalPlant, new Vec2(-598f, 66f))));
+            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.WaterPump, At(20f, 38f))));
+            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.SewageOutlet, At(20f, -38f))));
+            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.WindTurbine, At(58f, 46f))));
+            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.WindTurbine, At(58f, -46f))));
+            results.Add(host.Execute(new PlaceServiceCommand(ServiceType.CoalPlant, At(240f, 66f))));
             return results;
         }
 

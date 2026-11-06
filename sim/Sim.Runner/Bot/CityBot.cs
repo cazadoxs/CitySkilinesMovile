@@ -28,7 +28,9 @@ namespace Urbe.Sim.Runner.Bot
 
         private readonly CitySimulation _c;
         private readonly Vec2 _origin;
-        private readonly int _iMax, _jMax;
+        private readonly int _iMax, _jMax, _jMin;
+        private readonly Vec2 _anchor;
+        private bool _connected;
         private readonly bool[,] _built;   // [h?0:1, index]
         private readonly ZoneType[,] _painted;
         private readonly ZoneType[,] _over;
@@ -41,27 +43,45 @@ namespace Urbe.Sim.Runner.Bot
         public string Status { get; private set; } = "";
 
         private int NodeIndex(int i, int j) => i * (2 * _jMax + 1) + (j + _jMax);
-        private Vec2 NodePos(int i, int j) => new Vec2(_origin.X + i * Spacing, j * Spacing);
+        private Vec2 NodePos(int i, int j) => new Vec2(_origin.X + i * Spacing, _origin.Z + j * Spacing);
         private int SegIndex(Seg s) => s.I * (2 * _jMax + 1) + (s.J + _jMax);
 
         public CityBot(CitySimulation city)
         {
             _c = city;
-            Vec2 end = city.Network.GetNode(city.Network.GetSegment(city.OutsideSegment).NodeB).Position;
-            _origin = end;
-            _iMax = (int)((city.Balance.MapHalfSize - 24f - _origin.X) / Spacing);
-            _jMax = (int)((city.Balance.MapHalfSize - 24f) / Spacing);
+            // Se engancha a la autovia: una calle sube desde su punto mas al norte hasta el origen de la cuadricula, que queda
+            // al norte de toda la autovia (no hay que cruzarla). Con la autovia de pruebas (tramo corto) arranca en su extremo.
+            _anchor = city.HighwayAnchor;
+            bool stub = city.Balance.LegacyStubHighway;
+            float half = city.Balance.MapHalfSize;
+            _origin = stub ? _anchor : new Vec2(_anchor.X, _anchor.Z + 120f);
+            _iMax = (int)((half - 24f - _origin.X) / Spacing);
+            _jMax = (int)((half - 24f - (stub ? 0f : _origin.Z)) / Spacing);
+            _jMin = stub ? -_jMax : 0;
             int n = (_iMax + 1) * (2 * _jMax + 1);
             _built = new bool[2, n];
             _painted = new ZoneType[2, n];
             _over = new ZoneType[2, n];
             _nodeExists = new bool[n];
+            _connected = stub;
+            if (stub) _nodeExists[NodeIndex(0, 0)] = true;
+        }
+
+        /// <summary>Construye la calle de enganche a la autovia (la primera decision del bot).</summary>
+        private bool EnsureConnected()
+        {
+            if (_connected) return true;
+            var req = SegmentRequest.Straight(_anchor, _origin, RoadTypeIds.Street2);
+            if (_c.Execute(new BuildRoadCityCommand(req)) != CityResult.Ok) return false;
+            _connected = true;
             _nodeExists[NodeIndex(0, 0)] = true;
+            RoadsBuilt++;
+            return true;
         }
 
         // ------------------------------------------------------------------ cuadricula
 
-        private bool InGrid(int i, int j) => i >= 0 && i <= _iMax && j >= -_jMax && j <= _jMax;
+        private bool InGrid(int i, int j) => i >= 0 && i <= _iMax && j >= _jMin && j <= _jMax;
 
         private bool Valid(Seg s) => s.H ? InGrid(s.I, s.J) && InGrid(s.I + 1, s.J) : InGrid(s.I, s.J) && InGrid(s.I, s.J + 1);
 
@@ -101,7 +121,7 @@ namespace Urbe.Sim.Runner.Bot
         private IEnumerable<Seg> AllSegments()
         {
             for (int i = 0; i <= _iMax; i++)
-                for (int j = -_jMax; j <= _jMax; j++)
+                for (int j = _jMin; j <= _jMax; j++)
                 {
                     var h = new Seg(true, i, j);
                     if (Valid(h)) yield return h;
@@ -118,6 +138,7 @@ namespace Urbe.Sim.Runner.Bot
 
             Status = "";
             _thinks++;
+            if (!EnsureConnected()) { Status = "sin dinero para enganchar a la autovia"; return; }
             AdjustTaxes();
             PaintPending();
             PlaceUtilities();
@@ -176,7 +197,7 @@ namespace Urbe.Sim.Runner.Bot
             if (sup.SewerCapacity < needSewer && CanSpend(_c.Balance.Service(ServiceType.SewageOutlet).Cost)) PlaceNear(ServiceType.SewageOutlet, _origin);
         }
 
-        private Vec2 FarEast() => new Vec2(_origin.X + Spacing * Math.Min(_iMax, 14), Spacing * 4);
+        private Vec2 FarEast() => new Vec2(_origin.X + Spacing * Math.Min(_iMax, 14), _origin.Z + Spacing * 4);
 
         private Vec2 Center()
         {
@@ -364,7 +385,7 @@ namespace Urbe.Sim.Runner.Bot
             for (int i = 0; i < n; i++) { dist[i] = int.MaxValue; prev[i] = -1; }
             var queue = new List<int>();
             for (int i = 0; i <= _iMax; i++)
-                for (int j = -_jMax; j <= _jMax; j++)
+                for (int j = _jMin; j <= _jMax; j++)
                     if (_nodeExists[NodeIndex(i, j)]) { dist[NodeIndex(i, j)] = 0; queue.Add(NodeIndex(i, j)); }
             // Dijkstra simple con cola ordenada por (dist, indice): la cuadricula es pequena.
             var done = new bool[n];
@@ -409,7 +430,7 @@ namespace Urbe.Sim.Runner.Bot
                 int node = dist[na] <= dist[nb] ? na : nb;
                 int cost = dist[node];
                 if (cost == int.MaxValue) continue;
-                float d = Vec2.Distance(Mid(s), NodePos(0, 0)) + Math.Abs(Mid(s).Z) * 0.3f;
+                float d = Vec2.Distance(Mid(s), NodePos(0, 0)) + Math.Abs(Mid(s).Z - _origin.Z) * 0.3f;
                 if (cost < bestCost || (cost == bestCost && d < bestDist)) { bestCost = cost; bestDist = d; bestSeg = s; bestNode = node; }
             }
             if (bestNode < 0 && !fallback)

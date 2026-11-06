@@ -21,6 +21,8 @@ namespace Urbe.Sim.City
         InvalidTarget,
         /// <summary>La red viaria rechazo la orden; el motivo esta en <see cref="CityCommand.RoadResult"/>.</summary>
         RoadRejected,
+        /// <summary>El elemento esta protegido (por ejemplo, los extremos de la autovia de entrada).</summary>
+        Protected,
     }
 
     /// <summary>Utilidades de hash de estado (solo enteros, sin dependencia de cultura ni de formato).</summary>

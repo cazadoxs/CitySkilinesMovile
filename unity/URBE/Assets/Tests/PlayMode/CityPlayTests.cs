@@ -114,6 +114,13 @@ namespace Urbe.Game.Tests
 
         private Vector2 ScreenOf(Vec2 g) { Vector3 s = _cam.WorldToScreenPoint(new Vector3(g.X, 0f, g.Z)); return new Vector2(s.x, s.y); }
 
+        private string PickName(Vector2 screenPx)
+        {
+            var panel = _doc.rootVisualElement.panel;
+            VisualElement? v = panel.Pick(RuntimePanelUtils.ScreenToPanel(panel, new Vector2(screenPx.x, Screen.height - screenPx.y)));
+            return v == null ? "nada" : v.name + "/" + v.GetType().Name;
+        }
+
         private IEnumerator TapAt(Vec2 g)
         {
             int id = _touchId++;
@@ -152,10 +159,13 @@ namespace Urbe.Game.Tests
             if (newChain) yield return ClickButton("btn-cancel");
             bool vertical = Mathf.Abs(to.Z - from.Z) > Mathf.Abs(to.X - from.X);
             // Las calles que van hacia arriba de la pantalla se encuadran más lejos para que los dos extremos queden entre la barra superior y la inferior.
-            yield return FocusOn(Vec2.Lerp(from, to, 0.5f), vertical ? 600f : 300f);
+            // El panel de carreteras (con el selector de 6 tipos) ocupa la mitad baja de la pantalla: el trazo se encuadra en el tercio alto.
+            float fh = vertical ? 700f : 300f;
+            Vec2 mid = Vec2.Lerp(from, to, 0.5f);
+            yield return FocusOn(new Vec2(mid.X, mid.Z - fh * 0.18f), fh);
             yield return TapAt(from);
             yield return TapAt(to);
-            Assert.That(_road.Model!.HasEnd, "el trazo tiene final: " + _road.MessageText);
+            Assert.That(_road.Model!.HasEnd, $"el trazo tiene final: {_road.MessageText} from={from.X:F0},{from.Z:F0} ({ScreenOf(from)}) to={to.X:F0},{to.Z:F0} ({ScreenOf(to)}) screen={Screen.width}x{Screen.height} start={_road.Model.HasStart} startPos={_road.Model.Start.X:F0},{_road.Model.Start.Z:F0} overUiTo={PickName(ScreenOf(to))} overUiFrom={PickName(ScreenOf(from))}");
             Assert.That(_road.Model.CanConfirm, "el trazo es válido: " + _road.MessageText);
             long money = _host.City!.Money;
             int before = _host.City.Network.SegmentCount;
@@ -200,6 +210,18 @@ namespace Urbe.Game.Tests
             return n;
         }
 
+        // Las coordenadas de la partida se escribieron para un barrio con la calle principal en z = 0 que sale hacia el este; W lo traslada
+        // al barrio nuevo, al norte de la autovía (que cruza el mapa con una curva de +-55 m) y unido a ella por una calle de enganche.
+        private const float Dx = 344f, Dz = 335f;
+        private static Vec2 W(float x, float z) => new Vec2(x + Dx, z + Dz);
+        private static Vec2 Inv(Vec2 w) => new Vec2(w.X - Dx, w.Z - Dz);
+        private static bool IsHighwayOrLink(Urbe.Sim.Roads.RoadNetwork net, EntityId seg)
+        {
+            if (net.GetSegment(seg).RoadTypeId == Urbe.Sim.Roads.RoadTypeIds.Highway4) return true;
+            Vec2 mid = net.GetSegment(seg).Curve.Evaluate(0.5f);   // la calle de enganche sube por x = -494 desde la autovía hasta el barrio
+            return Mathf.Abs(mid.X - (-838f + Dx)) < 1f && mid.Z < Dz - 1f;
+        }
+
         [UnityTest]
         public IEnumerator PartidaCompleta_PorLaInterfaz_ConstruyeYCrece()
         {
@@ -219,12 +241,16 @@ namespace Urbe.Game.Tests
                 Assert.That(_doc.rootVisualElement.Q<Button>(cat).resolvedStyle.minHeight.value, Is.GreaterThanOrEqualTo(48f), cat + " mide 48 dp");
 
             // --- 1) una calle desde el final de la autopista y dos transversales
-            var hwEnd = new Vec2(-838f, 0f);
-            yield return BuildStreet(hwEnd, new Vec2(-678f, 0f), false);
-            yield return BuildStreet(new Vec2(-678f, 0f), new Vec2(-518f, 0f), false);
-            yield return BuildStreet(new Vec2(-518f, 0f), new Vec2(-358f, 0f), false);
-            yield return BuildStreet(new Vec2(-678f, 0f), new Vec2(-678f, 160f), true);
-            yield return BuildStreet(new Vec2(-678f, 0f), new Vec2(-678f, -160f), true);
+            // La partida empieza solo con la autovía: la primera calle sube desde un nodo de la autovía (en dos tramos) hasta el barrio.
+            Vec2 anchor = city.HighwayAnchor;
+            Vec2 g1 = new Vec2(anchor.X, anchor.Z + 140f), g2 = W(-838f, 0f);
+            yield return BuildStreet(anchor, g1, false);
+            yield return BuildStreet(g1, g2, false);
+            yield return BuildStreet(g2, W(-678f, 0f), false);
+            yield return BuildStreet(W(-678f, 0f), W(-518f, 0f), false);
+            yield return BuildStreet(W(-518f, 0f), W(-358f, 0f), false);
+            yield return BuildStreet(W(-678f, 0f), W(-678f, 160f), true);
+            yield return BuildStreet(W(-678f, 0f), W(-678f, -160f), true);
             Assert.That(city.Network.SegmentCount, Is.GreaterThanOrEqualTo(6));
 
             // --- 2) zonas: relleno residencial en la transversal norte, pincel comercial arrastrando por la calle principal, relleno industrial al sur
@@ -243,29 +269,29 @@ namespace Urbe.Game.Tests
                 Assert.That(ib.resolvedStyle.minWidth.value, Is.GreaterThanOrEqualTo(48f), ib.name + " min-width");
             }
             yield return ClickButton("zmode-fill", () => _menu.ZoneMode == ZonePaintMode.Fill);
-            yield return FocusAbove(new Vec2(-678f, 80f), 260f);
-            yield return TapAt(new Vec2(-678f, 80f));
+            yield return FocusAbove(W(-678f, 80f), 260f);
+            yield return TapAt(W(-678f, 80f));
             Assert.That(ZonedCells(ZoneType.Residential), Is.GreaterThan(20), "el relleno pinta residencial a los dos lados: " + _menu.MessageText);
 
             yield return ClickButton("zone-Industrial", () => _menu.SelectedZone == ZoneType.Industrial);
-            yield return FocusAbove(new Vec2(-678f, -80f), 260f);
-            yield return TapAt(new Vec2(-678f, -80f));
+            yield return FocusAbove(W(-678f, -80f), 260f);
+            yield return TapAt(W(-678f, -80f));
             Assert.That(ZonedCells(ZoneType.Industrial), Is.GreaterThan(20), "el relleno pinta industrial");
 
             yield return ClickButton("zone-Commercial", () => _menu.SelectedZone == ZoneType.Commercial);
             yield return ClickButton("zmode-brush", () => _menu.ZoneMode == ZonePaintMode.Brush);
             yield return ClickButton("zmode-brush"); // Pincel ya elegido: cambia el tamaño a 56 m
             Assert.That(_menu.BrushRadius, Is.EqualTo(28f));
-            yield return FocusAbove(new Vec2(-520f, 0f), 300f);
+            yield return FocusAbove(W(-520f, 0f), 300f);
             int undoBefore = _host.UndoCount;
-            yield return DragCursor(new Vec2(-620f, 0f), new Vec2(-420f, 0f));
+            yield return DragCursor(W(-620f, 0f), W(-420f, 0f));
             Assert.That(ZonedCells(ZoneType.Commercial), Is.GreaterThan(20), "el pincel arrastrado pinta comercial: " + _menu.MessageText);
             Assert.That(_host.UndoCount, Is.EqualTo(undoBefore + 1), "un trazo de pincel es una sola orden en el historial");
 
             // borrar un trozo y deshacer
             int commercial = ZonedCells(ZoneType.Commercial);
             yield return ClickButton("zerase", () => _menu.Erase);
-            yield return TapAt(new Vec2(-520f, 0f));
+            yield return TapAt(W(-520f, 0f));
             Assert.That(ZonedCells(ZoneType.Commercial), Is.LessThan(commercial), "Borrar quita zona");
             yield return ClickButton("zundo");
             Assert.That(ZonedCells(ZoneType.Commercial), Is.EqualTo(commercial), "Deshacer devuelve lo borrado");
@@ -273,7 +299,7 @@ namespace Urbe.Game.Tests
 
             // captura temprana: mapa con la barra abierta, las zonas coloreadas y ningún edificio todavía
             Assert.That(city.Buildings.Count, Is.EqualTo(0), "los edificios aún no han crecido");
-            yield return FocusOn(new Vec2(-590f, 0f), 330f);
+            yield return FocusOn(W(-590f, 0f), 330f);
             for (int i = 0; i < 6; i++) yield return null;
             yield return CaptureUtil.Shot(_cam, _doc, 1688, 780, "m3-partida.png");
 
@@ -281,15 +307,15 @@ namespace Urbe.Game.Tests
             yield return ClickButton("cat-utilities", () => _menu.Category == BuildCategory.Utilities);
             Assert.That(_zones.Visible, Is.False);
             yield return ClickButton("svc-WaterPump", () => _menu.SelectedService == ServiceType.WaterPump);
-            yield return FocusAbove(new Vec2(-700f, 330f), 240f);
+            yield return FocusAbove(W(-700f, 330f), 240f);
             // un sitio sin calle cerca: la vista previa se rechaza con el motivo en texto
-            yield return TapAt(new Vec2(-700f, 330f));
+            yield return TapAt(W(-700f, 330f));
             Assert.That(_menu.ServicePreviewResult, Is.EqualTo(CityResult.NoRoadAccess));
             Assert.That(_menu.MessageText, Does.Contain("calle"), "motivo en texto: " + _menu.MessageText);
-            yield return PlaceViaUi("svc-WaterPump", new Vec2(-780f, 44f), ServiceType.WaterPump);
-            yield return PlaceViaUi("svc-SewageOutlet", new Vec2(-780f, -44f), ServiceType.SewageOutlet);
-            yield return PlaceViaUi("svc-WindTurbine", new Vec2(-740f, 46f), ServiceType.WindTurbine);
-            yield return PlaceViaUi("svc-WindTurbine", new Vec2(-740f, -46f), ServiceType.WindTurbine);
+            yield return PlaceViaUi("svc-WaterPump", W(-780f, 44f), ServiceType.WaterPump);
+            yield return PlaceViaUi("svc-SewageOutlet", W(-780f, -44f), ServiceType.SewageOutlet);
+            yield return PlaceViaUi("svc-WindTurbine", W(-740f, 46f), ServiceType.WindTurbine);
+            yield return PlaceViaUi("svc-WindTurbine", W(-740f, -46f), ServiceType.WindTurbine);
             Assert.That(CountServices(ServiceType.WindTurbine), Is.EqualTo(2));
             // servicios aún bloqueados: se ven con el requisito
             yield return ClickButton("cat-services", () => _menu.Category == BuildCategory.Services);
@@ -321,14 +347,14 @@ namespace Urbe.Game.Tests
             foreach (float x in new[] { -518f, -358f })
                 foreach (float s in new[] { 1f, -1f })
                 {
-                    Assert.That(_host.Execute(new BuildRoadCityCommand(Urbe.Sim.Roads.SegmentRequest.Straight(new Vec2(x, 0f), new Vec2(x, 160f * s), Urbe.Sim.Roads.RoadTypeIds.Street2))), Is.EqualTo(CityResult.Ok));
+                    Assert.That(_host.Execute(new BuildRoadCityCommand(Urbe.Sim.Roads.SegmentRequest.Straight(W(x, 0f), W(x, 160f * s), Urbe.Sim.Roads.RoadTypeIds.Street2))), Is.EqualTo(CityResult.Ok));
                 }
             Urbe.Sim.Roads.RoadNetwork net = city.Network;
             for (int i = 0; i < net.SegmentIndexBound; i++)
             {
                 EntityId seg = net.SegmentIdAt(i);
-                if (!seg.IsValid || seg == city.OutsideSegment) continue;
-                Vec2 mid = net.GetSegment(seg).Curve.Evaluate(0.5f);
+                if (!seg.IsValid || IsHighwayOrLink(net, seg)) continue;
+                Vec2 mid = Inv(net.GetSegment(seg).Curve.Evaluate(0.5f));
                 if (mid.X < -600f && System.Math.Abs(mid.Z) > 5f) continue; // la primera transversal ya está zonificada
                 ZoneType z = System.Math.Abs(mid.Z) < 5f ? ZoneType.Commercial : (mid.Z > 0f ? ZoneType.Residential : ZoneType.Industrial);
                 host_Execute(PaintZoneCommand.FillSegment(seg, 4, z, 1));
@@ -347,7 +373,7 @@ namespace Urbe.Game.Tests
             yield return ClickButton("cat-utilities", () => _menu.Category == BuildCategory.Utilities);
             yield return ClickButton("svc-CoalPlant", () => _menu.SelectedService == ServiceType.CoalPlant);
             bool coalOk = false;
-            foreach (var spot in new[] { new Vec2(-598f, 55f), new Vec2(-598f, -55f), new Vec2(-440f, 55f), new Vec2(-440f, -55f), new Vec2(-770f, 70f) })
+            foreach (var spot in new[] { W(-598f, 55f), W(-598f, -55f), W(-440f, 55f), W(-440f, -55f), W(-770f, 70f) })
             {
                 yield return FocusAbove(spot, 240f);
                 yield return TapAt(spot);
@@ -378,24 +404,24 @@ namespace Urbe.Game.Tests
             for (int i = 0; i < net.SegmentIndexBound; i++) if (net.SegmentIdAt(i).IsValid) seen.Add(i);
             Assert.That(city.IsServiceUnlocked(ServiceType.Park), "con el hito Aldea se desbloquea el parque");
             for (float x = -358f; x < -40f; x += 160f)
-                Assert.That(_host.Execute(new BuildRoadCityCommand(Urbe.Sim.Roads.SegmentRequest.Straight(new Vec2(x, 0f), new Vec2(x + 160f, 0f), Urbe.Sim.Roads.RoadTypeIds.Street2))), Is.EqualTo(CityResult.Ok));
+                Assert.That(_host.Execute(new BuildRoadCityCommand(Urbe.Sim.Roads.SegmentRequest.Straight(W(x, 0f), W(x + 160f, 0f), Urbe.Sim.Roads.RoadTypeIds.Street2))), Is.EqualTo(CityResult.Ok));
             foreach (float x in new[] { -198f, -38f })
                 foreach (float sgn in new[] { 1f, -1f })
-                    Assert.That(_host.Execute(new BuildRoadCityCommand(Urbe.Sim.Roads.SegmentRequest.Straight(new Vec2(x, 0f), new Vec2(x, 160f * sgn), Urbe.Sim.Roads.RoadTypeIds.Street2))), Is.EqualTo(CityResult.Ok));
+                    Assert.That(_host.Execute(new BuildRoadCityCommand(Urbe.Sim.Roads.SegmentRequest.Straight(W(x, 0f), W(x, 160f * sgn), Urbe.Sim.Roads.RoadTypeIds.Street2))), Is.EqualTo(CityResult.Ok));
             for (int i = 0; i < net.SegmentIndexBound; i++)
             {
                 EntityId seg = net.SegmentIdAt(i);
-                if (!seg.IsValid || seen.Contains(i) || seg == city.OutsideSegment) continue;
-                Vec2 mid = net.GetSegment(seg).Curve.Evaluate(0.5f);
+                if (!seg.IsValid || seen.Contains(i) || IsHighwayOrLink(net, seg)) continue;
+                Vec2 mid = Inv(net.GetSegment(seg).Curve.Evaluate(0.5f));
                 ZoneType z = System.Math.Abs(mid.Z) < 5f ? ZoneType.Commercial : (mid.Z > 0f ? ZoneType.Residential : (mid.X < -100f ? ZoneType.Industrial : ZoneType.Residential));
                 host_Execute(PaintZoneCommand.FillSegment(seg, 4, z, 1));
             }
-            host_Execute(new PlaceServiceCommand(ServiceType.Park, new Vec2(-300f, 52f)));
-            host_Execute(new PlaceServiceCommand(ServiceType.HealthCenter, new Vec2(-120f, -52f)));
+            host_Execute(new PlaceServiceCommand(ServiceType.Park, W(-300f, 52f)));
+            host_Execute(new PlaceServiceCommand(ServiceType.HealthCenter, W(-120f, -52f)));
             for (int step = 0; step < 4; step++) { RunDays(10f); yield return null; }
             // con el hito Pueblo se desbloquean bomberos, policía y colegio: la cobertura sube el nivel de los edificios
             var wanted = new[] { ServiceType.Landfill, ServiceType.FireStation, ServiceType.PoliceStation, ServiceType.School, ServiceType.Park, ServiceType.HealthCenter };
-            var spots = new[] { new Vec2(-440f, 58f), new Vec2(-440f, -58f), new Vec2(-280f, 58f), new Vec2(-280f, -58f), new Vec2(-120f, 58f), new Vec2(-600f, -58f), new Vec2(-600f, 58f), new Vec2(-200f, -90f), new Vec2(-360f, 100f) };
+            var spots = new[] { W(-440f, 58f), W(-440f, -58f), W(-280f, 58f), W(-280f, -58f), W(-120f, 58f), W(-600f, -58f), W(-600f, 58f), W(-200f, -90f), W(-360f, 100f) };
             int placed = 0;
             foreach (ServiceType t in wanted)
             {
@@ -433,7 +459,7 @@ namespace Urbe.Game.Tests
 
             // Derribar un servicio desde su panel (un parque de prueba) y el panel de Demoler
             Vec2 parkSpot = default;
-            foreach (Vec2 sp in new[] { new Vec2(-360f, 100f), new Vec2(-200f, 100f), new Vec2(-520f, 100f), new Vec2(-40f, 100f), new Vec2(-360f, -100f) })
+            foreach (Vec2 sp in new[] { W(-360f, 100f), W(-200f, 100f), W(-520f, 100f), W(-40f, 100f), W(-360f, -100f) })
                 if (_host.Execute(new PlaceServiceCommand(ServiceType.Park, sp)) == CityResult.Ok) { parkSpot = sp; break; }
             int parks = CountServices(ServiceType.Park);
             int parkIdx = -1;
@@ -456,7 +482,7 @@ namespace Urbe.Game.Tests
 
             // captura de la ciudad crecida, con el panel de un edificio de zona abierto
             _inspector.Select(city, pick);
-            yield return FocusOn(new Vec2(-300f, 40f), 270f);
+            yield return FocusOn(W(-300f, 40f), 270f);
             for (int i = 0; i < 8; i++) yield return null;
             Assert.That(_br.LastVisible, Is.GreaterThan(30), "edificios dibujados en pantalla");
             yield return CaptureUtil.Shot(_cam, _doc, 1688, 780, "m3-ciudad.png");

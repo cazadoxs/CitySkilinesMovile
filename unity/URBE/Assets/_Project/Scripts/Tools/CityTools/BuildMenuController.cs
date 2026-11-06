@@ -713,7 +713,8 @@ namespace Urbe.Game.Tools.CityTools
             CitySimulation? city = host.City;
             if (city == null) return EntityId.None;
             if (!city.Network.NearestSegment(g, 30f, out EntityId seg, out _, out _)) return EntityId.None;
-            return seg == city.OutsideSegment ? EntityId.None : seg;
+            // La autovía no es zonificable: no se ofrece como objetivo de relleno de zona.
+            return city.Network.Types.Get(city.Network.GetSegment(seg).RoadTypeId).Zonable ? seg : EntityId.None;
         }
 
         // ------------------------------------------------------------------ servicios
