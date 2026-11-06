@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using UnityEngine;
+using Urbe.Sim.City;
 using Urbe.Sim.Commands;
 using Urbe.Sim.Roads;
 using Urbe.Sim.Traffic;
@@ -60,6 +61,7 @@ namespace Urbe.Game.Sim
 
         private FixedStepClock _clock = null!;
         private SnapshotInterpolator? _interp;
+        private CitySimulation? _city;
         private TrafficSimulation? _sim;
         private RoadNetwork? _network;
         private SimSpeed _speed = SimSpeed.X1;
@@ -77,6 +79,8 @@ namespace Urbe.Game.Sim
         /// <summary>Simulación en curso (solo lectura desde fuera; los cambios entran por <see cref="Enqueue"/>).</summary>
         public TrafficSimulation? Simulation => _sim;
         public RoadNetwork? Network => _network;
+        /// <summary>Ciudad en curso (M3-07), o null si el host aloja solo una simulación de tráfico (pruebas y escenarios de demostración).</summary>
+        public CitySimulation? City => _city;
         public bool IsInitialized => _sim != null;
 
         public SimSpeed Speed => _speed;
@@ -100,6 +104,7 @@ namespace Urbe.Game.Sim
         /// <summary>Instala una simulación. Las suscripciones a eventos se conservan.</summary>
         public void Initialize(TrafficSimulation sim, RoadNetwork network)
         {
+            if (_city != null && !ReferenceEquals(_city.Traffic, sim)) _city = null;
             FixedStepClock clock = EnsureClock();
             _sim = sim ?? throw new ArgumentNullException(nameof(sim));
             _network = network ?? throw new ArgumentNullException(nameof(network));
@@ -110,7 +115,19 @@ namespace Urbe.Game.Sim
             SimulationChanged?.Invoke(sim);
         }
 
-        public void Initialize(SimScenario scenario) => Initialize(scenario.Sim, scenario.Network);
+        public void Initialize(SimScenario scenario)
+        {
+            _city = null;
+            Initialize(scenario.Sim, scenario.Network);
+        }
+
+        /// <summary>Instala una ciudad (M3-07): el tráfico es el de la ciudad y los comandos del jugador son <see cref="CityCommand"/>.</summary>
+        public void Initialize(CitySimulation city)
+        {
+            if (city == null) throw new ArgumentNullException(nameof(city));
+            _city = city;
+            Initialize(city.Traffic, city.Network);
+        }
 
         // ------------------------------------------------------------------ velocidad
 
@@ -144,6 +161,21 @@ namespace Urbe.Game.Sim
         public int PendingCommands => _sim != null ? _sim.Commands.Count : 0;
 
         /// <summary>
+        /// Ejecuta ya una orden de ciudad (fuera del tick, en el hilo principal, también con la simulación en pausa) y devuelve su resultado.
+        /// Notifica <see cref="CommandExecuted"/> para que la interfaz y los renders reaccionen.
+        /// </summary>
+        public CityResult Execute(CityCommand command)
+        {
+            if (_city == null) throw new InvalidOperationException("SimHost sin ciudad");
+            CityResult r = _city.Execute(command);
+            CommandExecuted?.Invoke(command, r);
+            return r;
+        }
+
+        /// <summary>Tras cada orden de ciudad ejecutada con <see cref="Execute"/> (aceptada o rechazada).</summary>
+        public event Action<CityCommand, CityResult>? CommandExecuted;
+
+        /// <summary>
         /// Aplica ya los comandos encolados sin avanzar el tick (construir en pausa, M2-05). Devuelve cuántos se aplicaron.
         /// Seguro: se llama en el hilo principal y nunca a mitad de un tick.
         /// </summary>
@@ -157,6 +189,7 @@ namespace Urbe.Game.Sim
         public bool UndoLast()
         {
             if (_sim == null) return false;
+            if (_city != null) return _city.Undo();
             FlushCommands();
             return _sim.History.Undo(_sim.Network);
         }
@@ -164,12 +197,13 @@ namespace Urbe.Game.Sim
         public bool RedoLast()
         {
             if (_sim == null) return false;
+            if (_city != null) return _city.Redo();
             FlushCommands();
             return _sim.History.Redo(_sim.Network);
         }
 
-        public int UndoCount => _sim != null ? _sim.History.UndoCount : 0;
-        public int RedoCount => _sim != null ? _sim.History.RedoCount : 0;
+        public int UndoCount => _city != null ? _city.History.UndoCount : (_sim != null ? _sim.History.UndoCount : 0);
+        public int RedoCount => _city != null ? _city.History.RedoCount : (_sim != null ? _sim.History.RedoCount : 0);
 
         // ------------------------------------------------------------------ lectura para render
 
@@ -232,7 +266,7 @@ namespace Urbe.Game.Sim
         private void RunTick()
         {
             long t0 = Stopwatch.GetTimestamp();
-            _sim!.Step();
+            if (_city != null) _city.Step(); else _sim!.Step();
             double ms = (Stopwatch.GetTimestamp() - t0) * 1000.0 / Stopwatch.Frequency;
             _lastTickMs = ms;
             _sumTickMs += ms;

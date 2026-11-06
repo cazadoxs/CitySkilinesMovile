@@ -2,13 +2,34 @@
     <ui:VisualElement name="hud-root" class="hud-root" picking-mode="Ignore">
         <ui:VisualElement name="top-bar" class="top-bar">
             <ui:VisualElement name="stats" class="stats">
-                <ui:VisualElement name="vehicles-chip" class="chip">
-                    <ui:Label text="Vehículos" class="chip-caption" />
-                    <ui:Label name="vehicle-count" text="0" class="chip-value" />
+                <ui:VisualElement name="money-chip" class="chip chip-money">
+                    <ui:Label text="$" class="chip-caption" />
+                    <ui:VisualElement class="chip-col">
+                        <ui:Label name="money-value" text="0" class="chip-value" />
+                        <ui:Label name="money-delta" text="" class="chip-sub" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="flow-chip" class="chip">
-                    <ui:Label text="Flujo" class="chip-caption" />
-                    <ui:Label name="flow-value" text="100%" class="chip-value" />
+                <ui:VisualElement name="date-chip" class="chip">
+                    <ui:VisualElement class="chip-col">
+                        <ui:Label name="date-value" text="Lun 06:00" class="chip-value chip-small" />
+                        <ui:Label name="date-sub" text="Año 1 · sem 1" class="chip-sub" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="pop-chip" class="chip">
+                    <ui:Label text="Hab." class="chip-caption" />
+                    <ui:Label name="pop-value" text="0" class="chip-value" />
+                </ui:VisualElement>
+                <ui:VisualElement name="milestone-chip" class="chip">
+                    <ui:VisualElement class="chip-col">
+                        <ui:Label name="milestone-value" text="Asentamiento" class="chip-value chip-small" />
+                        <ui:Label name="milestone-sub" text="" class="chip-sub" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="rci" class="rci">
+                    <ui:VisualElement class="rci-col"><ui:VisualElement class="rci-track"><ui:VisualElement name="rci-r" class="rci-fill rci-r" /></ui:VisualElement><ui:Label text="R" class="rci-label" /></ui:VisualElement>
+                    <ui:VisualElement class="rci-col"><ui:VisualElement class="rci-track"><ui:VisualElement name="rci-c" class="rci-fill rci-c" /></ui:VisualElement><ui:Label text="C" class="rci-label" /></ui:VisualElement>
+                    <ui:VisualElement class="rci-col"><ui:VisualElement class="rci-track"><ui:VisualElement name="rci-i" class="rci-fill rci-i" /></ui:VisualElement><ui:Label text="I" class="rci-label" /></ui:VisualElement>
+                    <ui:VisualElement class="rci-col"><ui:VisualElement class="rci-track"><ui:VisualElement name="rci-o" class="rci-fill rci-o" /></ui:VisualElement><ui:Label text="O" class="rci-label" /></ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement name="speed-controls" class="speed-controls">
@@ -16,6 +37,39 @@
                 <ui:Button name="btn-x1" text="x1" class="hud-button" />
                 <ui:Button name="btn-x2" text="x2" class="hud-button" />
                 <ui:Button name="btn-x3" text="x3" class="hud-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="info-row" class="info-row" picking-mode="Ignore">
+            <ui:VisualElement name="side-col" class="side-col" picking-mode="Ignore">
+                <ui:VisualElement name="sub-stats" class="sub-stats">
+                    <ui:VisualElement name="vehicles-chip" class="chip chip-mini">
+                        <ui:Label text="Vehículos" class="chip-caption" />
+                        <ui:Label name="vehicle-count" text="0" class="chip-value chip-mini-value" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="flow-chip" class="chip chip-mini">
+                        <ui:Label text="Flujo" class="chip-caption" />
+                        <ui:Label name="flow-value" text="100%" class="chip-value chip-mini-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="tip-panel" class="tip-panel">
+                    <ui:VisualElement class="tip-head">
+                        <ui:Label text="Cómo empezar" class="tip-title" />
+                        <ui:Button name="btn-tip-close" text="X" class="tip-close" />
+                    </ui:VisualElement>
+                    <ui:Label name="tip-body" class="tip-body" text="" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="center-col" class="center-col" picking-mode="Ignore">
+                <ui:Label name="toast" class="toast" text="" picking-mode="Ignore" />
+                <ui:Label name="banner" class="banner" text="" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="building-panel" class="building-panel">
+                <ui:VisualElement class="tip-head">
+                    <ui:Label name="bp-title" text="" class="tip-title" />
+                    <ui:Button name="btn-bp-close" text="X" class="tip-close" />
+                </ui:VisualElement>
+                <ui:Label name="bp-body" class="tip-body" text="" />
+                <ui:Button name="btn-bp-demolish" text="Derribar" class="hud-button tool-button bp-demolish" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="bottom-area" class="bottom-area" picking-mode="Ignore">
@@ -43,8 +97,16 @@
                 <ui:Label text="Lento" class="legend-item legend-slow" />
                 <ui:Label text="Atasco" class="legend-item legend-jam" />
             </ui:VisualElement>
+            <ui:VisualElement name="sub-panel" class="sub-panel" />
             <ui:VisualElement name="bottom-row" class="bottom-row" picking-mode="Ignore">
                 <ui:Button name="btn-build" text="Construir" class="hud-button tool-button build-toggle" />
+                <ui:VisualElement name="category-bar" class="category-bar">
+                    <ui:Button name="cat-roads" text="Carreteras" class="hud-button tool-button cat-button" />
+                    <ui:Button name="cat-zones" text="Zonas" class="hud-button tool-button cat-button" />
+                    <ui:Button name="cat-utilities" text="Agua y luz" class="hud-button tool-button cat-button" />
+                    <ui:Button name="cat-services" text="Servicios" class="hud-button tool-button cat-button" />
+                    <ui:Button name="cat-demolish" text="Demoler" class="hud-button tool-button cat-button" />
+                </ui:VisualElement>
                 <ui:Button name="btn-traffic" text="Trafico" class="hud-button tool-button traffic-toggle" />
             </ui:VisualElement>
         </ui:VisualElement>

@@ -80,6 +80,9 @@ namespace Urbe.Game.Tools.RoadTool
             _prices = prices ?? RoadPrices.Default();
         }
 
+        /// <summary>Dinero disponible (M3-07). Si el plan cuesta más no es válido y el motivo lo dice. Infinito en escenarios sin economía.</summary>
+        public float Budget { get; set; } = float.PositiveInfinity;
+
         public RoadToolMode Mode { get; private set; } = RoadToolMode.Straight;
         public ushort RoadTypeId { get; private set; } = RoadTypeIds.Street2;
         public bool HasStart { get; private set; }
@@ -447,6 +450,12 @@ namespace Urbe.Game.Tools.RoadTool
             string? sharp = CheckJunctionAngles();
             if (sharp != null) { Fail(ref plan, sharp); return; }
 
+            if (plan.Cost > Budget)
+            {
+                Fail(ref plan, "Dinero insuficiente: cuesta " + plan.Cost.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)
+                    + " y tienes " + Budget.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) + ".");
+                return;
+            }
             plan.Valid = true;
             plan.Message = summary;
         }
@@ -506,6 +515,20 @@ namespace Urbe.Game.Tools.RoadTool
         }
 
         // ------------------------------------------------------------------ comandos
+
+        /// <summary>Órdenes de ciudad (M3-07) para confirmar el plan válido: cobran dinero real. Vacío si no hay nada válido.</summary>
+        public List<Urbe.Sim.City.CityCommand> BuildCityCommands()
+        {
+            var list = new List<Urbe.Sim.City.CityCommand>();
+            if (!CanConfirm) return list;
+            if (Mode == RoadToolMode.Demolish)
+            {
+                list.Add(new Urbe.Sim.City.DemolishRoadCityCommand(DemolishTarget));
+                return list;
+            }
+            foreach (SegmentRequest r in _requests) list.Add(new Urbe.Sim.City.BuildRoadCityCommand(r));
+            return list;
+        }
 
         /// <summary>Comandos para confirmar el plan válido (en orden). Vacío si no hay nada válido.</summary>
         public List<ICommand> BuildCommands()

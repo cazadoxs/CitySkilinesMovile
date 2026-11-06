@@ -179,3 +179,107 @@
 .legend-free { background-color: rgb(51, 199, 92); }
 .legend-slow { background-color: rgb(250, 199, 38); }
 .legend-jam { background-color: rgb(235, 31, 31); color: white; }
+
+
+/* ---------------------------------------------------------------------------------------------------------------------
+   Ciudad (M3-07, M3-08). Barra superior con dinero, fecha, población, hito y barras RCI; barra de construcción por categorías;
+   avisos sin apilar, consejo inicial y panel de edificio. Mismas unidades: 1 px = 1 dp de referencia.
+   --------------------------------------------------------------------------------------------------------------------- */
+.stats { flex-wrap: wrap; }
+.top-bar { flex-wrap: wrap; padding: 4px 6px; }
+.chip { min-height: 40px; padding: 0 8px; margin-right: 5px; }
+.chip-value { font-size: 18px; min-width: 0; -unity-text-align: middle-left; }
+.chip-small { font-size: 15px; }
+.chip-caption { font-size: 12px; margin-right: 5px; }
+.chip-col { flex-direction: column; justify-content: center; }
+.chip-sub { font-size: 11px; color: rgb(170, 178, 192); -unity-text-align: middle-left; }
+.chip-money .chip-caption { color: rgb(120, 220, 160); font-size: 18px; -unity-font-style: bold; }
+.chip-delta-up { color: rgb(120, 220, 160); }
+.chip-delta-down { color: rgb(240, 120, 120); }
+.chip-warn .chip-value { color: rgb(240, 180, 60); }
+.chip-bad { background-color: rgba(229, 72, 77, 0.28); }
+.chip-bad .chip-value { color: rgb(255, 150, 150); }
+
+.rci { flex-direction: row; align-items: stretch; height: 40px; padding: 0 4px; margin-right: 4px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.08); }
+.rci-col { width: 22px; margin: 0 1px; align-items: center; justify-content: center; }
+.rci-track { width: 14px; height: 24px; margin-top: 2px; border-radius: 3px; background-color: rgba(255, 255, 255, 0.10); }
+.rci-fill { position: absolute; left: 0; right: 0; border-radius: 3px; }
+.rci-label { font-size: 11px; -unity-font-style: bold; color: rgb(200, 206, 218); height: 12px; margin: 0; padding: 0; -unity-text-align: middle-center; }
+.rci-r { background-color: rgb(80, 205, 100); }
+.rci-c { background-color: rgb(70, 140, 245); }
+.rci-i { background-color: rgb(245, 190, 50); }
+.rci-o { background-color: rgb(160, 120, 235); }
+
+.info-row { flex-direction: row; justify-content: space-between; align-items: flex-start; padding: 6px 8px 0 8px; }
+.side-col { flex-direction: column; align-items: flex-start; }
+.center-col { flex-grow: 1; flex-shrink: 1; align-items: center; }
+.sub-stats { flex-direction: row; margin-bottom: 6px; }
+.chip-mini { min-height: 24px; padding: 0 6px; background-color: rgba(30, 34, 42, 0.70); }
+.chip-mini-value { font-size: 13px; min-width: 0; }
+
+.tip-panel, .building-panel {
+    flex-direction: column;
+    width: 250px;
+    padding: 6px 10px 8px 10px;
+    border-radius: 10px;
+    background-color: rgba(30, 34, 42, 0.90);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+.tip-panel { display: none; }
+.tip-panel.show { display: flex; }
+.building-panel { display: none; width: 240px; }
+.building-panel.show { display: flex; }
+.tip-head { flex-direction: row; justify-content: space-between; align-items: center; }
+.tip-title { font-size: 15px; -unity-font-style: bold; color: rgb(240, 243, 248); flex-shrink: 1; white-space: normal; }
+.tip-body { font-size: 13px; color: rgb(214, 220, 232); white-space: normal; margin-top: 2px; }
+.tip-close { min-width: 48px; min-height: 48px; margin: -8px -10px -8px 0; padding: 0; border-width: 0; background-color: rgba(0, 0, 0, 0); color: rgb(190, 196, 208); font-size: 16px; }
+.bp-demolish { margin: 6px 0 0 0; background-color: rgb(200, 52, 56); border-color: rgb(250, 140, 140); color: white; }
+
+.toast, .banner {
+    display: none;
+    margin-top: 2px;
+    max-width: 420px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    -unity-font-style: bold;
+    white-space: normal;
+    -unity-text-align: middle-center;
+    color: rgb(240, 243, 248);
+    background-color: rgba(30, 34, 42, 0.92);
+}
+.toast.show, .banner.show { display: flex; }
+.toast.warn { background-color: rgb(196, 112, 24); color: white; }
+.toast.bad { background-color: rgb(200, 52, 56); color: white; }
+.banner { margin-top: 8px; font-size: 20px; background-color: rgb(34, 160, 90); color: white; }
+
+.category-bar { flex-direction: row; flex-grow: 1; display: none; justify-content: flex-start; }
+.category-bar.open { display: flex; }
+.cat-button { margin-left: 0; margin-right: 6px; min-width: 64px; }
+.cat-button.toggled { background-color: rgb(59, 130, 246); }
+
+.sub-panel {
+    display: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-self: center;
+    padding: 4px 6px;
+    margin-bottom: 6px;
+    border-radius: 10px;
+    background-color: rgba(30, 34, 42, 0.90);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+.sub-panel.open { display: flex; }
+.sub-panel .hud-button { margin: 2px 4px 2px 0; }
+.sub-panel .hud-button.item { padding: 0 8px; font-size: 13px; min-width: 76px; white-space: normal; }
+.sub-panel .zone-r.toggled { background-color: rgb(46, 150, 70); }
+.sub-panel .zone-c.toggled { background-color: rgb(40, 100, 210); }
+.sub-panel .zone-i.toggled { background-color: rgb(190, 140, 20); }
+.sub-panel .zone-o.toggled { background-color: rgb(120, 80, 200); }
+.hud-button.locked, .hud-button.locked:hover { background-color: rgba(255, 255, 255, 0.04); color: rgb(120, 126, 138); font-size: 11px; }
+.build-toggle.toggled { background-color: rgb(59, 130, 246); }
+.build-toggle, .traffic-toggle, .cat-button { background-color: rgba(30, 34, 42, 0.90); }
+.build-toggle.toggled, .traffic-toggle.toggled, .cat-button.toggled { background-color: rgb(59, 130, 246); }

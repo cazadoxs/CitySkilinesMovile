@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
 using Urbe.Game.Rendering.Roads;
 using Urbe.Game.Sim;
+using Urbe.Game.UI;
 using Urbe.Sim.Commands;
 using Urbe.Sim.Geometry;
 using Urbe.Sim.Roads;
@@ -44,6 +45,8 @@ namespace Urbe.Game.Tools.RoadTool
         private Vector2 _lastPointerScreen;
         private PrecisionLoupe? _loupeCam;
         private int _builtCount;
+        private string _note = "";
+        private float _noteUntil;
 
         public bool IsActive => _active;
         public RoadToolModel? Model => _model;
@@ -113,7 +116,8 @@ namespace Urbe.Game.Tools.RoadTool
             }
             if (_build != null)
             {
-                _build.clicked -= ToggleActive; _street.clicked -= OnStreet; _avenue.clicked -= OnAvenue; _straight.clicked -= OnStraight;
+                _street.clicked -= OnStreet; _avenue.clicked -= OnAvenue; _straight.clicked -= OnStraight;
+                _build.clicked -= ToggleActive;
                 _curve.clicked -= OnCurve; _free.clicked -= OnFree; _demolish.clicked -= OnDemolish; _undo.clicked -= Undo;
                 _cancel.clicked -= Cancel; _confirm.clicked -= OnConfirm;
             }
@@ -124,10 +128,29 @@ namespace Urbe.Game.Tools.RoadTool
         {
             ushort type = _model != null ? _model.RoadTypeId : RoadTypeIds.Street2;
             RoadToolMode mode = _model != null ? _model.Mode : RoadToolMode.Straight;
-            _model = new RoadToolModel(sim.Network, RoadPrices.Parse(pricesJson != null ? pricesJson.text : null));
+            RoadPrices prices = host.City != null ? CityPrices(host.City.Balance) : RoadPrices.Parse(pricesJson != null ? pricesJson.text : null);
+            _model = new RoadToolModel(sim.Network, prices);
             _model.SetRoadType(type);
             _model.SetMode(mode);
             _dirty = true;
+        }
+
+        /// <summary>Precios por metro de la economía de la ciudad (M3-07), en el orden de <see cref="RoadTypeIds"/>.</summary>
+        public static RoadPrices CityPrices(Urbe.Sim.City.CityBalance bal)
+        {
+            string[] keys = { "street_2", "oneway_2", "avenue_4", "avenue_6", "rural_2", "highway_4" };
+            var p = new RoadPrices { note = "Precios de CityBalance", entries = new RoadPrices.Entry[keys.Length] };
+            for (int i = 0; i < keys.Length; i++) p.entries[i] = new RoadPrices.Entry { key = keys[i], perMeter = bal.RoadCostPerMeter[i] };
+            return p;
+        }
+
+        /// <summary>Aviso corto en la línea de mensajes (por ejemplo "bloqueado hasta ...") que no pisa el plan hasta que pasa el tiempo.</summary>
+        public void ShowNote(string text, float seconds = 3.5f)
+        {
+            _note = text;
+            _noteUntil = Time.unscaledTime + seconds;
+            _dirty = true;
+            RefreshUi();
         }
 
         // ------------------------------------------------------------------ botones
@@ -144,7 +167,15 @@ namespace Urbe.Game.Tools.RoadTool
         }
 
         private void OnStreet() => SetType(RoadTypeIds.Street2);
-        private void OnAvenue() => SetType(RoadTypeIds.Avenue4);
+        private void OnAvenue()
+        {
+            if (host.City != null && !host.City.IsRoadUnlocked(RoadTypeIds.Avenue4))
+            {
+                ShowNote("Avenida bloqueada: " + CityText.Requirement(host.City.Balance.MilestoneRoadAvenue4, host.City.Balance));
+                return;
+            }
+            SetType(RoadTypeIds.Avenue4);
+        }
         private void OnStraight() => SetMode(RoadToolMode.Straight);
         private void OnCurve() => SetMode(RoadToolMode.Curve);
         private void OnFree() => SetMode(RoadToolMode.Free);
@@ -167,9 +198,23 @@ namespace Urbe.Game.Tools.RoadTool
         {
             if (_model == null || !_model.CanConfirm) return false;
             bool demolish = _model.Mode == RoadToolMode.Demolish;
-            var cmds = _model.BuildCommands();
-            foreach (ICommand c in cmds) host.Enqueue(c);
-            int applied = host.FlushCommands();
+            int applied;
+            if (host.City != null)
+            {
+                applied = 0;
+                foreach (Urbe.Sim.City.CityCommand c in _model.BuildCityCommands())
+                {
+                    Urbe.Sim.City.CityResult r = host.Execute(c);
+                    if (r == Urbe.Sim.City.CityResult.Ok) applied++;
+                    else { ShowNote(CityText.Reject(r, host.City, c.RoadResult)); break; }
+                }
+            }
+            else
+            {
+                var cmds = _model.BuildCommands();
+                foreach (ICommand c in cmds) host.Enqueue(c);
+                applied = host.FlushCommands();
+            }
             if (applied == 0) return false;
             if (!demolish) _builtCount += applied;
             if (demolish) _model.Cancel(); else _model.ContinueFromEnd();
@@ -240,7 +285,9 @@ namespace Urbe.Game.Tools.RoadTool
 
         private void Update()
         {
+            if (_note.Length > 0 && Time.unscaledTime >= _noteUntil) { _note = ""; RefreshUi(); }
             if (!_active || _model == null) return;
+            if (host.City != null) _model.Budget = host.City.Money;
             if (_dragging && !PointerDown()) { _dragging = false; if (!_loupe) { /* el ghost queda pendiente hasta confirmar */ } HideLoupe(); }
             if (_loupe && !_loupeForced && !PointerDown()) HideLoupe();
 
@@ -320,6 +367,9 @@ namespace Urbe.Game.Tools.RoadTool
             _panel.EnableInClassList("open", _active);
             _build.EnableInClassList("toggled", _active);
             _build.text = _active ? "Cerrar" : "Construir";
+            bool cityLocked = host.City != null && !host.City.IsRoadUnlocked(RoadTypeIds.Avenue4);
+            _avenue.EnableInClassList("locked", cityLocked);
+            _avenue.text = cityLocked ? "Avenida\n" + CityText.ShortRequirement(host.City!.Balance.MilestoneRoadAvenue4, host.City.Balance) : "Avenida";
             if (_model == null) return;
             _street.EnableInClassList("toggled", _model.RoadTypeId == RoadTypeIds.Street2);
             _avenue.EnableInClassList("toggled", _model.RoadTypeId == RoadTypeIds.Avenue4);
@@ -329,9 +379,10 @@ namespace Urbe.Game.Tools.RoadTool
             _demolish.EnableInClassList("toggled", _model.Mode == RoadToolMode.Demolish);
             _confirm.SetEnabled(_model.CanConfirm);
             _undo.SetEnabled(host.UndoCount > 0);
-            _message.EnableInClassList("show", _active && !string.IsNullOrEmpty(_model.Plan.Message));
-            _message.EnableInClassList("tool-bad", _model.Plan.HasGeometry && !_model.Plan.Valid);
-            string text = _model.Plan.Message ?? "";
+            bool noteOn = Time.unscaledTime < _noteUntil && _note.Length > 0;
+            string text = noteOn ? _note : (_model.Plan.Message ?? "");
+            _message.EnableInClassList("show", _active && !string.IsNullOrEmpty(text));
+            _message.EnableInClassList("tool-bad", noteOn || (_model.Plan.HasGeometry && !_model.Plan.Valid));
             if (_message.text != text) _message.text = text;
         }
 

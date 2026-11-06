@@ -53,7 +53,8 @@ namespace Urbe.Game.Tests
             _doc = _tool.GetComponent<UIDocument>();
             Assert.That(_tool, Is.Not.Null);
             _host.SetSpeed(SimSpeed.Paused);
-            if (showcase) _host.Initialize(ShowcaseScenario.Create(7UL, 40, 1f).Scenario);
+            // Estas pruebas son del trazado en un escenario de tráfico (rejilla de M2 o muestra); las de la ciudad real están en CityPlayTests.
+            _host.Initialize(showcase ? ShowcaseScenario.Create(7UL, 40, 1f).Scenario : GridScenario.Create());
             for (int i = 0; i < 6; i++) yield return null; // el diseño de UI Toolkit tarda unos fotogramas en estabilizarse
         }
 

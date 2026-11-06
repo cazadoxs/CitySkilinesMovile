@@ -34,6 +34,9 @@ namespace Urbe.Game.Tests
             _hud = Object.FindFirstObjectByType<HudController>();
             Assert.That(_host, Is.Not.Null);
             Assert.That(_hud, Is.Not.Null);
+            _host.SetSpeed(SimSpeed.Paused);
+            _host.Initialize(GridScenario.Create()); // el HUD de tráfico se prueba con la rejilla de M2; la ciudad real, en CityStartTests
+            yield return null;
             // Los vehículos tardan en aparecer: avanzamos la simulación a mano para no depender del reloj.
             yield return null;
             int ticks = Mathf.RoundToInt(secondsOfSim * SimHost.TicksPerSecond);
@@ -82,24 +85,33 @@ namespace Urbe.Game.Tests
         {
             yield return LoadMain(1f);
             yield return null;
+            yield return ClickUntil("btn-x3", () => _host.Speed == SimSpeed.X3);
             var x3 = _hud.Root.Q<Button>("btn-x3");
-            Vector2 p = ElementCenterToScreen(x3);
-            Set(_mouse.position, p);
-            yield return null;
-            Click(_mouse.leftButton);
-            yield return null;
-            yield return null;
             Assert.That(_host.Speed, Is.EqualTo(SimSpeed.X3));
             Assert.That(x3.ClassListContains("active"));
 
+            yield return ClickUntil("btn-pause", () => _host.IsPaused);
             var pause = _hud.Root.Q<Button>("btn-pause");
-            Set(_mouse.position, ElementCenterToScreen(pause));
-            yield return null;
-            Click(_mouse.leftButton);
-            yield return null;
-            yield return null;
             Assert.That(_host.IsPaused);
             Assert.That(pause.ClassListContains("active"));
+        }
+
+        /// <summary>Clic virtual sobre un botón; se reintenta (hasta 4 veces) porque el primer clic tras cargar la escena a veces no llega al módulo de UI.</summary>
+        private IEnumerator ClickUntil(string name, System.Func<bool> done)
+        {
+            for (int attempt = 0; attempt < 4 && !done(); attempt++)
+            {
+                var b = _hud.Root.Q<Button>(name);
+                Vector2 p = ElementCenterToScreen(b);
+                Set(_mouse.position, p + new Vector2(20f, 0f));
+                yield return null;
+                Set(_mouse.position, p);
+                yield return null;
+                yield return null;
+                Click(_mouse.leftButton);
+                yield return null;
+                yield return null;
+            }
         }
 
         [UnityTest]

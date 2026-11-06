@@ -7,6 +7,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Urbe.Game.CameraRig;
+using Urbe.Game.Rendering.Ground;
 using Urbe.Game.Rendering.Roads;
 using Urbe.Game.Rendering.Traffic;
 using Urbe.Game.Rendering.Vehicles;
@@ -34,7 +35,7 @@ namespace Urbe.Game.Editor
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
             Material roadSurface = RoadAtlasBuilder.EnsureAll();
-            Material ground = EnsureUnlit("DebugGround", new Color(0.56f, 0.72f, 0.47f), false);
+            Material ground = EnsureUnlit("DebugGround", Color.white, false);
             Material vehicleMat = VehicleAssetBuilder.EnsureMaterial();
             VehicleModelSet vehicleSet = VehicleAssetBuilder.EnsureModelSet();
 
@@ -48,9 +49,9 @@ namespace Urbe.Game.Editor
             var host = simGo.AddComponent<SimHost>();
             var boot = simGo.AddComponent<SimBootstrap>();
             SetRef(boot, "host", host);
-            var view = simGo.AddComponent<DebugSimView>();
-            SetRef(view, "host", host);
-            SetRef(view, "groundMaterial", ground);
+            var groundView = simGo.AddComponent<CityGround>();
+            SetRef(groundView, "host", host);
+            SetRef(groundView, "groundMaterial", ground);
             var vehicles = simGo.AddComponent<VehicleRenderer>();
             SetRef(vehicles, "host", host);
             SetRef(vehicles, "models", vehicleSet);
@@ -70,12 +71,12 @@ namespace Urbe.Game.Editor
             camGo.AddComponent<AudioListener>();
             var rig = camGo.AddComponent<CityCameraController>();
             var rigSo = new SerializedObject(rig);
-            rigSo.FindProperty("settings.boundsMin").vector2Value = new Vector2(-300f, -300f);
+            rigSo.FindProperty("settings.boundsMin").vector2Value = new Vector2(-1100f, -1100f);
             rigSo.FindProperty("settings.boundsMax").vector2Value = new Vector2(1100f, 1100f);
-            rigSo.FindProperty("startFocus").vector2Value = new Vector2(400f, 400f);
-            rigSo.FindProperty("startHeight").floatValue = 700f;
+            rigSo.FindProperty("startFocus").vector2Value = new Vector2(-780f, 0f);
+            rigSo.FindProperty("startHeight").floatValue = 300f;
             rigSo.ApplyModifiedPropertiesWithoutUndo();
-            camGo.transform.SetPositionAndRotation(new Vector3(400f, 700f, -120f), Quaternion.Euler(55f, 0f, 0f));
+            camGo.transform.SetPositionAndRotation(new Vector3(-800f, 260f, -90f), Quaternion.Euler(55f, 0f, 0f));
 
             var ghostGo = new GameObject("FantasmaCarreteras");
             var ghost = ghostGo.AddComponent<RoadGhostRenderer>();
@@ -112,6 +113,8 @@ namespace Urbe.Game.Editor
             SetRef(hud, "cameraController", rig);
             SetRef(hud, "styleSheet", AssetDatabase.LoadAssetAtPath<StyleSheet>(uiFolder + "/Hud.uss"));
             SetRef(hud, "trafficLayer", traffic);
+            var cityHud = hudGo.AddComponent<CityHudController>();
+            SetRef(cityHud, "host", host);
             var tool = hudGo.AddComponent<RoadToolController>();
             SetRef(tool, "host", host);
             SetRef(tool, "cameraController", rig);

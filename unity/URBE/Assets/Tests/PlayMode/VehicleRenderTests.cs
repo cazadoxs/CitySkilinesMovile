@@ -31,7 +31,7 @@ namespace Urbe.Game.Tests
             _rig = Object.FindFirstObjectByType<CityCameraController>();
             _cam = _rig.GetComponent<Camera>();
             Assert.That(_vr, Is.Not.Null, "la escena Main lleva VehicleRenderer");
-            Assert.That(Object.FindFirstObjectByType<DebugSimView>(), Is.Not.Null);
+            Assert.That(Object.FindFirstObjectByType<Urbe.Game.Rendering.Ground.CityGround>(), Is.Not.Null);
             _host.SetSpeed(SimSpeed.Paused);
             _host.Initialize(scenario);
             yield return null;
@@ -129,6 +129,11 @@ namespace Urbe.Game.Tests
         public IEnumerator Main_ArrancaSola_Y_DibujaVehiculosSinPasosPrevios()
         {
             SceneManager.LoadScene("Main");
+            yield return null;
+            yield return null;
+            Object.FindFirstObjectByType<SimHost>().Initialize(GridScenario.Create()); // la partida real es una ciudad vacía (M3-07)
+            Object.FindFirstObjectByType<CityCameraController>().Model.SnapTo(new Vector2(400f, 400f), 700f); // la cámara de la ciudad mira a la autopista
+            for (int i = 0; i < 300; i++) Object.FindFirstObjectByType<SimHost>().StepOnce(); // los primeros vehículos tardan unos segundos simulados
             for (int i = 0; i < 120; i++) yield return null;
             var host = Object.FindFirstObjectByType<SimHost>();
             var vr = Object.FindFirstObjectByType<VehicleRenderer>();

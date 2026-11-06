@@ -48,6 +48,8 @@ namespace Urbe.Game.Tests
             var host = Object.FindFirstObjectByType<SimHost>();
             var roads = Object.FindFirstObjectByType<RoadChunkRenderer>();
             Assert.That(roads, Is.Not.Null);
+            host.Initialize(GridScenario.Create()); // la partida real es una ciudad vacía (M3-07): la rejilla de M2 se instala a mano
+            yield return null;
             roads.Flush();
             Assert.That(host.Network!.SegmentCount, Is.GreaterThan(100));
             Assert.That(roads.ChunkCount, Is.GreaterThan(10), "rejilla de 800 m en chunks de 128 m");
