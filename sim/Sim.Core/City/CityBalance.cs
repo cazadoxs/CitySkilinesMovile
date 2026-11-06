@@ -116,7 +116,7 @@ namespace Urbe.Sim.City
 
         // ---------------------------------------------------------------- economia, campos e hitos (M3-05)
         /// <summary>Impuesto semanal base por residente (R) o por empleo cubierto (C, I, O) al 9 % (indice = ZoneType), GDD 8.13.</summary>
-        public float[] TaxPerOccupant = { 0f, 3.0f, 5.0f, 4.5f, 7.0f };
+        public float[] TaxPerOccupant = { 0f, 6f, 9f, 8f, 12f };
         /// <summary>Sube la recaudacion un 20 % por nivel por encima del 1.</summary>
         public float TaxLevelBonus = 0.2f;
         /// <summary>Mantenimiento semanal por metro de carretera (indice = tipo de carretera).</summary>

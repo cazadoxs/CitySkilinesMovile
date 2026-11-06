@@ -62,7 +62,7 @@ namespace Urbe.Sim.City
             float jobsGap = s.JobsFree - s.Unemployed;
             float r = bal.DemandBaseR;
             r += 55f * Clamp(jobsGap / Math.Max(20f, 0.15f * pop), -1f, 1f);
-            r -= 90f * Clamp((vacantFrac - 0.10f) / 0.35f, 0f, 1f);
+            r -= 80f * Clamp((vacantFrac - 0.15f) / 0.35f, 0f, 1f);
             if (pop > 0f) r += (s.AverageHappiness - 55f) * 0.6f;
             r -= (taxR - 9f) * 6f;
             d.R = Clamp(r, -100f, 100f);

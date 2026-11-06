@@ -287,7 +287,7 @@ namespace Urbe.Sim.City
             if (_alive >= _bal.MaxPopulation) return;
             CityStats s = _city.Stats;
             if (_alive > 0 && s.HousingVacant <= 0) return;
-            float attract = _alive == 0 ? 20f : s.JobsFree - 0.6f * s.Unemployed + 8f;
+            float attract = _alive == 0 ? 20f : s.JobsFree - 0.5f * s.Unemployed + 25f;
             if (attract <= 0f) return;
             float hf = s.AverageHappiness / 60f;
             hf = hf < 0.2f ? 0.2f : (hf > 1.2f ? 1.2f : hf);

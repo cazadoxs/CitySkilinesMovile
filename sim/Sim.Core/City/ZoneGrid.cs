@@ -120,6 +120,18 @@ namespace Urbe.Sim.City
         public int ZonedFreeCount(ZoneType zone) => _zonedFree[(int)zone];
         public int MaxDepth => _maxDepth;
 
+        /// <summary>Celdas libres de esa zona pegadas a la calle (fondo 0): las unicas donde puede empezar un edificio. Recorre todas las celdas.</summary>
+        public int CountFreeFront(ZoneType zone)
+        {
+            int n = 0;
+            for (int i = 0; i < _high; i++)
+            {
+                ref readonly ZoneCell c = ref _cells[i];
+                if (c.Segment.IsValid && c.Depth == 0 && c.Zone == zone && c.Building < 0) n++;
+            }
+            return n;
+        }
+
         /// <summary>Numero de celdas a lo largo del segmento (0 si no tiene celdas).</summary>
         public int AlongCount(EntityId segment)
         {

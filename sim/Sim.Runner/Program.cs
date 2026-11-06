@@ -24,6 +24,8 @@ namespace Urbe.Sim.Runner
             float? openAt = null;
             float tripsAfter = 0.3f, trunk = 4f;
             float tripsPerSecond = 3f; // M1-07b: con el JunctionController por defecto, 8 viajes/s saturan la cuadricula 8x8
+            int targetPop = 10000, maxDays = 600, holdTicks = 3000;
+            bool verbose = false;
 
             try
             {
@@ -34,6 +36,10 @@ namespace Urbe.Sim.Runner
                         case "--diagnose": diagnose = Next(args, ref i); break;
                         case "--opt": diagOpts.Add(Next(args, ref i)); break;
                         case "--bench": bench = true; break;
+                        case "--target-pop": targetPop = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--max-days": maxDays = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--hold-ticks": holdTicks = int.Parse(Next(args, ref i), CultureInfo.InvariantCulture); break;
+                        case "--verbose": verbose = true; break;
                         case "--quick": quick = true; break;
                         case "--bench-json": benchJson = Next(args, ref i); break;
                         case "--render": png = Next(args, ref i); break;
@@ -62,6 +68,7 @@ namespace Urbe.Sim.Runner
 
             if (diagnose != null) return Diagnose.Run(diagnose, diagOpts.ToArray());
             if (bench) return Bench.Run(quick, benchJson, seed);
+            if (scenarioName == "city") return CityRun.Run(seed, targetPop, maxDays, csv, png, holdTicks, verbose);
             if (png == null && gif == null && csv == null) return 0;
             if (layerName != "vehicles" && layerName != "flow") { Console.Error.WriteLine("--layer: vehicles | flow"); return 2; }
             if (frameTicks < 1) frameTicks = 1;

@@ -12,6 +12,7 @@
     <!-- El codificador GIF no depende de SkiaSharp: se compila aqui por enlace en lugar de referenciar Sim.Runner. -->
     <Compile Include="..\Sim.Runner\Render\GifWriter.cs" Link="Render\GifWriter.cs" />
     <Compile Include="..\Sim.Runner\Render\FixedPalette.cs" Link="Render\FixedPalette.cs" />
+    <Compile Include="..\Sim.Runner\Bot\CityBot.cs" Link="Bot\CityBot.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sim.Core\Sim.Core.csproj" />
